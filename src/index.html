@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			http-equiv="Content-Security-Policy"
+			content="default-src *; script-src 'self' 'unsafe-eval'"
+		/>
+		<title>Bloodbath</title>
+		<link rel="stylesheet" href="css/index.less" />
+	</head>
+	<body>
+		<div id="ui">
+			<div class="top"></div>
+			<div class="bottom right col">
+				<div class="box weaponSlot">
+					<img class="weapImg" draggable="false" />
+					<div class="weapData">
+						<div class="name"></div>
+						<div class="ammo">
+							<span class="clip"></span> /
+							<span class="total"></span>
+						</div>
+					</div>
+				</div>
+				<div class="box weaponSlot">
+					<img class="weapImg" draggable="false" />
+					<div class="weapData">
+						<div class="name"></div>
+						<div class="ammo">
+							<span class="clip"></span> /
+							<span class="total"></span>
+						</div>
+					</div>
+				</div>
+				<div class="box weaponSlot">
+					<img class="weapImg" draggable="false" />
+					<div class="weapData">
+						<div class="name"></div>
+					</div>
+				</div>
+				<div class="box weaponSlot">
+					<img class="weapImg" draggable="false" />
+					<div class="weapData">
+						<div class="name"></div>
+						<div class="ammo">
+							<span class="clip"></span> /
+							<span class="total"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="box interact hidden">
+				<span class="key">F</span>Pickup<span class="item"></span>
+			</div>
+		</div>
+		<script type="module" src="js/index.js"></script>
+	</body>
+</html>

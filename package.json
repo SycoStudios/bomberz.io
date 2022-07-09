@@ -1,0 +1,30 @@
+{
+	"name": "shooty",
+	"version": "1.0.0",
+	"description": "",
+	"scripts": {
+		"build": "rd /s /q dist && parcel build src/index.html"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@parcel/config-default": "^2.5.0",
+		"@parcel/plugin": "^2.5.0",
+		"@parcel/transformer-less": "^2.5.0",
+		"@parcel/transformer-sass": "^2.5.0",
+		"parcel": "^2.5.0",
+		"querystring-es3": "^0.2.1",
+		"sharp": "^0.29.3"
+	},
+	"type": "module",
+	"dependencies": {
+		"@codezilluh/bitarray.js": "^1.0.4",
+		"@geckos.io/client": "^2.1.8",
+		"@geckos.io/server": "^2.2.0",
+		"@rbf/parcel-optimizer-javascript-obfuscator": "^0.2.2",
+		"detect-collisions": "^3.2.6",
+		"howler": "^2.2.3",
+		"pixi.js": "^6.3.0"
+	}
+}

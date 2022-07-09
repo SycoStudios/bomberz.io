@@ -1,0 +1,6 @@
+{
+	"compress": {
+		"keep_fargs": false,
+		"toplevel": true
+	}
+}

@@ -1,0 +1,149 @@
+@ui-speed: 0.1s;
+
+body {
+	margin: 0;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+canvas {
+	display: block;
+}
+
+#ui {
+	pointer-events: none;
+	position: fixed;
+	height: 100vh;
+	width: 100vw;
+
+	& .bottom,
+	& .top {
+		position: fixed;
+		display: flex;
+
+		&.col {
+			flex-direction: column;
+		}
+
+		&.right {
+			right: 0;
+			align-items: end;
+		}
+
+		&.left {
+			left: 0;
+		}
+	}
+
+	& .interact {
+		color: white;
+		margin: 0 !important;
+		width: fit-content;
+		position: fixed;
+		top: 50vh;
+		left: calc(50% + 120px);
+		transform: translateY(-50%);
+		font-size: 20px;
+		line-height: 1;
+		padding: 10px 12px !important;
+
+		& .key {
+			font-size: 32px;
+			margin-right: 12px;
+			font-weight: bold;
+		}
+
+		& .item {
+			margin-left: 6px;
+		}
+
+		&.hidden {
+			display: none;
+		}
+	}
+
+	& .bottom {
+		bottom: 0;
+	}
+
+	& .top {
+		top: 0;
+	}
+
+	& .box {
+		padding: 10px;
+		margin: 10px;
+		margin-top: 0;
+		background: #00000038;
+		border-radius: 5px;
+		display: flex;
+		align-items: center;
+		backdrop-filter: blur(5px);
+		outline: 2px solid #0000005e;
+		user-select: none;
+
+		&.active {
+			outline: 2px solid #ecec21;
+		}
+
+		&.weaponSlot {
+			width: 150px;
+			//transition: width @ui-speed linear;
+			pointer-events: auto;
+			cursor: pointer;
+
+			&.none {
+				cursor: not-allowed;
+			}
+
+			&:hover:not(.none) {
+				background: #00000060;
+			}
+
+			& .weapImg {
+				height: 35px;
+				margin: 0;
+				display: block;
+				margin-right: 10px;
+			}
+
+			& .weapData {
+				flex: 1;
+				margin-right: 6px;
+				line-height: 1;
+				color: white;
+				text-align: right;
+
+				& .name {
+					font-size: 20px;
+				}
+
+				& .ammo {
+					font-size: 0;
+				}
+			}
+
+			&.active {
+				width: 180px;
+
+				& .weapImg {
+					height: 60px;
+				}
+
+				& .weapData {
+					& .ammo {
+						font-size: 12px;
+						margin-top: 5px;
+
+						& .clip {
+							font-size: 18px;
+						}
+					}
+
+					& .name {
+						font-size: 26px;
+					}
+				}
+			}
+		}
+	}
+}
