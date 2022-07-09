@@ -3,7 +3,7 @@ import { objects, objFromId } from "./meta/objects.js";
 import { getRandomInt } from "./math.js"
 
 export default class Object {
-	constructor(x = getRandomInt(15), y = getRandomInt(15), id = 0, type, local = false) {
+	constructor(x = 0, y = 0, id = 0, type, local = false) {
 		this.x = x;
 		this.y = y;
 		this.id = id;
@@ -104,7 +104,7 @@ export default class Object {
 			let object = objects[this.type];
 
 			this._collider.setPosition(
-				this.x - object.collider.width / 2,
+				this.x- object.collider.width / 2,
 				this.y - object.collider.height / 2
 			);
 			this.change();

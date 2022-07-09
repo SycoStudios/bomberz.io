@@ -24,6 +24,18 @@ export const objects = {
 		health: 50,
 		contentRarity: 1
 	},
+	crate_03: {
+		worldImage: new URL("../../src/img/crate_02.png?as=webp&width=400", import.meta.url).href,
+		width: 1.365,
+		height: 0.79,
+		collider: {
+			type: "box",
+			width: 1.365,
+			height: 0.79
+		},
+		health: 50,
+		contentRarity: 1
+	},
 	tree_01: {
 		worldImage: new URL("../../src/img/tree_01.png?as=webp&width=1024", import.meta.url).href,
 		width: 8,
