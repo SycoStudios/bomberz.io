@@ -77,13 +77,13 @@ export class Player {
 			// possibly make another container and put this._container and this._username in it, use it for movement, but use this._container for rotation
 
 			this._playerBody = Sprite.from(
-				new URL("../src/img/player_body.png?as=webp&width=200", import.meta.url).href
+				new URL("../src/img/player_body.png?as=webp&width=300", import.meta.url).href
 			);
 			this._leftHand = Sprite.from(
-				new URL("../src/img/player_body.png?as=webp&width=100", import.meta.url).href
+				new URL("../src/img/player_fist.png?as=webp&width=100", import.meta.url).href
 			);
 			this._rightHand = Sprite.from(
-				new URL("../src/img/player_body.png?as=webp&width=100", import.meta.url).href
+				new URL("../src/img/player_fist.png?as=webp&width=100", import.meta.url).href
 			);
 			this._weapsContainer = new Container();
 			this._weapon = Sprite.from(weapons.mp5.bodyImage);

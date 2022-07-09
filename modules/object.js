@@ -9,7 +9,7 @@ export default class Object {
 		this.type = type;
 		this.category = idFromCategory("object");
 		this.seenList = [];
-		this.health = 100;
+		this.health = objects[type].health || 100;
 		this.layer = objects[type].layer || "objects";
 		this._isLocal = local;
 	}

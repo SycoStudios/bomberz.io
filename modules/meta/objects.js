@@ -8,6 +8,7 @@ export const objects = {
 			width: 2.7,
 			height: 2.7
 		},
+		health: 50,
 		contentRarity: 0
 	},
 	crate_02: {
@@ -19,16 +20,18 @@ export const objects = {
 			width: 2.73,
 			height: 1.58
 		},
+		health: 50,
 		contentRarity: 1
 	},
 	tree_01: {
-		worldImage: new URL("../../src/img/tree_01.png?as=webp&width=400", import.meta.url).href,
+		worldImage: new URL("../../src/img/tree_01.png?as=webp&width=1024", import.meta.url).href,
 		width: 8,
 		height: 7.76,
 		collider: {
 			type: "circle",
 			radius: 0.8
 		},
+		health: 200,
 		layer: "roofs"
 	},
 	crate_03: {
