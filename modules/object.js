@@ -3,7 +3,7 @@ import { objects, objFromId } from "./meta/objects.js";
 import { getRandomInt } from "./math.js"
 
 export default class Object {
-	constructor(x = 0, y = 0, id = 0, type, local = false) {
+	constructor(x = getRandomInt(15), y = getRandomInt(15), id = 0, type, local = false) {
 		this.x = x;
 		this.y = y;
 		this.id = id;
@@ -37,7 +37,7 @@ export default class Object {
 
 			this._container.addChild(this._body);
 
-			this.move(getRandomInt(15), getRandomInt(15));
+			this.move(this.x, this.y);
 
 			return this._container;
 		} else {

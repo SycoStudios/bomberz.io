@@ -24,4 +24,3 @@ export const getRandomInt = (maxNum) => {
 
 export const deg2Rad = Math.PI / 180;
 export const rad2Deg = 180 / Math.PI;
-as
