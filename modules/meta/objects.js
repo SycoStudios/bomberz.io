@@ -30,6 +30,17 @@ export const objects = {
 			radius: 0.8
 		},
 		layer: "roofs"
+	},
+	crate_03: {
+		worldImage: new URL("../../src/img/crate_02.png?as=webp&width=400", import.meta.url).href,
+		width: 2.73,
+		height: 1.58,
+		collider: {
+			type: "box",
+			width: 2.73,
+			height: 1.58
+		},
+		contentRarity: 1
 	}
 };
 
