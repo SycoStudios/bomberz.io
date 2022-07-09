@@ -10,6 +10,7 @@ export class Input {
 		this.mouseY = 0;
 
 		this._ui = document.querySelector("#ui");
+		this._death = document.querySelector("#death");
 		this._cbs = [];
 	}
 
@@ -36,7 +37,7 @@ export class Input {
 				break;
 			}
 			case "mousedown": {
-				if (this._ui.contains(e.target)) break;
+				if (this._ui.contains(e.target) || this._death.contains(e.target)) break;
 
 				this.buttons[e.button] = true;
 				break;

@@ -1,3 +1,4 @@
+// Types of objects and information about them
 export const objects = {
 	crate_01: {
 		worldImage: new URL("../../src/img/crate_01.png?as=webp&width=400", import.meta.url).href,
@@ -33,20 +34,9 @@ export const objects = {
 		},
 		health: 200,
 		layer: "roofs"
-	},
-	crate_03: {
-		worldImage: new URL("../../src/img/crate_02.png?as=webp&width=400", import.meta.url).href,
-		width: 2.73,
-		height: 1.58,
-		collider: {
-			type: "box",
-			width: 2.73,
-			height: 1.58
-		},
-		contentRarity: 1
 	}
 };
-
+// this is just meta data, information. Actual logic for objects can be done in Object.js
 const objNames = Object.keys(objects);
 
 export const idFromObj = (obj) => {

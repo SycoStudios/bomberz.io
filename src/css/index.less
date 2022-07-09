@@ -147,3 +147,45 @@ canvas {
 		}
 	}
 }
+
+#death {
+	position: fixed;
+	user-select: none;
+	margin: auto;
+	background: #00000063;
+	backdrop-filter: blur(5px);
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	z-index: 2;
+
+	&.hidden {
+		display: none;
+	}
+
+	h1 {
+		color: white;
+		font-size: 64px;
+	}
+	//ok
+	.button {
+		background-color: #00ff37;
+		border-radius: 10px;
+		outline: 4px solid black;
+		cursor: pointer;
+		font-weight: bold;
+		padding: 25px 25px;
+		transition: 200ms;
+		box-sizing: border-box;
+		line-height: 0;
+		font-size: 18px;
+		user-select: none;
+
+		&:hover {
+			background: #00d11c;
+		}
+	}
+}

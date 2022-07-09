@@ -50,7 +50,8 @@ const layers = {
 	roofs: new Container()
 };
 const UI = {
-	interact: document.querySelector(".interact")
+	interact: document.querySelector(".interact"),
+	deathScreen: document.querySelector("#death")
 };
 const init = () => {
 	audio.volume(1);
@@ -139,6 +140,12 @@ const dataUpdate = ({ players = [], objects = [], bullets = [] }) => {
 				p._leftHand.visible = false;
 				p._rightHand.visible = false;
 				p._weapon.visible = false;
+
+				if (player.id == data.pov) {
+					audio.sounds.title_looped.play();
+					UI.deathScreen.classList.remove("hidden");
+				}
+
 				p.rotate(0);
 				p.move(player.x, player.y);
 

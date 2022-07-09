@@ -6,12 +6,16 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta
 			http-equiv="Content-Security-Policy"
-			content="default-src *; script-src 'self' 'unsafe-eval'"
+			content="default-src *; script-src 'self' 'unsafe-eval' 'unsafe-inline'"
 		/>
 		<title>Bloodbath</title>
 		<link rel="stylesheet" href="css/index.less" />
 	</head>
 	<body>
+		<div id="death" class="hidden">
+			<h1>YOU DIED!</h1>
+			<div class="button" onclick="javascript:location.reload()">Play again?</div>
+		</div>
 		<div id="ui">
 			<div class="top"></div>
 			<div class="bottom right col">

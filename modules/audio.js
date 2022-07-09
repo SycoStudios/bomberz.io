@@ -18,16 +18,13 @@ export const Audio = class {
 			}),
 			r870_shoot: new Howl({
 				src: new URL("../src/audio/r870_shoot.mp3", import.meta.url).href
-			})
-		};
-		this.music = {
-			title_theme_looped: new Howl({
+			}),
+			title_looped: new Howl({
 				src: new URL("../src/audio/title_theme_looped.mp3", import.meta.url).href,
 				volume: 0.5,
 				loop: true
 			})
-		}
-	    this.music.title_theme_looped.play();
+		};
 		this.x = 0;
 		this.y = 0;
 	}
@@ -54,7 +51,7 @@ export const Audio = class {
 			}).bind(this),
 			instance
 		);
-      
+
 		return instance;
 	}
 
