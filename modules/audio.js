@@ -27,6 +27,7 @@ export const Audio = class {
 				loop: true
 			})
 		}
+	    this.music.title_theme_looped.play();
 		this.x = 0;
 		this.y = 0;
 	}
@@ -38,8 +39,6 @@ export const Audio = class {
 	playSound(name, listener, end = () => {}) {
 		let sound = this.sounds[name];
 		let instance = sound.play();
-
-		this.music.title_theme_looped.play();
 
 		//sound.pos(-(this.x - listener.x), this.y - listener.y, 0, instance);
 		sound.stereo(clamp(((this.x - listener.x) / 28) * -1, -1, 1), instance);
