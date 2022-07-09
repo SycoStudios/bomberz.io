@@ -18,5 +18,10 @@ export const absCeil = (num) => {
 	return num > 0 ? Math.ceil(num) : Math.floor(num);
 };
 
+export const getRandomInt = (maxNum) => {
+  return Math.floor(Math.random() * maxNum);
+};
+
 export const deg2Rad = Math.PI / 180;
 export const rad2Deg = 180 / Math.PI;
+as

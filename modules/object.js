@@ -1,5 +1,6 @@
 import { idFromCategory } from "./meta/objCategories.js";
 import { objects, objFromId } from "./meta/objects.js";
+import { getRandomInt } from "./math.js"
 
 export default class Object {
 	constructor(x = 0, y = 0, id = 0, type, local = false) {
@@ -36,7 +37,7 @@ export default class Object {
 
 			this._container.addChild(this._body);
 
-			this.move(this.x, this.y);
+			this.move(getRandomInt(15), getRandomInt(15));
 
 			return this._container;
 		} else {
@@ -86,7 +87,6 @@ export default class Object {
 		if (this.destroyed) return;
 
 		this.health -= amnt;
-
 		if (this.health <= 0) {
 			this.health = 0;
 			this.destroy(system);

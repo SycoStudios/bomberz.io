@@ -30,7 +30,18 @@ export const objects = {
 		height: 7.76,
 		collider: {
 			type: "circle",
-			radius: 0.8
+			radius: 0.4
+		},
+		health: 200,
+		layer: "roofs"
+	},
+	tree_02: {
+		worldImage: new URL("../../src/img/tree_01.png?as=webp&width=1024", import.meta.url).href,
+		width: 4,
+		height: 3.88,
+		collider: {
+			type: "circle",
+			radius: 0.2
 		},
 		health: 200,
 		layer: "roofs"
