@@ -1,6 +1,8 @@
 // Types of objects and information about them
 
 // this is just meta data, information. Actual logic for objects can be done in Object.js
+
+//Spawning of the Objects are done in server.js
 export const objects = {
 	crate_01: {
 		worldImage: new URL("../../src/img/crate_01.png?as=webp&width=400", import.meta.url).href,
