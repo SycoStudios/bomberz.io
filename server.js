@@ -90,11 +90,13 @@ const Game = class {
 		};
 
 		this.collisionSystem = new System();
-
+		
+		//Loot Spawning from Objects.js
 		for (var i = 0; i < 20; i++) {
 			this.spawnLoot(0, 5, Math.random() > 0.5 ? "mp5" : "m14");
 		}
-
+		
+		//Object Spawning from Objects.js
 		this.spawnObject(5, 5, `crate_02`);
 		this.spawnObject(2, 0, `crate_01`);
 		this.spawnObject(-6, 2, `tree_01`);
