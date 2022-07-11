@@ -37,7 +37,8 @@ export const objects = {
 			radius: 0.4
 		},
 		health: 200,
-		layer: "roofs"
+		layer: "roofs",
+		rotate: true
 	}
 };
 const objNames = Object.keys(objects);

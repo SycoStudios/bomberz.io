@@ -9,7 +9,7 @@ import { actions } from "../../modules/meta/actions";
 import { weapons, weapFromId } from "../../modules/meta/weapons";
 import { Language } from "../../modules/lang";
 import { categoryFromId } from "../../modules/meta/objCategories";
-import { calcDistance, clamp, lerp } from "../../modules/math";
+import { calcDistance, clamp, deg2Rad, getRandomInt, lerp } from "../../modules/math";
 import { Audio } from "../../modules/audio";
 import { itemFromId } from "../../modules/meta/itemTypes";
 import { BitArray } from "@codezilluh/bitarray.js";
@@ -17,7 +17,7 @@ import { messageIds } from "../../modules/meta/messageIds";
 import LootClass from "../../modules/loot.js";
 import ObjectClass from "../../modules/object.js";
 import bullets from "../../models/bullets";
-import { objFromId } from "../../modules/meta/objects";
+import { objFromId, objects as objectData } from "../../modules/meta/objects";
 
 const app = new Application({
 	antialias: true,
@@ -207,11 +207,16 @@ const dataUpdate = ({ players = [], objects = [], bullets = [] }) => {
 							objFromId(object.data),
 							true
 						);
-						data.objects[object.id].category = category;
 
-						layers[data.objects[object.id].layer].addChild(
-							data.objects[object.id].create({ Sprite, Container })
-						);
+						let o = data.objects[object.id];
+
+						o.category = category;
+
+						layers[o.layer].addChild(o.create({ Sprite, Container }));
+
+						if (objectData[objFromId(object.data)].rotate) {
+							o._container.rotation = getRandomInt(180 * deg2Rad);
+						}
 					}
 					break;
 				}
