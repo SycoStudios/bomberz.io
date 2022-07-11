@@ -17,6 +17,7 @@ import ObjectClass from "./modules/object.js";
 import { idFromObj, objects, objFromId } from "./modules/meta/objects.js";
 import { categoryFromId } from "./modules/meta/objCategories.js";
 import bullets from "./models/bullets.js";
+import { gameModes } from "./modules/meta/gameModes.js";
 
 const mapPlayers = (players) =>
 	map(players, (p) => {
@@ -78,6 +79,7 @@ const Game = class {
 		this.actualTicks = 0;
 
 		this.gameId = crypto.randomBytes(36).toString("hex");
+		this.gameMode = gameModes.diffuse;
 
 		this.players = [];
 		this.objects = [];
@@ -90,12 +92,12 @@ const Game = class {
 		};
 
 		this.collisionSystem = new System();
-		
+
 		//Loot Spawning from Objects.js
 		for (var i = 0; i < 20; i++) {
 			this.spawnLoot(0, 5, Math.random() > 0.5 ? "mp5" : "m14");
 		}
-		
+
 		//Object Spawning from Objects.js
 		this.spawnObject(5, 5, `crate_02`);
 		this.spawnObject(2, 0, `crate_01`);
@@ -589,7 +591,8 @@ const Game = class {
 
 		player.channel.raw.emit(
 			welcomeState.encode({
-				pov: player.id
+				pov: player.id,
+				gameMode: this.gameMode
 			})
 		);
 	}

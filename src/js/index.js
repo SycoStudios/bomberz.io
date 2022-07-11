@@ -40,6 +40,7 @@ const data = {
 	bullets: [],
 	objects: [],
 	pov: 0,
+	gameMode: 0,
 	playersJustSeen: []
 };
 const layers = {
@@ -366,6 +367,7 @@ channel.onConnect((error) => {
 				let msg = welcomeState.decode(arr);
 
 				data.pov = msg.pov;
+				data.gameMode = msg.gameMode;
 
 				break;
 			}
