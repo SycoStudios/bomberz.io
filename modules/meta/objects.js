@@ -22,8 +22,8 @@ export const objects = {
 		height: 1.58,
 		collider: {
 			type: "box",
-			width: 2.73,
-			height: 1.58
+			width: 2.64,
+			height: 1.5
 		},
 		health: 50,
 		contentRarity: 1

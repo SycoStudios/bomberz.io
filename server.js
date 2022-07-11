@@ -26,7 +26,12 @@ const mapPlayers = (players) =>
 			y: p.y,
 			dead: p.dead,
 			angle: p.angle,
-			action: p.shooting ? (p.curWeap == 2 ? actions.punch : actions.shoot) : actions.none,
+			action:
+				p.shooting || p.shouldSendShoot
+					? p.curWeap == 2
+						? actions.punch
+						: actions.shoot
+					: actions.none,
 			curWeap: idFromWeap(p.weapons[p.curWeap].type),
 			id: p.id
 		};
@@ -311,6 +316,8 @@ const Game = class {
 				switch (weapStats.type) {
 					case "melee": {
 						player.shooting = true;
+						player.change();
+						player.lastShot = now;
 						break;
 					}
 					case "gun": {
@@ -329,6 +336,8 @@ const Game = class {
 										moveX || moveY
 									);
 								}
+								player.change();
+								player.lastShot = now;
 							}
 						}
 						break;
@@ -336,8 +345,6 @@ const Game = class {
 				}
 
 				player.mouseWasDown = true;
-				player.change();
-				player.lastShot = now;
 			}
 			if (player.inputChanged) {
 				player.change();
@@ -487,13 +494,21 @@ const Game = class {
 		}
 
 		// Send unique message to each player based on
-		// 	what the player can see and what has changed
+		// 		what the player can see and what has changed
+		// Only send when it is time
 		if (shouldSend) {
 			this.previousSend = now;
 			forEach(this.players, (player) => {
 				let players = mapPlayers(
 					filter(this.players, (p) => {
 						if (!p.seenList) p.seenList = [];
+
+						p.lastShouldSendShoot = p.shouldSendShoot;
+						p.shouldSendShoot = now - p.lastShot < 50;
+
+						if (p.lastShouldSendShoot !== p.shouldSendShoot) {
+							p.change();
+						}
 
 						// Can player see p?
 						if (!player.canSee(p.x, p.y, 3)) {
