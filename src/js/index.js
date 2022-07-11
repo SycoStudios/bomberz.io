@@ -18,6 +18,7 @@ import LootClass from "../../modules/loot.js";
 import ObjectClass from "../../modules/object.js";
 import bullets from "../../models/bullets";
 import { objFromId, objects as objectData } from "../../modules/meta/objects";
+import { Circle, Box, System } from "detect-collisions";
 
 const app = new Application({
 	antialias: true,
@@ -41,7 +42,10 @@ const data = {
 	objects: [],
 	pov: 0,
 	gameMode: 0,
-	playersJustSeen: []
+	spectating: false,
+	playersJustSeen: [],
+	lastFrameTime: Date.now(),
+	collisionSystem: new System()
 };
 const layers = {
 	floors: new Container(),
@@ -112,7 +116,17 @@ const dataUpdate = ({ players = [], objects = [], bullets = [] }) => {
 				data.players[player.id] = new Player(true);
 
 				layers.players.addChild(
-					data.players[player.id].create({ Sprite, Text, TextStyle, Container })
+					data.players[player.id].create(
+						{
+							Sprite,
+							Text,
+							TextStyle,
+							Container,
+							Circle,
+							system: data.collisionSystem
+						},
+						data.pov == player.id || !data.spectating
+					)
 				);
 			}
 
@@ -160,7 +174,7 @@ const dataUpdate = ({ players = [], objects = [], bullets = [] }) => {
 
 			if (object.destroyed) {
 				if (data.objects[object.id]) {
-					data.objects[object.id].destroy();
+					data.objects[object.id].destroy(data.collisionSystem);
 					data.objects[object.id] = undefined;
 				}
 
@@ -212,7 +226,12 @@ const dataUpdate = ({ players = [], objects = [], bullets = [] }) => {
 
 						o.category = category;
 
-						layers[o.layer].addChild(o.create({ Sprite, Container }));
+						layers[o.layer].addChild(
+							o.create(
+								{ Sprite, Container, Box, Circle, system: data.collisionSystem },
+								true
+							)
+						);
 
 						if (objectData[objFromId(object.data)].rotate) {
 							o._container.rotation = getRandomInt(180 * deg2Rad);
@@ -268,9 +287,56 @@ const dataUpdate = ({ players = [], objects = [], bullets = [] }) => {
 const animateUpdate = () => {
 	requestAnimationFrame(animateUpdate);
 
-	let showInteract = false;
-	let interactName = "";
 	let touching = [];
+	let now = Date.now();
+	let delta = (now - data.lastFrameTime) / (1000 / 60);
+
+	if (data.pov != undefined && !data.spectating) {
+		let player = data.players[data.pov];
+
+		if (!player || player.dead) return;
+
+		let moveLeft = input.getKeyDown(keybinds.moveLeft);
+		let moveRight = input.getKeyDown(keybinds.moveRight);
+		let moveUp = input.getKeyDown(keybinds.moveUp);
+		let moveDown = input.getKeyDown(keybinds.moveDown);
+
+		let moveX = moveRight - moveLeft;
+		let moveY = moveDown - moveUp;
+
+		if (moveX || moveY) {
+			let moveDir = Math.atan2(moveY, moveX);
+
+			player.move(
+				Math.cos(moveDir) * player.speed * delta,
+				Math.sin(moveDir) * player.speed * delta,
+				false
+			);
+
+			let potentials = data.collisionSystem.getPotentials(player._collider);
+
+			forEach(potentials, (collider) => {
+				if (
+					collider.__type == "bullet" ||
+					collider.__type == "player" ||
+					collider.__type == "loot"
+				)
+					return;
+
+				if (data.collisionSystem.checkCollision(player._collider, collider)) {
+					const { overlapV } = data.collisionSystem.response;
+
+					player.move(-overlapV.x, -overlapV.y, false);
+				}
+			});
+
+			focus(player.x, player.y);
+		}
+
+		player.rotate(input.mouseAngle);
+	}
+
+	data.lastFrameTime = now;
 
 	forEach(data.players, (p) => {
 		const weap = p.curWeap;
@@ -373,6 +439,8 @@ channel.onConnect((error) => {
 
 				data.pov = msg.pov;
 				data.gameMode = msg.gameMode;
+
+				sendInput(input);
 
 				break;
 			}

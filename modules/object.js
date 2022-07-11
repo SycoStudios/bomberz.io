@@ -23,23 +23,8 @@ export default class Object {
 		this.update();
 	}
 
-	create({ Sprite, Container, Box, Circle, system }) {
-		if (this._isLocal) {
-			let object = objects[this.type];
-
-			this._container = new Container();
-			this._body = Sprite.from(new URL(object.worldImage, import.meta.url).href);
-
-			this._body.width = object.width;
-			this._body.height = object.height;
-			this._body.anchor.set(0.5, 0.5);
-
-			this._container.addChild(this._body);
-
-			this.move(this.x, this.y);
-
-			return this._container;
-		} else {
+	create({ Sprite, Container, Box, Circle, system }, collisions = false) {
+		if (!this._isLocal || collisions) {
 			let object = objects[this.type];
 
 			if (object.collider.type == "box") {
@@ -65,12 +50,29 @@ export default class Object {
 
 			system.insert(this._collider);
 		}
+		if (this._isLocal) {
+			let object = objects[this.type];
+
+			this._container = new Container();
+			this._body = Sprite.from(new URL(object.worldImage, import.meta.url).href);
+
+			this._body.width = object.width;
+			this._body.height = object.height;
+			this._body.anchor.set(0.5, 0.5);
+
+			this._container.addChild(this._body);
+
+			this.move(this.x, this.y);
+
+			return this._container;
+		}
 	}
 
 	destroy(system) {
 		if (this._isLocal) {
 			this._container.destroy();
-		} else {
+		}
+		if (!!this._collider) {
 			system.remove(this._collider);
 		}
 
@@ -99,13 +101,18 @@ export default class Object {
 	update() {
 		if (this._isLocal) {
 			this._container.position.set(this.x, this.y);
-		} else {
+		}
+		if (!!this._collider) {
 			let object = objects[this.type];
 
-			this._collider.setPosition(
-				this.x - object.collider.width / 2,
-				this.y - object.collider.height / 2
-			);
+			if (object.collider.width) {
+				this._collider.setPosition(
+					this.x - object.collider.width / 2,
+					this.y - object.collider.height / 2
+				);
+			} else {
+				this._collider.setPosition(this.x, this.y);
+			}
 			this.change();
 		}
 	}

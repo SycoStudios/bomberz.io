@@ -62,15 +62,23 @@ export class Player {
 	update() {
 		if (this._isLocal) {
 			this._container.position.set(this.x, this.y);
-		} else {
+		}
+		if (!!this._collider) {
 			this._collider.setPosition(this.x, this.y);
 		}
 
 		this.change();
 	}
 
-	create({ Sprite, Container, Text, TextStyle, Circle, system }) {
-		// Client or server?
+	create({ Sprite, Container, Text, TextStyle, Circle, system }, collisions) {
+		if (!this._isLocal || collisions) {
+			// Server create code
+			this._collider = new Circle({ x: this.x, y: this.y }, 1);
+			this._collider.__type = "player";
+			this._collider.__pid = this.id;
+
+			system.insert(this._collider);
+		}
 		if (this._isLocal) {
 			// Client create code goes here
 			this._container = new Container();
@@ -123,13 +131,6 @@ export class Player {
 			this.move(this.x, this.y);
 
 			return this._container;
-		} else {
-			// Server create code
-			this._collider = new Circle({ x: this.x, y: this.y }, 1);
-			this._collider.__type = "player";
-			this._collider.__pid = this.id;
-
-			system.insert(this._collider);
 		}
 	}
 

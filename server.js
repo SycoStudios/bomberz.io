@@ -75,8 +75,10 @@ const changeWeap = (id, dir, weapons) => {
 const Game = class {
 	constructor(server) {
 		this.fps = 60;
+		this.sendRate = 35;
 		this.tickLength = 1000 / this.fps;
 		this.previousTick = Date.now();
+		this.previousSend = Date.now();
 		this.actualTicks = 0;
 		this.inLoop = false;
 
@@ -201,6 +203,8 @@ const Game = class {
 		this.inLoop = true;
 
 		let now = Date.now();
+		let shouldSend = now - this.previousSend >= 1000 / this.sendRate;
+
 		// do logic
 		forEach(this.bullets, (bullet) => {
 			let now = Date.now();
@@ -266,9 +270,10 @@ const Game = class {
 
 			let moveX = player.moveRight - player.moveLeft;
 			let moveY = player.moveDown - player.moveUp;
-			let moveDir = Math.atan2(moveY, moveX);
 
 			if (moveX || moveY) {
+				let moveDir = Math.atan2(moveY, moveX);
+
 				player.move(
 					Math.cos(moveDir) * player.speed * delta,
 					Math.sin(moveDir) * player.speed * delta,
@@ -483,46 +488,49 @@ const Game = class {
 
 		// Send unique message to each player based on
 		// 	what the player can see and what has changed
-		forEach(this.players, (player) => {
-			let players = mapPlayers(
-				filter(this.players, (p) => {
-					if (!p.seenList) p.seenList = [];
+		if (shouldSend) {
+			this.previousSend = now;
+			forEach(this.players, (player) => {
+				let players = mapPlayers(
+					filter(this.players, (p) => {
+						if (!p.seenList) p.seenList = [];
 
-					// Can player see p?
-					if (!player.canSee(p.x, p.y, 3)) {
-						// if not, remove player from p's seen-by list
-						p.seenList = Object.values(filter(p.seenList, (e) => e != player.id));
+						// Can player see p?
+						if (!player.canSee(p.x, p.y, 3)) {
+							// if not, remove player from p's seen-by list
+							p.seenList = Object.values(filter(p.seenList, (e) => e != player.id));
 
-						return false;
-					} else {
-						// if so, check if p has been updated
-						if (p.seenList.includes(player.id)) return false;
-					}
+							return false;
+						} else {
+							// if so, check if p has been updated
+							if (p.seenList.includes(player.id)) return false;
+						}
 
-					// Add player to p's seen-by list
-					p.seenList.push(player.id);
-					return true;
-				})
-			);
-			let objects = mapObjects(
-				filter(this.objects, (o) => {
-					if (!player.canSee(o.x, o.y, 5)) return false;
-					if (o.seenList.includes(player.id)) return false;
-
-					o.seenList.push(player.id);
-					return true;
-				})
-			);
-
-			// No need to send if nothing has changed
-			if (!!players.length || !!objects.length)
-				player.channel.raw.emit(
-					gameState.encode({
-						players,
-						objects
+						// Add player to p's seen-by list
+						p.seenList.push(player.id);
+						return true;
 					})
 				);
-		});
+				let objects = mapObjects(
+					filter(this.objects, (o) => {
+						if (!player.canSee(o.x, o.y, 5)) return false;
+						if (o.seenList.includes(player.id)) return false;
+
+						o.seenList.push(player.id);
+						return true;
+					})
+				);
+
+				// No need to send if nothing has changed
+				if (!!players.length || !!objects.length)
+					player.channel.raw.emit(
+						gameState.encode({
+							players,
+							objects
+						})
+					);
+			});
+		}
 
 		this.inLoop = false;
 	}
