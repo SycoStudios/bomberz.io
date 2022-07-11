@@ -1,8 +1,9 @@
 @ui-speed: 0.1s;
+@blur-amnt: 5px;
 
 body {
 	margin: 0;
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: "Fira Sans", Helvetica, sans-serif;
 }
 
 canvas {
@@ -82,7 +83,7 @@ canvas {
 		border-radius: 5px;
 		display: flex;
 		align-items: center;
-		backdrop-filter: blur(5px);
+		backdrop-filter: blur(@blur-amnt);
 		outline: 2px solid #0000005e;
 		user-select: none;
 
@@ -183,7 +184,7 @@ canvas {
 	user-select: none;
 	margin: auto;
 	background: #00000063;
-	backdrop-filter: blur(5px);
+	backdrop-filter: blur(@blur-amnt);
 	width: 100vw;
 	height: 100vh;
 	display: flex;
@@ -200,7 +201,7 @@ canvas {
 		color: white;
 		font-size: 64px;
 	}
-	//ok
+
 	.button {
 		background-color: #00ff37;
 		border-radius: 10px;
@@ -222,83 +223,96 @@ canvas {
 
 #lobby {
 	background-size: cover;
-    	background-repeat: no-repeat;
+	background-repeat: no-repeat;
 	background-image: url(https://cdn.glitch.com/9277bef4-d401-4139-88d2-4a898cbf36f4%2Fvictorrbackground.png?v=1592576196700);
 	margin: 0;
 	padding: 0;
 	width: 100%;
 	height: 100%;
 	position: fixed;
-	font-family: 'Fira Sans', sans-serif;
 
-}
+	& .centerMenu {
+		position: fixed;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		height: 100vh;
+		width: 100%;
+		margin: 0;
+		padding: 0;
 
-#playbtn {
-	background-color: white;
-	border-radius: 10px;
-	height: 60px;
-	width: 90px;
-	font-size: 25px;
-}
+		& .button {
+			background-color: white;
+			border-radius: 10px;
+			height: 60px;
+			width: 90px;
+			font-size: 25px;
 
-#playbtn:hover{
-	cursor: pointer;
-	background-color: gray;
-}
+			&:hover {
+				cursor: pointer;
+				background-color: gray;
+			}
+		}
+	}
 
-#p{
-	position:fixed;
-	display: flex;
-	justify-content: center;
-	align-items:center;
-	text-align: center;
-	height: 100vh;
-	width: 100%;
-	margin: 0;
-	padding: 0;
-}
+	& .friendsMenu {
+		position: fixed;
+		top: 50%;
+		left: 0;
+		transform: translateY(-50%);
+		width: 69px;
+		height: 80vh;
+		min-height: 500px;
+		background: #00000038;
+		border-radius: 0 10px 10px 0;
+		overflow: hidden;
+		outline: 2px solid #0000005e;
+		//box-shadow: 0px 0px 20px #d4d4d4;
+		transition: background 0.3s ease, width 0.3s ease, height 0.3s ease, border-radius 0.3s ease;
+		backdrop-filter: blur(@blur-amnt);
 
-.user-group {
-	width: 25px;
-	height: 25px;
-	padding-right: 25px;
-	padding-left: 10px;
+		&:hover {
+			width: 280px;
+			border-radius: 0;
+			height: 100vh;
 
-}
-.fa{
-	font-style: normal;
-	font-size: 25px;
-	width: 40px;
-	
-}
-.friends-menu{
-	position:fixed;
-	top: 0;
-	left: 0;
-	width: 70px;
-	height: 100vh;
+			& .menuItem {
+				padding-left: 30px;
 
-	background-color: rgba(0,0,0,0.1);
-	border-top-right-radius: 10px;
-	border-bottom-right-radius: 10px;
+				& .friendsIcon {
+					margin-right: 30px;
+				}
+			}
+		}
 
-	overflow: hidden;
-	white-space: nowrap;
-	box-shadow: 0px 0px 20px #d4d4d4;
+		& ul {
+			list-style: none;
+			margin: 0;
+			padding: 10px 0;
+		}
 
-	transition: .3s ease;
+		& .menuItem {
+			padding: 0 22px;
+			height: 50px;
+			display: flex;
+			align-items: center;
+			user-select: none;
+			cursor: default;
+			transition: 0.3s ease;
+			color: white;
 
-}
-.friends-menu:hover {
-	width:270px;
-}
+			& .friendsIcon {
+				width: 25px;
+				margin-right: 22px;
+				transition: 0.3s ease;
+				filter: invert();
+			}
 
-.menu-item{
-	padding: 10px;
-}
-
-#friendul{
-	list-style: none;
-	padding: 0;
-	
+			& .menuTitle {
+				font-size: 25px;
+				margin-top: 3px;
+			}
+		}
+	}
 }
