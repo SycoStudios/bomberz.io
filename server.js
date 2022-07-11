@@ -74,9 +74,11 @@ const changeWeap = (id, dir, weapons) => {
 
 const Game = class {
 	constructor(server) {
-		this.tickLength = 1000 / 60;
+		this.fps = 60;
+		this.tickLength = 1000 / this.fps;
 		this.previousTick = Date.now();
 		this.actualTicks = 0;
+		this.inLoop = false;
 
 		this.gameId = crypto.randomBytes(36).toString("hex");
 		this.gameMode = gameModes.diffuse;
@@ -194,6 +196,10 @@ const Game = class {
 	}
 
 	update(delta) {
+		if (this.inLoop) return;
+
+		this.inLoop = true;
+
 		let now = Date.now();
 		// do logic
 		forEach(this.bullets, (bullet) => {
@@ -254,6 +260,9 @@ const Game = class {
 		forEach(this.players, (player) => {
 			if (player.dead) return;
 			if (player.disconnected) return;
+			if (!player.lastHealth) {
+				player.lastHealth = player.health;
+			}
 
 			let moveX = player.moveRight - player.moveLeft;
 			let moveY = player.moveDown - player.moveUp;
@@ -329,7 +338,7 @@ const Game = class {
 				player.change();
 				player.inputChanged = false;
 			}
-			if (player.invChanged) {
+			if (player.invChanged || player.health !== player.lastHealth) {
 				player.channel.raw.emit(
 					localState.encode({
 						weapon1Type: idFromWeap(player.weapons[0].type),
@@ -340,11 +349,13 @@ const Game = class {
 						weapon2Ammo: player.weapons[1].ammo,
 						weapon3Ammo: player.weapons[2].ammo,
 						weapon4Ammo: player.weapons[3].ammo,
-						weapId: player.curWeap
+						weapId: player.curWeap,
+						health: player.health
 					})
 				);
 				player.change();
 				player.invChanged = false;
+				player.lastHealth = player.health;
 			}
 
 			if (!player.interact) player.alreadyInteracted = false;
@@ -512,6 +523,8 @@ const Game = class {
 					})
 				);
 		});
+
+		this.inLoop = false;
 	}
 
 	playerInput(

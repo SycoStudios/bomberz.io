@@ -10,7 +10,8 @@ const encode = ({
 	weapon2Ammo,
 	weapon3Ammo,
 	weapon4Ammo,
-	weapId
+	weapId,
+	health
 }) => {
 	let arr = new BitArray();
 
@@ -26,6 +27,7 @@ const encode = ({
 	arr.addUint(weapon4Ammo, 5);
 
 	arr.addUint(weapId, 4);
+	arr.addUint(health, 7);
 
 	return arr.encode();
 };
@@ -40,7 +42,8 @@ const decode = (arr) => {
 		weapon2Ammo: arr.getUint(6, 29),
 		weapon3Ammo: arr.getUint(4, 35),
 		weapon4Ammo: arr.getUint(5, 39),
-		weapId: arr.getUint(4, 44)
+		weapId: arr.getUint(4, 44),
+		health: arr.getUint(7, 48)
 	};
 };
 

@@ -386,7 +386,8 @@ channel.onConnect((error) => {
 					weapon2Ammo,
 					weapon3Ammo,
 					weapon4Ammo,
-					weapId
+					weapId,
+					health
 				} = localState.decode(arr);
 				let weaps = [
 					{ type: weapFromId(weapon1Type), ammo: weapon1Ammo },
@@ -423,6 +424,8 @@ channel.onConnect((error) => {
 					weapSlots[i].children[1].children[1].children[0].innerText = weaps[i].ammo;
 					weapSlots[i].children[1].children[1].children[1].innerText = "200";
 				}
+
+				document.querySelector("#healthAmnt").style.width = `${health}%`;
 
 				break;
 			}

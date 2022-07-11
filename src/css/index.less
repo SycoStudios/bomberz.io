@@ -29,6 +29,11 @@ canvas {
 			align-items: end;
 		}
 
+		&.center {
+			left: 50vw;
+			transform: translateX(-50%);
+		}
+
 		&.left {
 			left: 0;
 		}
@@ -83,6 +88,31 @@ canvas {
 
 		&.active {
 			outline: 2px solid #ecec21;
+		}
+
+		&.healthBar {
+			width: 30vw;
+			padding: 5px;
+			flex-direction: column;
+
+			& #healthAmnt {
+				height: 30px;
+				width: 100%;
+				background: white;
+				border-radius: 0 0 2.5px 2.5px;
+				box-sizing: border-box;
+				transition: @ui-speed;
+			}
+
+			& #drugsAmnt {
+				height: 8px;
+				width: 100%;
+				background: #86aee9;
+				border-radius: 2.5px 2.5px 0 0;
+				box-sizing: border-box;
+				top: 5px;
+				transition: @ui-speed;
+			}
 		}
 
 		&.weaponSlot {
