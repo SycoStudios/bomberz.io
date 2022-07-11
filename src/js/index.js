@@ -26,13 +26,6 @@ const app = new Application({
 	resizeTo: window
 });
 const channel = geckos({ port: 3000 });
-
-// Temp hide lobby until ice implements something else
-document.getElementById("playbtn").addEventListener("click",()=>{
-	console.log("Hidden Lobby")
-	document.getElementById("lobby").style.display = "none"
-})
-
 const lang = new Language();
 const input = new Input();
 const audio = new Audio();
