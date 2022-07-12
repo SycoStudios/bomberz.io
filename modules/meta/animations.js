@@ -3,25 +3,38 @@ export const animations = {
 		left: { x: 0.71, y: -0.77 },
 		right: { x: 0.71, y: 0.77 },
 		gun: { x: 0, y: 0 },
-		length: 100
+		length: 100,
+		circleHands: true
 	},
 	fists: {
 		left: { x: 0.71, y: -0.77 },
 		right: { x: 0.71, y: 0.77 },
 		gun: { x: 0, y: 0 },
-		length: 100
+		length: 100,
+		longHands: {
+			r: true,
+			l: true
+		}
 	},
 	punchL: {
 		left: { x: 1.36, y: -0.35 },
 		right: { x: 0.71, y: 0.77 },
 		gun: { x: 0, y: 0 },
-		length: 150
+		length: 150,
+		longHands: {
+			r: true,
+			l: false
+		}
 	},
 	punchR: {
 		right: { x: 1.36, y: 0.35 },
 		left: { x: 0.71, y: -0.77 },
 		gun: { x: 0, y: 0 },
-		length: 150
+		length: 150,
+		longHands: {
+			r: false,
+			l: true
+		}
 	},
 	mp5: {
 		right: { x: 1.2, y: 0.11 },

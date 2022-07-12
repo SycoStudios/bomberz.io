@@ -1,5 +1,6 @@
 import { calcDistance, deg2Rad, lerp } from "./math.js";
 import { animations } from "./meta/animations.js";
+import { skins } from "./meta/skins.js";
 import { weapons } from "./meta/weapons.js";
 
 export class Player {
@@ -70,6 +71,25 @@ export class Player {
 		this.change();
 	}
 
+	setSkin(type, Sprite) {
+		if (this.skin == type) return;
+
+		this.skin = type;
+
+		let skinData = skins[type];
+
+		if (this._isLocal) {
+			this._container.removeChild(this._playerSkin);
+			this._playerSkin = Sprite.from(skinData.image);
+			this._playerSkin.width = skinData.width;
+			this._playerSkin.height = skinData.height;
+			this._playerSkin.anchor.set(0.5, skinData.center);
+			this._playerSkin.rotation = -90 * deg2Rad;
+			this._rightHand.tint = this._leftHand.tint = skinData.handColor;
+			this._container.addChildAt(this._playerSkin, 2);
+		}
+	}
+
 	create({ Sprite, Container, Text, TextStyle, Circle, system }, collisions) {
 		if (!this._isLocal || collisions) {
 			// Server create code
@@ -87,6 +107,7 @@ export class Player {
 			this._playerBody = Sprite.from(
 				new URL("../src/img/player_body.png?as=webp&width=300", import.meta.url).href
 			);
+			this._playerSkin = Sprite.from(skins.bomb_skin_01.image);
 			this._leftHand = Sprite.from(
 				new URL("../src/img/player_fist.png?as=webp&width=100", import.meta.url).href
 			);
@@ -109,24 +130,36 @@ export class Player {
 			this._playerBody.anchor.set(0.5, 0.5);
 			this._playerBody.tint = 0xfce6b6;
 
+			this._playerSkin.width = 2;
+			this._playerSkin.height = 2.83;
+			this._playerSkin.anchor.set(0.5, 182.8 / 283);
+			this._playerSkin.rotation = -90 * deg2Rad;
+
 			this._leftHand.width = 0.7;
 			this._leftHand.height = 0.7;
 			this._leftHand.anchor.set(0.5, 0.5);
 			this._leftHand.position.set(animations.fists.left.x, animations.fists.left.y);
-			this._leftHand.tint = 0xe3d0a3;
+			this._leftHand.tint = 0x453939;
+			this._leftHand.rotation = -90 * deg2Rad;
 
 			this._rightHand.width = 0.7;
 			this._rightHand.height = 0.7;
 			this._rightHand.anchor.set(0.5, 0.5);
 			this._rightHand.position.set(animations.fists.right.x, animations.fists.right.y);
-			this._rightHand.tint = 0xe3d0a3;
+			this._rightHand.tint = 0x453939;
+			this._rightHand.rotation = -90 * deg2Rad;
 
 			this._weapon.visible = false;
 			this._weapon.width = 0;
 			this._weapon.height = 0;
 
 			this._weapsContainer.addChild(this._weapon, this._leftHand, this._rightHand);
-			this._container.addChild(this._playerBody, this._weapsContainer, this._playerRip);
+			this._container.addChild(
+				this._playerBody,
+				this._weapsContainer,
+				this._playerSkin,
+				this._playerRip
+			);
 
 			this.move(this.x, this.y);
 
@@ -187,6 +220,17 @@ export class Player {
 				lerp(this._rightHand.position.x, data.right.x, t),
 				lerp(this._rightHand.position.y, data.right.y, t)
 			);
+
+			if (data.longHands) {
+				this._leftHand.height = 0.7;
+				this._rightHand.height = 0.7;
+
+				if (data.longHands.l) this._leftHand.height = 1.28;
+				if (data.longHands.r) this._rightHand.height = 1.28;
+			} else {
+				this._leftHand.height = 0.7;
+				this._rightHand.height = 0.7;
+			}
 
 			if (t >= 1 || done) {
 				this.animating = false;

@@ -138,6 +138,7 @@ const dataUpdate = ({ players = [], objects = [], bullets = [] }) => {
 			let p = data.players[player.id];
 
 			p.dead = player.dead;
+			p.setSkin("bomb_skin_02", Sprite);
 
 			if (player.id == data.pov) {
 				focus(player.x, player.y);
@@ -157,6 +158,7 @@ const dataUpdate = ({ players = [], objects = [], bullets = [] }) => {
 			} else {
 				p._playerRip.visible = true;
 				p._playerBody.visible = false;
+				p._playerSkin.visible = false;
 				p._leftHand.visible = false;
 				p._rightHand.visible = false;
 				p._weapon.visible = false;
