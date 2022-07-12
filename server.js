@@ -95,9 +95,9 @@ const Game = class {
 		this.bullets = [];
 
 		this.map = {
-			min: -307,
-			max: 307,
-			pad: 20
+			min: -300,
+			max: 300,
+			pad: 24
 		};
 
 		this.collisionSystem = new System();

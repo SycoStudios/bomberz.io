@@ -1,10 +1,10 @@
-import { Application, Container, Text, TextStyle, Sprite } from "pixi.js";
+import { Application, Container, Text, TextStyle, Sprite, Graphics } from "pixi.js";
 import { Bullet } from "../../modules/bullet";
 import { Input } from "../../modules/input";
 import { Player } from "../../modules/player";
 import { gameState, welcomeState, inputState, localState, checkSchemaId } from "../../models/index";
 import geckos from "@geckos.io/client";
-import { forEach } from "../../modules/optimized";
+import { forEach, map } from "../../modules/optimized";
 import { actions } from "../../modules/meta/actions";
 import { weapons, weapFromId } from "../../modules/meta/weapons";
 import { Language } from "../../modules/lang";
@@ -45,7 +45,12 @@ const data = {
 	spectating: false,
 	playersJustSeen: [],
 	lastFrameTime: Date.now(),
-	collisionSystem: new System()
+	collisionSystem: new System(),
+	map: {
+		min: -300,
+		max: 300,
+		pad: 24
+	}
 };
 const layers = {
 	floors: new Container(),
@@ -313,6 +318,14 @@ const animateUpdate = () => {
 				false
 			);
 
+			if (!inMap(player.x, player.y, false, 1)) {
+				player.move(
+					clamp(player.x, data.map.min + 1, data.map.max - 1),
+					clamp(player.y, data.map.min + 1, data.map.max - 1),
+					true
+				);
+			}
+
 			let potentials = data.collisionSystem.getPotentials(player._collider);
 
 			forEach(potentials, (collider) => {
@@ -417,6 +430,41 @@ const animateUpdate = () => {
 		if (!UI.interact.classList.contains("hidden")) UI.interact.classList.add("hidden");
 	}
 };
+const inMap = (x, y, pad = false, rad = 0) => {
+	let min = data.map.min + rad - (pad ? data.map.pad : 0);
+	let max = data.map.max - rad + (pad ? data.map.pad : 0);
+
+	return x >= min && y >= min && x <= max && y <= max;
+};
+const drawGrid = () => {
+	let map = data.map;
+	let grid = new Graphics();
+
+	grid.lineStyle(0.1, 0, 0.15);
+
+	for (let k = map.min - map.pad; k <= map.max + map.pad; k += 12) {
+		grid.moveTo(k, map.min - map.pad);
+		grid.lineTo(k, map.max + map.pad);
+	}
+
+	for (let k = map.min - map.pad; k <= map.max + map.pad; k += 12) {
+		grid.moveTo(map.min - map.pad, k);
+		grid.lineTo(map.max + map.pad, k);
+	}
+
+	grid.lineStyle(0);
+	grid.beginFill(0, 0.2);
+	// Left
+	grid.drawRect(map.min - map.pad, map.min - map.pad, map.pad, (map.max + map.pad) * 2);
+	// Top
+	grid.drawRect(map.min, map.min - map.pad, map.max * 2, map.pad);
+	// Right
+	grid.drawRect(map.max, map.min - map.pad, map.pad, (map.max + map.pad) * 2);
+	// Bottom
+	grid.drawRect(map.min, map.max, map.max * 2, map.pad);
+
+	layers.floors.addChildAt(grid, 0);
+};
 
 channel.onConnect((error) => {
 	requestAnimationFrame(animateUpdate);
@@ -500,12 +548,12 @@ channel.onConnect((error) => {
 		}
 	});
 });
-
 channel.onDisconnect(() => {
 	cancelAnimationFrame(animateUpdate);
 });
-
 input.on("change", sendInput);
+
+drawGrid();
 
 window.addEventListener("load", init);
 window.addEventListener("resize", resize);
