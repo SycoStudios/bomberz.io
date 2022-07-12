@@ -104,7 +104,7 @@ const Game = class {
 
 		// Loot Spawning from Objects.js
 		for (var i = 0; i < 20; i++) {
-			this.spawnLoot(0, 5, Math.random() > 0.5 ? "mp5" : "m14");
+			this.spawnLoot(0, 5, Math.random() > 0.5 ? "ak47" : "m14");
 		}
 
 		// Object Spawning from Objects.js

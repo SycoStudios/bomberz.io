@@ -55,6 +55,14 @@ export const Audio = class {
 		return instance;
 	}
 
+	playMenuTheme() {
+		this.sounds.title_looped.play();
+	}
+
+	stopMenuTheme() {
+		this.sounds.title_looped.stop();
+	}
+
 	setPos(x, y) {
 		this.x = x;
 		this.y = y;

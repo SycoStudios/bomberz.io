@@ -11,6 +11,7 @@ export class Input {
 
 		this._ui = document.querySelector("#ui");
 		this._death = document.querySelector("#death");
+		this._lobby = document.querySelector("#lobby");
 		this._cbs = [];
 	}
 
@@ -37,7 +38,12 @@ export class Input {
 				break;
 			}
 			case "mousedown": {
-				if (this._ui.contains(e.target) || this._death.contains(e.target)) break;
+				if (
+					this._ui.contains(e.target) ||
+					this._death.contains(e.target) ||
+					this._lobby.contains(e.target)
+				)
+					break;
 
 				this.buttons[e.button] = true;
 				break;

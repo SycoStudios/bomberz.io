@@ -1,5 +1,6 @@
 @ui-speed: 0.1s;
 @blur-amnt: 5px;
+@primary: #ecec21;
 
 body {
 	margin: 0;
@@ -17,7 +18,8 @@ canvas {
 	width: 100vw;
 
 	& .bottom,
-	& .top {
+	& .top,
+	& .middle {
 		position: fixed;
 		display: flex;
 
@@ -67,6 +69,11 @@ canvas {
 		}
 	}
 
+	& .middle {
+		top: 50vh;
+		transform: translateY(-50%);
+	}
+
 	& .bottom {
 		bottom: 0;
 	}
@@ -82,13 +89,12 @@ canvas {
 		background: #00000038;
 		border-radius: 5px;
 		display: flex;
-		align-items: center;
 		backdrop-filter: blur(@blur-amnt);
 		outline: 2px solid #0000005e;
 		user-select: none;
 
 		&.active {
-			outline: 2px solid #ecec21;
+			outline: 2px solid @primary;
 		}
 
 		&.healthBar {
@@ -177,6 +183,38 @@ canvas {
 			}
 		}
 	}
+
+	& .pauseMenu {
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+		width: 360px;
+		padding: 0 50px;
+		user-select: none;
+
+		& .box {
+			width: 100%;
+			box-sizing: border-box;
+			height: 600px;
+			color: white;
+			pointer-events: auto;
+
+			& h1 {
+				margin: 0;
+			}
+		}
+
+		& .logo {
+			height: 65px;
+			width: auto;
+			margin-bottom: 25px;
+		}
+
+		&.hidden {
+			display: none;
+			visibility: hidden;
+		}
+	}
 }
 
 #death {
@@ -202,8 +240,18 @@ canvas {
 		font-size: 64px;
 	}
 
+	& .box {
+		background: #00000038;
+		outline: 2px solid #0000005e;
+		border-radius: 10px;
+		padding: 20px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
 	.button {
-		background-color: #00ff37;
+		background: @primary;
 		border-radius: 10px;
 		outline: 4px solid black;
 		cursor: pointer;
@@ -214,16 +262,20 @@ canvas {
 		line-height: 0;
 		font-size: 18px;
 		user-select: none;
+		width: fit-content;
+		text-align: center;
 
 		&:hover {
-			background: #00d11c;
+			background: darken(@primary, 10%);
 		}
 	}
 }
 
 #lobby {
-	background-size: cover;
+	background: #497e51;
+	background-size: 200%;
 	background-repeat: no-repeat;
+	background-position: center;
 	background-image: url(https://cdn.glitch.com/9277bef4-d401-4139-88d2-4a898cbf36f4%2Fvictorrbackground.png?v=1592576196700);
 	margin: 0;
 	padding: 0;
@@ -235,9 +287,17 @@ canvas {
 		display: none;
 	}
 
+	& .box {
+		background: #00000038;
+		outline: 2px solid #0000005e;
+		border-radius: 10px;
+		backdrop-filter: blur(@blur-amnt);
+	}
+
 	& .centerMenu {
 		position: fixed;
 		display: flex;
+		flex-direction: column;
 		justify-content: center;
 		align-items: center;
 		text-align: center;
@@ -246,33 +306,34 @@ canvas {
 		margin: 0;
 		padding: 0;
 
-
-		& .container {
-			background: #00000038;
-			outline: 2px solid #0000005e;
-			border-radius: 10px;
-			height: 300px;
+		& .box {
+			height: 350px;
 			width: 500px;
-			//backdrop-filter: blur(@blur-amnt);
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			padding: 20px;
+			box-sizing: border-box;
 
 			& .button {
-				background-color: rgb(253, 228, 0);
+				background: @primary;
 				border-radius: 10px;
 				height: 50px;
 				width: 200px;
 				font-size: 25px;
-				margin-top: 180px;
-				border-color: rgb(253, 228, 0);
+				border: none;
+				//outline: 2px solid @primary;
 
 				&:hover {
 					cursor: pointer;
-					background-color: rgba(253, 228, 0, 0.3);
-					border-color: rgba(253, 228, 0, 0.3);
+					background: fade(@primary, 60%);
+					//outline-color: fade(@primary, 30%);
 				}
 			}
+		}
 	}
-	}
-	& .friendsMenu {
+
+	& .sideMenu {
 		position: fixed;
 		top: 50%;
 		left: 0;
@@ -280,17 +341,15 @@ canvas {
 		width: 69px;
 		height: 80vh;
 		min-height: 500px;
-		background: #00000038;
+		max-height: calc(100vh - 200px);
 		border-radius: 0 10px 10px 0;
 		overflow: hidden;
-		outline: 2px solid #0000005e;
-		//box-shadow: 0px 0px 20px #d4d4d4;
 		transition: background 0.3s ease, width 0.3s ease, height 0.3s ease, border-radius 0.3s ease;
-		//backdrop-filter: blur(@blur-amnt);
+		padding: 10px 0;
+		box-sizing: border-box;
 
 		&:hover {
 			width: 280px;
-			border-radius: 0;
 			height: 100vh;
 
 			& .menuItem {
@@ -302,12 +361,6 @@ canvas {
 			}
 		}
 
-		& ul {
-			list-style: none;
-			margin: 0;
-			padding: 10px 0;
-		}
-
 		& .menuItem {
 			padding: 0 22px;
 			height: 50px;
@@ -315,14 +368,24 @@ canvas {
 			align-items: center;
 			user-select: none;
 			cursor: default;
-			transition: 0.3s ease;
+			transition: 0.3s ease, color @ui-speed ease;
 			color: white;
 
-			& .friendsIcon {
+			&:hover {
+				cursor: pointer;
+				color: @primary;
+				//outline-color: fade(@primary, 30%);
+
+				& .icon {
+					filter: initial;
+				}
+			}
+
+			& .icon {
 				width: 25px;
 				margin-right: 22px;
-				transition: 0.3s ease;
-				filter: invert();
+				transition: 0.3s ease, filter @ui-speed ease;
+				filter: grayscale(1) brightness(3);
 			}
 
 			& .menuTitle {
@@ -331,38 +394,43 @@ canvas {
 			}
 		}
 	}
+
 	& .topMenu {
 		position: fixed;
-		background: #00000038;
 		border-radius: 0 0 10px 10px;
-		top:0;
-		width:  110vh;
-		height: 100px;
-		outline: 2px solid #0000005e;
-		left:45vh;
-		backdrop-filter: blur(@blur-amnt);
+		top: 0;
+		max-width: 900px;
+		width: 100%;
+		left: 50%;
+		transform: translateX(-50%);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 20px;
 
-		& .nav{
-			list-style-type: none;
-			overflow: hidden;
-			display:flex;
-			justify-content: center;
-			align-items: center;
+		& .navItem {
+			color: white;
+			padding: 0 16px;
+			font-size: 25px;
+			transition: color @ui-speed ease;
 
-			& .navItem{
-				float: left;
-				color: white;
-				padding: 14px 16px;
-				text-decoration: none;
-				font-size: 25px;
-
-				&:hover {
-					cursor: pointer;
-					color: black;
-				}
-				
+			&:hover {
+				cursor: pointer;
+				color: @primary;
 			}
 		}
 
+		& .active {
+			color: darken(@primary, 10%);
+		}
 	}
+}
+
+.logo {
+	max-width: 400px;
+	width: 50vw;
+	margin-bottom: 50px;
+	filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.281));
+	//backdrop-filter: blur(@blur-amnt);
+	border-radius: 20px;
 }
