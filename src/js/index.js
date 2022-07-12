@@ -138,7 +138,7 @@ const dataUpdate = ({ players = [], objects = [], bullets = [] }) => {
 			let p = data.players[player.id];
 
 			p.dead = player.dead;
-			p.setSkin("bomb_skin_02", Sprite);
+			p.setSkin("bomb_skin_01", Sprite);
 
 			if (player.id == data.pov) {
 				focus(player.x, player.y);
@@ -442,14 +442,16 @@ const drawGrid = () => {
 	let map = data.map;
 	let grid = new Graphics();
 
+	let gridSize = 12;
+
 	grid.lineStyle(0.1, 0, 0.15);
 
-	for (let k = map.min - map.pad; k <= map.max + map.pad; k += 12) {
+	for (let k = map.min - map.pad; k <= map.max + map.pad; k += gridSize) {
 		grid.moveTo(k, map.min - map.pad);
 		grid.lineTo(k, map.max + map.pad);
 	}
 
-	for (let k = map.min - map.pad; k <= map.max + map.pad; k += 12) {
+	for (let k = map.min - map.pad; k <= map.max + map.pad; k += gridSize) {
 		grid.moveTo(map.min - map.pad, k);
 		grid.lineTo(map.max + map.pad, k);
 	}

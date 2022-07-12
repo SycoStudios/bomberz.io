@@ -72,6 +72,12 @@ export class Player {
 	}
 
 	setSkin(type, Sprite) {
+		if (!type || type == "") {
+			this._playerSkin.visible = false;
+			this._rightHand.tint = this._leftHand.tint = 0xe3d0a3;
+			this.skin = undefined;
+			return;
+		}
 		if (this.skin == type) return;
 
 		this.skin = type;
@@ -86,6 +92,7 @@ export class Player {
 			this._playerSkin.anchor.set(0.5, skinData.center);
 			this._playerSkin.rotation = -90 * deg2Rad;
 			this._rightHand.tint = this._leftHand.tint = skinData.handColor;
+			this._playerSkin.visible = true;
 			this._container.addChildAt(this._playerSkin, 2);
 		}
 	}
@@ -139,14 +146,14 @@ export class Player {
 			this._leftHand.height = 0.7;
 			this._leftHand.anchor.set(0.5, 0.5);
 			this._leftHand.position.set(animations.fists.left.x, animations.fists.left.y);
-			this._leftHand.tint = 0x453939;
+			this._leftHand.tint = 0xe3d0a3;
 			this._leftHand.rotation = -90 * deg2Rad;
 
 			this._rightHand.width = 0.7;
 			this._rightHand.height = 0.7;
 			this._rightHand.anchor.set(0.5, 0.5);
 			this._rightHand.position.set(animations.fists.right.x, animations.fists.right.y);
-			this._rightHand.tint = 0x453939;
+			this._rightHand.tint = 0xe3d0a3;
 			this._rightHand.rotation = -90 * deg2Rad;
 
 			this._weapon.visible = false;
@@ -161,6 +168,7 @@ export class Player {
 				this._playerRip
 			);
 
+			this.setSkin();
 			this.move(this.x, this.y);
 
 			return this._container;
@@ -221,7 +229,7 @@ export class Player {
 				lerp(this._rightHand.position.y, data.right.y, t)
 			);
 
-			if (data.longHands) {
+			if (this.skin && data.longHands) {
 				this._leftHand.height = 0.7;
 				this._rightHand.height = 0.7;
 

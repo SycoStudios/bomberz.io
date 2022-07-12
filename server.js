@@ -80,7 +80,7 @@ const changeWeap = (id, dir, weapons) => {
 const Game = class {
 	constructor(server) {
 		this.fps = 60;
-		this.sendRate = 35;
+		this.sendRate = 30;
 		this.tickLength = 1000 / this.fps;
 		this.previousTick = Date.now();
 		this.previousSend = Date.now();
@@ -498,7 +498,10 @@ const Game = class {
 		// Only send when it is time
 		if (shouldSend) {
 			this.previousSend = now;
+
 			forEach(this.players, (player) => {
+				if (player.disconnected) return;
+
 				let players = mapPlayers(
 					filter(this.players, (p) => {
 						if (!p.seenList) p.seenList = [];
@@ -612,6 +615,12 @@ const Game = class {
 		this.players[id].disconnected = true;
 	}
 
+	playerLeft(channel) {
+		if (!channel.id || !this.players[channel.id]) return;
+
+		this.players[channel.id].disconnected = true;
+	}
+
 	addPlayer(channel) {
 		let player = new Player(false, this.map);
 
@@ -650,7 +659,9 @@ const game = new Game(io);
 
 io.listen(3000);
 io.onConnection((channel) => {
-	channel.onDisconnect(() => {});
+	channel.onDisconnect(() => {
+		game.playerLeft(channel);
+	});
 
 	channel.onRaw(({ buffer }) => {
 		let arr = new BitArray(buffer);
