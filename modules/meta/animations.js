@@ -23,7 +23,7 @@ export const animations = {
 		length: 150,
 		longHands: {
 			r: true,
-			l: false
+			l: true
 		}
 	},
 	punchR: {
@@ -32,7 +32,7 @@ export const animations = {
 		gun: { x: 0, y: 0 },
 		length: 150,
 		longHands: {
-			r: false,
+			r: true,
 			l: true
 		}
 	},

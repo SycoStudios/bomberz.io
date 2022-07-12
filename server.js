@@ -315,9 +315,11 @@ const Game = class {
 			if (player.mouseDown && now - player.lastShot > (weapStats.shootDelay || 150)) {
 				switch (weapStats.type) {
 					case "melee": {
-						player.shooting = true;
-						player.change();
-						player.lastShot = now;
+						if (!player.mouseWasDown) {
+							player.shooting = true;
+							player.change();
+							player.lastShot = now;
+						}
 						break;
 					}
 					case "gun": {
