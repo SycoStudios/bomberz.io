@@ -246,20 +246,27 @@ canvas {
 		margin: 0;
 		padding: 0;
 
-		& .button {
-			background-color: white;
+		& .container {
+			background: #00000038;
+			outline: 2px solid #0000005e;
 			border-radius: 10px;
-			height: 60px;
-			width: 90px;
-			font-size: 25px;
+			height: 300px;
+			width: 500px;
 
-			&:hover {
-				cursor: pointer;
-				background-color: gray;
+			& .button {
+				background-color: white;
+				border-radius: 10px;
+				height: 60px;
+				width: 90px;
+				font-size: 25px;
+
+				&:hover {
+					cursor: pointer;
+					background-color: gray;
+				}
 			}
-		}
 	}
-
+	}
 	& .friendsMenu {
 		position: fixed;
 		top: 50%;
