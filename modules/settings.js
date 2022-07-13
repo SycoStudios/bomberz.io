@@ -1,27 +1,31 @@
 import { forEach } from "./optimized";
 
 export default class Settings {
-	constructor({ sfxVol, musicVol, lang }) {
+	constructor(settingsKey, { sfxVol, musicVol, lang }) {
 		this.elements = {
 			sfxVol,
 			musicVol,
 			lang
 		};
+		this.settingsKey = settingsKey;
 		this.listeners = [];
 
 		this.elements.sfxVol.addEventListener("mouseup", () => {
 			forEach(this.listeners, (onInput) => {
 				onInput("sfxVol", this.getSlider("sfxVol"));
+				this.save();
 			});
 		});
 		this.elements.musicVol.addEventListener("mouseup", () => {
 			forEach(this.listeners, (onInput) => {
 				onInput("musicVol", this.getSlider("musicVol"));
+				this.save();
 			});
 		});
 		this.elements.lang.addEventListener("change", () => {
 			forEach(this.listeners, (onInput) => {
 				onInput("lang", this.getInput("lang"));
+				this.save();
 			});
 		});
 	}
@@ -42,5 +46,30 @@ export default class Settings {
 		let element = this.elements[el];
 
 		return element.value;
+	}
+
+	load() {
+		let storage = localStorage.getItem(this.settingsKey);
+
+		if (storage) {
+			storage = JSON.parse(Buffer.from(storage, "base64").toString());
+
+			this.elements.sfxVol.value = storage.sfxVol * 100;
+			this.elements.musicVol.value = storage.musicVol * 100;
+			this.elements.lang.value = storage.lang;
+		}
+	}
+
+	save() {
+		localStorage.setItem(
+			this.settingsKey,
+			Buffer.from(
+				JSON.stringify({
+					sfxVol: this.getSlider("sfxVol"),
+					musicVol: this.getSlider("musicVol"),
+					lang: this.getInput("lang")
+				})
+			).toString("base64")
+		);
 	}
 }

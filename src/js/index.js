@@ -24,7 +24,7 @@ import Settings from "../../modules/settings.js";
 let listeners = [];
 
 const audio = new Audio();
-const settings = new Settings({
+const settings = new Settings("game-settings", {
 	sfxVol: document.querySelector("#sfx_vol"),
 	musicVol: document.querySelector("#music_vol"),
 	lang: document.querySelector("#lang")
@@ -677,6 +677,7 @@ const startGame = (done) => {
 };
 
 audio.playMenuTheme();
+settings.load();
 settings.addListener((type, value) => {
 	switch (type) {
 		case "lang":
