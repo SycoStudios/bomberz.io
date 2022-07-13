@@ -29,10 +29,6 @@ export const Audio = class {
 		this.y = 0;
 	}
 
-	volume(x) {
-		Howler.volume = x;
-	}
-
 	playSound(name, listener, end = () => {}) {
 		let sound = this.sounds[name];
 		let instance = sound.play();
@@ -40,7 +36,8 @@ export const Audio = class {
 		//sound.pos(-(this.x - listener.x), this.y - listener.y, 0, instance);
 		sound.stereo(clamp(((this.x - listener.x) / 28) * -1, -1, 1), instance);
 		sound.volume(
-			1 - clamp(calcDistance(this.x, this.y, listener.x, listener.y) / 28, 0, 1),
+			(1 - clamp(calcDistance(this.x, this.y, listener.x, listener.y) / 28, 0, 1)) *
+				this.volume,
 			instance
 		);
 

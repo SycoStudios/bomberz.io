@@ -54,8 +54,9 @@ const mapBullets = (bullets) =>
 			y: b.y,
 			startX: b.startX,
 			startY: b.startY,
-			deactivating: Math.min(Math.max(0, Date.now() - b.deactivated), 170),
-			angle: b.angle
+			speed: b.speed,
+			angle: b.angle,
+			type: b.bulletType
 		};
 	});
 const cycle = (num) => {
@@ -150,6 +151,8 @@ const Game = class {
 		bullet.speed = weapons[type].bulletSpeed || 0.2;
 		bullet.range = weapons[type].range || 10;
 		bullet.damage = weapons[type].damage || 5;
+		bullet.bulletType = idFromWeap(type);
+		bullet.start = Date.now();
 		bullet.create({ system: this.collisionSystem, Circle });
 
 		this.bullets.push(bullet);
@@ -214,7 +217,7 @@ const Game = class {
 		forEach(this.bullets, (bullet) => {
 			let now = Date.now();
 
-			if (!bullet.active && now - bullet.deactivated > 170) {
+			if (!bullet.active) {
 				bullet.done = true;
 			}
 
@@ -252,7 +255,6 @@ const Game = class {
 
 						bullet.move(-overlap);
 						bullet.active = false;
-						bullet.deactivated = now;
 						this.collisionSystem.remove(bullet._collider);
 
 						return true;
@@ -261,7 +263,6 @@ const Game = class {
 
 				if (bullet.distance > bullet.range || !this.inMap(bullet.x, bullet.y, true)) {
 					bullet.active = false;
-					bullet.deactivated = now;
 					this.collisionSystem.remove(bullet._collider);
 				}
 			}
@@ -311,7 +312,6 @@ const Game = class {
 				player.change();
 				player.mouseWasDown = false;
 			}
-
 			if (player.mouseDown && now - player.lastShot > (weapStats.shootDelay || 150)) {
 				switch (weapStats.type) {
 					case "melee": {
@@ -484,22 +484,28 @@ const Game = class {
 		});
 
 		// Remove bullets that are "done"
-		this.bullets = this.bullets.filter((bullet) => !bullet.done);
-
-		// Don't send a bullets message if there are no bullets
-		if (!!this.bullets.length) {
-			this.room.emit(
-				bullets.encode({
-					bullets: mapBullets(this.bullets)
-				})
-			);
-		}
+		this.bullets = filter(this.bullets, (bullet) => !bullet.done);
 
 		// Send unique message to each player based on
 		// 		what the player can see and what has changed
 		// Only send when it is time
 		if (shouldSend) {
 			this.previousSend = now;
+
+			// Don't send a bullets message if there are no bullets
+			if (!!this.bullets.length) {
+				this.room.emit(
+					bullets.encode({
+						bullets: mapBullets(
+							filter(
+								this.bullets,
+								(bullet) =>
+									bullet.start > now || now - bullet.start <= this.sendRate
+							)
+						)
+					})
+				);
+			}
 
 			forEach(this.players, (player) => {
 				if (player.disconnected) return;
@@ -509,7 +515,9 @@ const Game = class {
 						if (!p.seenList) p.seenList = [];
 
 						p.lastShouldSendShoot = p.shouldSendShoot;
-						p.shouldSendShoot = now - p.lastShot < 50;
+						p.shouldSendShoot =
+							now - p.lastShot <
+							(weapons[p.weapons[p.curWeap].type].shootDelay || 150) / 2;
 
 						if (p.lastShouldSendShoot !== p.shouldSendShoot) {
 							p.change();
@@ -518,7 +526,7 @@ const Game = class {
 						// Can player see p?
 						if (!player.canSee(p.x, p.y, 3)) {
 							// if not, remove player from p's seen-by list
-							p.seenList = Object.values(filter(p.seenList, (e) => e != player.id));
+							p.seenList = filter(p.seenList, (e) => e != player.id);
 
 							return false;
 						} else {
@@ -583,9 +591,18 @@ const Game = class {
 		player.mouseDown = mouseDown;
 		player.rotate(angle);
 
-		if (nextWeap || prevWeap) {
-			player.curWeap = changeWeap(player.curWeap, prevWeap ? -1 : 1, player.weapons);
-			player.invChanged = true;
+		if (!player.mouseDown) {
+			if (nextWeap || prevWeap) {
+				player.curWeap = changeWeap(player.curWeap, prevWeap ? -1 : 1, player.weapons);
+				player.invChanged = true;
+			}
+
+			if (curWeap !== 4) {
+				if (player.weapons[curWeap].type !== "") {
+					player.curWeap = curWeap;
+					player.invChanged = true;
+				}
+			}
 		}
 
 		if (
@@ -603,13 +620,6 @@ const Game = class {
 			player.weapons[id] = { type: "", ammo: 0 };
 			player.curWeap = 1 - id;
 			player.invChanged = true;
-		}
-
-		if (curWeap !== 4) {
-			if (player.weapons[curWeap].type !== "") {
-				player.curWeap = curWeap;
-				player.invChanged = true;
-			}
 		}
 	}
 

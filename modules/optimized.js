@@ -17,7 +17,7 @@
  * @param {function} fn Function to be run
  */
 export const forEach = (arr, fn) => {
-	if (typeof arr == "object" && !arr.length) {
+	if (typeof arr == "object" && arr.length == undefined) {
 		let keysArr = Object.keys(arr);
 
 		for (var i = 0; i < keysArr.length; i++) {
@@ -40,7 +40,7 @@ export const forEach = (arr, fn) => {
 export const filter = (arr, fn) => {
 	let final = [];
 
-	if (typeof arr == "object" && !arr.length) {
+	if (typeof arr == "object" && arr.length == undefined) {
 		final = {};
 		let keysArr = Object.keys(arr);
 
@@ -74,7 +74,7 @@ export const filter = (arr, fn) => {
 export const map = (arr, fn) => {
 	let final = new Array(arr.length);
 
-	if (typeof arr == "object" && !arr.length) {
+	if (typeof arr == "object" && arr.length == undefined) {
 		final = {};
 		let keysArr = Object.keys(arr);
 

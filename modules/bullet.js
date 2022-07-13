@@ -9,6 +9,7 @@ export class Bullet {
 		this.angle = angle;
 		this.active = true;
 		this._isLocal = local;
+		this.deactivating = 0;
 	}
 
 	get distance() {
@@ -30,7 +31,20 @@ export class Bullet {
 		this.update();
 	}
 
-	create({ Sprite, Container, Circle, system }) {
+	create({ Sprite, Container, Circle, system }, collisions) {
+		if (!this._isLocal || collisions) {
+			this._collider = new Circle(
+				{
+					x: this.x - Math.cos(this.angle * deg2Rad) * 0.15,
+					y: this.y - Math.sin(this.angle * deg2Rad) * 0.15
+				},
+				0.3
+			);
+			this._collider.__type = "bullet";
+			this._collider.__bid = this.id;
+
+			system.insert(this._collider);
+		}
 		if (this._isLocal) {
 			this._container = new Container();
 			this._tracer = Sprite.from(
@@ -46,18 +60,6 @@ export class Bullet {
 			this._container.addChild(this._tracer);
 
 			return this._container;
-		} else {
-			this._collider = new Circle(
-				{
-					x: this.x - Math.cos(this.angle * deg2Rad) * 0.15,
-					y: this.y - Math.sin(this.angle * deg2Rad) * 0.15
-				},
-				0.3
-			);
-			this._collider.__type = "bullet";
-			this._collider.__bid = this.id;
-
-			system.insert(this._collider);
 		}
 	}
 
@@ -67,9 +69,11 @@ export class Bullet {
 				this.x + Math.cos(this.angle * deg2Rad) * 0.15,
 				this.y + Math.sin(this.angle * deg2Rad) * 0.15
 			);
+			this._container.alpha = 0.8 * (1 - this.deactivating / 170);
 			this._container.rotation = this.angle * deg2Rad;
-			this._tracer.width = Math.min(9, this.dist * 0.75);
-		} else {
+			this._tracer.width = Math.min(9, this.distance * (1 - this.deactivating / 170) * 0.75);
+		}
+		if (!!this._collider) {
 			this._collider.setPosition(
 				this.x - Math.cos(this.angle * deg2Rad) * 0.15,
 				this.y - Math.sin(this.angle * deg2Rad) * 0.15

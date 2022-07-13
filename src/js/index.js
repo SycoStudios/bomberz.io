@@ -4,7 +4,7 @@ import { Input } from "../../modules/input";
 import { Player } from "../../modules/player";
 import { gameState, welcomeState, inputState, localState, checkSchemaId } from "../../models/index";
 import geckos from "@geckos.io/client";
-import { forEach, map } from "../../modules/optimized";
+import { filter, forEach, map } from "../../modules/optimized";
 import { actions } from "../../modules/meta/actions";
 import { weapons, weapFromId } from "../../modules/meta/weapons";
 import { Language } from "../../modules/lang";
@@ -19,10 +19,17 @@ import ObjectClass from "../../modules/object.js";
 import bullets from "../../models/bullets";
 import { objFromId, objects as objectData } from "../../modules/meta/objects";
 import { Circle, Box, System } from "detect-collisions";
+import Settings from "../../modules/settings.js";
 
 let listeners = [];
 
 const audio = new Audio();
+const settings = new Settings({
+	sfxVol: document.querySelector("#sfx_vol"),
+	musicVol: document.querySelector("#music_vol"),
+	lang: document.querySelector("#lang")
+});
+const lang = new Language();
 const addEventListener = (type, listener) => {
 	listeners.push([type, listener]);
 
@@ -52,7 +59,6 @@ const startGame = (done) => {
 		resizeTo: window
 	});
 	const channel = geckos({ port: 3000 });
-	const lang = new Language();
 	const input = new Input();
 	const keybinds = {
 		moveLeft: "a",
@@ -93,8 +99,6 @@ const startGame = (done) => {
 		pauseMenu: document.querySelector(".pauseMenu")
 	};
 	const init = () => {
-		audio.volume(1);
-
 		document.body.appendChild(app.view);
 		drawGrid();
 		resize();
@@ -166,7 +170,7 @@ const startGame = (done) => {
 								Circle,
 								system: data.collisionSystem
 							},
-							data.pov == player.id || !data.spectating
+							true
 						)
 					);
 				}
@@ -188,7 +192,7 @@ const startGame = (done) => {
 					p.curWeap = weapFromId(player.curWeap);
 					p.action = player.action;
 
-					if (p.action == actions.shoot && p.lastAction !== actions.shoot) {
+					if (p.action == actions.shoot && p.lastAction !== p.action) {
 						audio.playSound(p.curWeap + "_shoot", { x: p.x, y: p.y });
 					}
 
@@ -305,33 +309,30 @@ const startGame = (done) => {
 		} else {
 			if (bullets.length > 0) {
 				forEach(bullets, (bullet, i) => {
-					if (!data.bullets[i]) {
-						data.bullets.push(new Bullet(bullet.x, bullet.y, bullet.angle, true));
-						layers.bullets.addChild(data.bullets[i].create({ Container, Sprite }));
-					}
+					let id = data.bullets.length;
+					data.bullets.push(new Bullet(bullet.x, bullet.y, bullet.angle, true));
 
-					let b = data.bullets[i];
+					layers.bullets.addChild(
+						data.bullets[id].create(
+							{ Container, Sprite, Circle, system: data.collisionSystem },
+							true
+						)
+					);
 
+					let b = data.bullets[id];
+
+					b.active = true;
 					b.x = bullet.x;
 					b.y = bullet.y;
 					b.startX = bullet.startX;
 					b.startY = bullet.startY;
-					b.dist = b.distance * (1 - bullet.deactivating / 170);
-					b._container.alpha = 0.8 * (1 - bullet.deactivating / 170);
+					b.speed = bullet.speed;
 					b.angle = bullet.angle;
+					b.bulletType = bullet.type;
+					b.range = weapons[weapFromId(bullet.type)].range || 100;
 
 					b.update();
 				});
-
-				if (data.bullets.length > bullets.length) {
-					forEach(data.bullets, (bullet, i) => {
-						if (i >= bullets.length) {
-							bullet._container.destroy();
-						}
-					});
-
-					data.bullets.splice(bullets.length - data.bullets.length);
-				}
 			}
 		}
 	};
@@ -463,6 +464,45 @@ const startGame = (done) => {
 				}
 			}
 		});
+		forEach(data.bullets, (bullet) => {
+			if (!bullet || bullet.done) return;
+			if (bullet.deactivating >= 170) {
+				bullet.done = true;
+				return;
+			}
+			if (!bullet.active) {
+				bullet.deactivating = clamp(now - bullet.deactivated, 0, 170);
+				bullet.update();
+				return;
+			}
+
+			bullet.move(bullet.speed);
+
+			let potentials = data.collisionSystem.getPotentials(bullet._collider);
+
+			potentials.some((collider) => {
+				if (collider.__type == "bullet" || collider.__type == "loot") return false;
+
+				if (data.collisionSystem.checkCollision(bullet._collider, collider)) {
+					const { overlap, overlapN } = data.collisionSystem.response;
+
+					bullet.move(-overlap);
+					bullet.active = false;
+					bullet.deactivated = now;
+					data.collisionSystem.remove(bullet._collider);
+
+					return true;
+				}
+			});
+
+			if (bullet.distance > bullet.range || !inMap(bullet.x, bullet.y, true)) {
+				bullet.active = false;
+				bullet.deactivated = now;
+				data.collisionSystem.remove(bullet._collider);
+			}
+		});
+
+		data.bullets = filter(data.bullets, (b) => !b.done);
 
 		if (input.getKeyDown(keybinds.pause) && !data.lastKeybind.pause) {
 			UI.pauseMenu.classList.toggle("hidden");
@@ -637,6 +677,19 @@ const startGame = (done) => {
 };
 
 audio.playMenuTheme();
+settings.addListener((type, value) => {
+	switch (type) {
+		case "lang":
+			lang.setLang(value);
+			break;
+		case "sfxVol":
+			audio.volume = value;
+			break;
+		case "musicVol":
+			audio.sounds.title_looped.volume(value);
+			break;
+	}
+});
 
 document.querySelector("#play").onclick = () => {
 	startGame(() => {
@@ -662,7 +715,6 @@ window.showMenu = (menu) => {
 		document.querySelector(".menu").classList.remove("hidden");
 	}
 };
-
 window.setMode = (mode) => {
 	document
 		.querySelectorAll("#casualMode, #competitiveMode, #deathmatchMode")
