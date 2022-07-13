@@ -646,6 +646,7 @@ document.querySelector("#play").onclick = () => {
 };
 document.querySelector("#playAgain").onclick = () => {
 	document.querySelector("#lobby").classList.remove("hidden");
+	document.querySelector("#death").classList.add("hidden");
 	audio.stopMenuTheme();
 };
 
