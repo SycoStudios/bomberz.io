@@ -716,6 +716,18 @@ window.showMenu = (menu) => {
 		document.querySelector(".menu").classList.remove("hidden");
 	}
 };
+window.showModal = (modal) => {
+	document
+		.querySelectorAll(".privacy, .terms, .socials")
+		.forEach((el) => el.classList.add("hidden"));
+
+	if (modal) {
+		document.querySelector(modal).classList.remove("hidden");
+		document.querySelector("#modal").classList.remove("hidden");
+	} else {
+		document.querySelector("#modal").classList.add("hidden");
+	}
+};
 window.setMode = (mode) => {
 	document
 		.querySelectorAll("#casualMode, #competitiveMode, #deathmatchMode")

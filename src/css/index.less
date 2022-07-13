@@ -516,6 +516,130 @@ canvas {
 	}
 }
 
+#modal {
+	position: fixed;
+	z-index: 3;
+	background: #000000a6;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	user-select: none;
+	backdrop-filter: blur(calc(@blur-amnt / 2));
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 25px;
+
+	& .privacy,
+	& .socials,
+	& .terms {
+		background: #363636;
+		color: white;
+		border-radius: 10px;
+		padding: 22px;
+		padding-bottom: 0;
+		max-width: 900px;
+		max-height: 600px;
+		width: 100%;
+		height: 100%;
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		overflow: auto;
+		outline: 2px solid black;
+
+		& h1,
+		& h3,
+		& h4 {
+			margin: 0;
+			width: 100%;
+		}
+
+		& h4 {
+			font-size: 20px;
+		}
+
+		& h3 {
+			font-size: 24px;
+			margin-bottom: -5px;
+		}
+
+		& p {
+			color: #e9e9e9;
+			font-size: 20px;
+			padding: 20px 0;
+			text-align: justify;
+			margin: 0;
+			width: 100%;
+
+			& a {
+				text-decoration: none;
+				color: #6666db;
+			}
+		}
+
+		& .indent {
+			padding: 20px 0 0 20px;
+			width: 100%;
+			box-sizing: border-box;
+		}
+
+		& ul {
+			width: 100%;
+			padding: 20px;
+			margin: 0;
+			box-sizing: border-box;
+
+			& b {
+				width: 100px;
+				display: inline-block;
+			}
+
+			& li {
+				margin-bottom: 5px;
+				font-size: 18px;
+			}
+		}
+
+		& .exit {
+			width: 25px;
+			height: 25px;
+			background: url(../img/UI/exit_icon.png?as=webp&width=25);
+			position: fixed;
+			cursor: pointer;
+			filter: grayscale(1) brightness(2);
+			transition: filter @ui-speed ease;
+
+			&:hover {
+				filter: initial;
+			}
+		}
+
+		&::-webkit-scrollbar {
+			width: 10px;
+		}
+		&::-webkit-scrollbar-track {
+			background: #4e4e4e;
+			border-radius: 20px;
+		}
+		&::-webkit-scrollbar-thumb {
+			background: #888;
+			border-radius: 20px;
+		}
+		&::-webkit-scrollbar-thumb:hover {
+			background: #cccccc;
+		}
+	}
+
+	&.hidden,
+	& .hidden {
+		display: none;
+	}
+}
+
 .logo {
 	max-width: 400px;
 	width: 50vw;

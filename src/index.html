@@ -67,16 +67,14 @@
 			</div>
 			<div class="middle">
 				<div class="pauseMenu hidden">
-					<img class="logo" src="./img/UI/logo_large.png"/>
+					<img class="logo" src="./img/UI/logo_large.png?as=webp&width=400" />
 					<div class="box">
-						<h1>Pause Menu</hi>
+						<h1>Pause Menu</h1>
 					</div>
 				</div>
 				<!-- B to activate, can only be opened before round starts -->
 				<div class="buyMenu hidden">
-					<div class="box">
-						
-					</div>
+					<div class="box"></div>
 				</div>
 			</div>
 			<div class="box interact hidden">
@@ -93,20 +91,30 @@
 
 		<div id="lobby">
 			<div class="centerMenu">
-				<img class="logo" src="./img/UI/logo_large.png" draggable="false"/>
+				<img
+					class="logo"
+					src="./img/UI/logo_large.png?as=webp&width=400"
+					draggable="false"
+				/>
 				<div class="box">
 					<button class="button" id="play">PLAY</button>
 				</div>
 			</div>
 			<div class="topMenu box">
-				<div class="navItem active" id="casualMode" onclick="setMode('#casualMode')">Casual</div>
-				<div class="navItem" id="competitiveMode" onclick="setMode('#competitiveMode')">Competitive</div>
-				<div class="navItem" id="deathmatchMode" onclick="setMode('#deathmatchMode')">Deathmatch</div>
+				<div class="navItem active" id="casualMode" onclick="setMode('#casualMode')">
+					Casual
+				</div>
+				<div class="navItem" id="competitiveMode" onclick="setMode('#competitiveMode')">
+					Competitive
+				</div>
+				<div class="navItem" id="deathmatchMode" onclick="setMode('#deathmatchMode')">
+					Deathmatch
+				</div>
 			</div>
 			<div class="sideMenu box">
 				<div class="menu">
 					<div class="menuItem" onclick="showMenu('.settings')">
-						<img class="icon" src="./img/UI/settings_icon.png?as=webp&width=25"/>
+						<img class="icon" src="./img/UI/settings_icon.png?as=webp&width=25" />
 						<span class="menuTitle navItem">Settings</span>
 					</div>
 					<div class="menuItem" onclick="showMenu('.friends')">
@@ -115,21 +123,21 @@
 					</div>
 					<div class="menuItem" onclick="showMenu('.account')">
 						<img class="icon" src="./img/UI/user_icon.png?as=webp&width=25" />
-						<span class="menuTitle navItem">Account</span> 
+						<span class="menuTitle navItem">Account</span>
 					</div>
 					<div class="menuItem" onclick="showMenu('.leaderboard')">
 						<img class="icon" src="./img/UI/trophy_icon.png?as=webp&width=25" />
-						<span class="menuTitle navItem">Leaderboard</span> 
+						<span class="menuTitle navItem">Leaderboard</span>
 					</div>
 				</div>
 
 				<div class="back hidden">
 					<div class="menuItem" onclick="showMenu()">
 						<img class="icon" src="./img/UI/back_icon.png?as=webp&width=25" />
-						<span class="menuTitle navItem">Back</span> 
+						<span class="menuTitle navItem">Back</span>
 					</div>
 				</div>
-			
+
 				<div class="settings hidden">
 					<label>Language:</label>
 					<select id="lang">
@@ -137,22 +145,92 @@
 						<option value="es">Español</option>
 					</select>
 					<label>Music Volume:</label>
-					<input type="range" id="music_vol" value="100" min="0" max="100">
+					<input type="range" id="music_vol" value="100" min="0" max="100" />
 					<label>SFX Volume:</label>
-					<input type="range" id="sfx_vol" value="100" min="0" max="100">
+					<input type="range" id="sfx_vol" value="100" min="0" max="100" />
 				</div>
-				<div class="friends hidden">
-					Not signed in.
-				</div>
-				<div class="account hidden">
-					Not signed in.
-				</div>
-				<div class="leaderboard hidden">
-					No users found.
-				</div>
+				<div class="friends hidden">Not signed in.</div>
+				<div class="account hidden">Not signed in.</div>
+				<div class="leaderboard hidden">No users found.</div>
 			</div>
 			<div class="footer">
-				<span>&copy; 2022 SycoStudios</span> | <span>v0.0.1</span> | <a href="">Privacy</a> | <a href="">Terms</a> | <a href="">Socials</a>
+				<span>&copy; 2022 SycoStudios</span> | <span>v0.0.1</span> |
+				<a href="javascript:showModal('.privacy')">Privacy</a> |
+				<a href="javascript:showModal('.terms')">Terms</a> |
+				<a href="javascript:showModal('.socials')">Game Info</a>
+			</div>
+		</div>
+
+		<div id="modal" class="hidden">
+			<div class="privacy hidden">
+				<div class="exit" onclick="showModal(false)"></div>
+				<h1>Privacy Policy</h1>
+				<p>
+					<i
+						>By using this site (Bomberz.io) you declare that you understand and agree
+						with the following Privacy Policy.</i
+					>
+				</p>
+				<h3>What we collect</h3>
+				<p>
+					We will collect your IP Address, Email Adress, Username, and Password if they
+					are supplied. The data will be stored to give you access to an Account and the
+					privileges/features that come with one. Accounts are not required. If you do not
+					create an Account, we will not store your IP Address, Email Address, Username,
+					or Password.
+				</p>
+				<h3>How we store data</h3>
+				<p>
+					When we store data, we store it with the most secure methods that will work with
+					our systems. We hash all IPs and Passwords supplied to us using the SHA-256
+					algorithm. Only you will know what your password is. Email Addresses are
+					encrypted using the AES-256 standard.
+				</p>
+				<h3>Modification of data</h3>
+				<p>
+					We allow you to modify your data. You can do so in your Account Settings (you
+					must be signed in). You can change your Password and Email Address. Your
+					Username is permanent unless specific permission is granted. To change your
+					Username, you may <a href="">contact us</a>.
+				</p>
+				<h3>Our commitments</h3>
+				<p>
+					We are committed to your privacy. We will <b>never</b> sell what little data we
+					do store (Email Addresses, IP Addresses, Passwords, & Usernames) to
+					<b>anyone</b>. We store the data on a server with restricted access, not just
+					anyone on the team can access it. Likewise, all the data files are in a
+					non-readable format.
+				</p>
+			</div>
+			<div class="terms hidden">
+				<div class="exit" onclick="showModal(false)"></div>
+			</div>
+			<div class="socials hidden">
+				<div class="exit" onclick="showModal(false)"></div>
+				<h1>About Bomberz.io</h1>
+				<p>
+					Bomberz.io is a fast-paced, 5v5, 2D shooter game inspired by CS:GO and Valorant.
+					The goals are simple: diffuse the bomb planted by the opposing team or defend
+					the bomb your team has planted.
+				</p>
+
+				<h3>Developers & Staff</h3>
+				<div class="indent">
+					<h4>Programmers</h4>
+					<ul>
+						<li><b>IceBurger</b> Lead Dev.</li>
+						<li><b>SycoBak</b> Gameplay Dev. / Project Lead</li>
+						<li><b>Chpsterz</b> Jr. Gameplay Dev. / Staff Lead</li>
+					</ul>
+					<h4>Artists</h4>
+					<ul>
+						<li><b>Supreme</b> Artist</li>
+						<li><b>Humphrey</b> SFX Artist</li>
+					</ul>
+				</div>
+
+				<h3>Social Media</h3>
+				<div class="indent"></div>
 			</div>
 		</div>
 
