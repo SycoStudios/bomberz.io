@@ -210,6 +210,8 @@ const startGame = (done) => {
 						UI.deathScreen.classList.remove("hidden");
 					}
 
+					data.collisionSystem.remove(p._collider);
+
 					p.rotate(0);
 					p.move(player.x, player.y);
 
