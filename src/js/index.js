@@ -662,3 +662,15 @@ window.showMenu = (menu) => {
 		document.querySelector(".menu").classList.remove("hidden");
 	}
 };
+
+window.setMode = (mode) => {
+	document
+		.querySelectorAll("#casualMode, #competitiveMode, #deathmatchMode")
+		.forEach((el) => el.classList.remove("active"));
+
+	if (mode) {
+		document.querySelector(mode).classList.add("active");
+	} else {
+		document.querySelector("#casualMode").classList.add("active");
+	}
+};
