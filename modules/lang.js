@@ -77,6 +77,61 @@ export const dictionary = {
 	empty_item: {
 		en: "Out of *",
 		es: "Sin *"
+	},
+	language: {
+		en: "Language",
+		es: "Idioma"
+	},
+	music_vol: {
+		en: "Music Volume",
+		es: "Volumen de la Música"
+	},
+	sfx_vol: {
+		en: "SFX Volume",
+		es: "Volumen SFX"
+	},
+	not_signed_in: {
+		en: "Not signed in",
+		es: "No registrado"
+	},
+	settings: {
+		en: "Settings",
+		es: "Ajustes"
+	},
+	friends: {
+		en: "Friends",
+		es: "Amigos"
+	},
+	account: {
+		en: "Account",
+		es: "Perfil"
+	},
+	leaderboard: {
+		en: "Leaderboard",
+		es: "Tabla de Clasificación"
+	},
+	privacy: {
+		en: "Privacy",
+		es: "Privacidad"
+	},
+	terms: {
+		en: "Terms",
+		es: "Términos"
+	},
+	socials: {
+		en: "Socials",
+		es: "Redes Sociales"
+	},
+	casual: {
+		en: "Casual"
+	},
+	competitive: {
+		en: "Competitive",
+		es: "Competitivo"
+	},
+	deathmatch: {
+		en: "Deathmatch",
+		es: "Combate-a-Muerte"
 	}
 };
 

@@ -1,5 +1,5 @@
 @ui-speed: 0.1s;
-@blur-amnt: 5px;
+@blur-amnt: 35px;
 @primary: #ecec21;
 
 body {
@@ -53,6 +53,7 @@ canvas {
 		font-size: 20px;
 		line-height: 1;
 		padding: 10px 12px !important;
+		align-items: center;
 
 		& .key {
 			font-size: 32px;
@@ -209,11 +210,11 @@ canvas {
 			width: auto;
 			margin-bottom: 25px;
 		}
+	}
 
-		&.hidden {
-			display: none;
-			visibility: hidden;
-		}
+	& .hidden {
+		display: none;
+		visibility: hidden;
 	}
 }
 
@@ -264,9 +265,9 @@ canvas {
 		user-select: none;
 		width: fit-content;
 		text-align: center;
-
 		&:hover {
 			background: darken(@primary, 10%);
+			box-shadow: 10px 10px 4px #000000;
 		}
 	}
 }
@@ -305,6 +306,7 @@ canvas {
 		width: 100%;
 		margin: 0;
 		padding: 0;
+		user-select: none;
 
 		& .box {
 			height: 350px;
@@ -349,7 +351,7 @@ canvas {
 		box-sizing: border-box;
 
 		&:hover {
-			width: 280px;
+			width: 300px;
 			height: 100vh;
 
 			& .menuItem {
@@ -359,6 +361,17 @@ canvas {
 					margin-right: 30px;
 				}
 			}
+
+			& .settings:not(.hidden),
+			& .friends:not(.hidden),
+			& .leaderboards:not(.hidden),
+			& .account:not(.hidden) {
+				display: block;
+			}
+		}
+
+		& .hidden {
+			display: none;
 		}
 
 		& .menuItem {
@@ -379,6 +392,10 @@ canvas {
 				& .icon {
 					filter: initial;
 				}
+
+				& .menuTitle {
+					margin-left: 5px;
+				}
 			}
 
 			& .icon {
@@ -391,6 +408,58 @@ canvas {
 			& .menuTitle {
 				font-size: 25px;
 				margin-top: 3px;
+			}
+		}
+
+		& .settings,
+		& .friends,
+		& .leaderboards,
+		& .account {
+			padding: 10px 30px;
+			display: none;
+			overflow: hidden;
+			width: 240;
+			color: white;
+
+			& label {
+				font-size: 18px;
+				display: block;
+				margin-bottom: 5px;
+			}
+
+			& input {
+				margin-bottom: 18px;
+
+				&[type="range"] {
+					appearance: none;
+					width: 100%;
+					height: 10px;
+					border-radius: 5px;
+					background: #292929;
+					box-sizing: border-box;
+					margin-left: 0;
+					margin-right: 0;
+					margin-top: 0;
+				}
+
+				&::-webkit-slider-thumb {
+					appearance: none;
+					width: 20px;
+					height: 20px;
+					border-radius: 50%;
+					background: white;
+				}
+			}
+
+			& select {
+				width: 100%;
+				font-size: 18px;
+				box-sizing: border-box;
+				margin-bottom: 18px;
+				padding: 4px;
+				border-radius: 5px;
+				outline: none;
+				border: none;
 			}
 		}
 	}
@@ -407,6 +476,7 @@ canvas {
 		justify-content: center;
 		align-items: center;
 		padding: 20px;
+		user-select: none;
 
 		& .navItem {
 			color: white;
@@ -422,6 +492,26 @@ canvas {
 
 		& .active {
 			color: darken(@primary, 10%);
+		}
+	}
+
+	& .footer {
+		position: fixed;
+		bottom: 8px;
+		left: 6px;
+		color: #dbdbdb;
+		font-size: 12px;
+		user-select: none;
+
+		& a,
+		& span {
+			text-decoration: none;
+			color: white;
+			padding: 8px;
+		}
+
+		& a:hover {
+			color: #c9c9f5;
 		}
 	}
 }

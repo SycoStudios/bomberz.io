@@ -40,7 +40,6 @@ const removeCanvases = () => {
 		document.body.removeChild(cvs);
 	});
 };
-
 const startGame = (done) => {
 	removeEventListeners();
 	removeCanvases();
@@ -644,4 +643,21 @@ document.querySelector("#play").onclick = () => {
 		document.querySelector("#lobby").classList.add("hidden");
 		audio.stopMenuTheme();
 	});
+};
+document.querySelector("#playAgain").onclick = () => {
+	document.querySelector("#lobby").classList.remove("hidden");
+	audio.stopMenuTheme();
+};
+
+window.showMenu = (menu) => {
+	document
+		.querySelectorAll(".leaderboard, .account, .friends, .settings, .menu, .back")
+		.forEach((el) => el.classList.add("hidden"));
+
+	if (menu) {
+		document.querySelector(menu).classList.remove("hidden");
+		document.querySelector(".back").classList.remove("hidden");
+	} else {
+		document.querySelector(".menu").classList.remove("hidden");
+	}
 };
