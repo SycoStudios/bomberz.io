@@ -9,7 +9,7 @@ import { actions } from "../../modules/meta/actions";
 import { weapons, weapFromId } from "../../modules/meta/weapons";
 import { Language } from "../../modules/lang";
 import { categoryFromId } from "../../modules/meta/objCategories";
-import { calcDistance, clamp, deg2Rad, getRandomInt, lerp } from "../../modules/math";
+import { calcAngle, calcDistance, clamp, deg2Rad, getRandomInt, lerp } from "../../modules/math";
 import { Audio } from "../../modules/audio";
 import { itemFromId } from "../../modules/meta/itemTypes";
 import { BitArray } from "@codezilluh/bitarray.js";
@@ -180,15 +180,20 @@ const startGame = (done) => {
 				p.dead = player.dead;
 				p.setSkin("bomb_skin_01", Sprite);
 
-				if (player.id == data.pov) {
+				if (player.id == data.pov && data.spectating) {
 					focus(player.x, player.y);
 				}
 
 				if (!p._container.visible) p._container.visible = true;
 
 				if (!player.dead) {
-					p.rotate(player.angle);
-					p.move(player.x, player.y);
+					if (player.id == data.pov && !data.spectating) {
+						p.actualX = player.x;
+						p.actualY = player.y;
+					} else {
+						p.rotate(player.angle);
+						p.move(player.x, player.y);
+					}
 					p.curWeap = weapFromId(player.curWeap);
 					p.action = player.action;
 
@@ -357,15 +362,12 @@ const startGame = (done) => {
 
 			let moveX = moveRight - moveLeft;
 			let moveY = moveDown - moveUp;
+			let deltaSpeed = player.speed * delta;
 
 			if (moveX || moveY) {
 				let moveDir = Math.atan2(moveY, moveX);
 
-				player.move(
-					Math.cos(moveDir) * player.speed * delta,
-					Math.sin(moveDir) * player.speed * delta,
-					false
-				);
+				player.move(Math.cos(moveDir) * deltaSpeed, Math.sin(moveDir) * deltaSpeed, false);
 
 				if (!inMap(player.x, player.y, false, 1)) {
 					player.move(
@@ -391,9 +393,15 @@ const startGame = (done) => {
 						player.move(-overlapV.x, -overlapV.y, false);
 					}
 				});
-
-				focus(player.x, player.y);
+			} else {
+				player.move(
+					lerp(player.x, player.actualX, 0.35),
+					lerp(player.y, player.actualY, 0.35),
+					true
+				);
 			}
+
+			focus(player.x, player.y);
 
 			player.rotate(input.mouseAngle);
 		}
