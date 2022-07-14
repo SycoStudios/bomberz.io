@@ -716,6 +716,9 @@ document.querySelector("#playAgain").onclick = () => {
 	audio.stopMenuTheme();
 };
 
+window.onload = () => {
+	document.querySelector("#loading").classList.add("hidden");
+};
 window.showMenu = (menu) => {
 	document
 		.querySelectorAll(".leaderboard, .account, .friends, .settings, .menu, .back")

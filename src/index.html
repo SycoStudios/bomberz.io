@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta
 			http-equiv="Content-Security-Policy"
-			content="default-src *; script-src 'self' 'unsafe-eval' 'unsafe-inline'"
+			content="default-src * 'unsafe-inline'; script-src 'self' 'unsafe-eval' 'unsafe-inline'"
 		/>
 		<title>Bomberz.io</title>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -19,6 +19,11 @@
 		<link rel="stylesheet" href="css/index.less" />
 	</head>
 	<body>
+		<div
+			id="loading"
+			style="background: #39623f; inset: 0; position: fixed; z-index: 100"
+		></div>
+
 		<div id="ui">
 			<div class="top"></div>
 			<div class="bottom right col">
@@ -26,10 +31,7 @@
 					<img class="weapImg" draggable="false" />
 					<div class="weapData">
 						<div class="name"></div>
-						<div class="ammo">
-							<span class="clip"></span> /
-							<span class="total"></span>
-						</div>
+						<div class="ammo"></div>
 					</div>
 				</div>
 				<div class="box weaponSlot">
