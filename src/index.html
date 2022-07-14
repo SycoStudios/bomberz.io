@@ -24,278 +24,305 @@
 			style="background: #39623f; inset: 0; position: fixed; z-index: 100"
 		></div>
 
-		<div id="ui">
-			<div class="top"></div>
-			<div class="bottom right col">
-				<div class="box weaponSlot">
-					<img class="weapImg" draggable="false" />
-					<div class="weapData">
-						<div class="name"></div>
-						<div class="ammo"></div>
+		<div class="rescale">
+			<div id="ui">
+				<div class="top"></div>
+				<div class="bottom right col">
+					<div class="box weaponSlot">
+						<img class="weapImg" draggable="false" />
+						<div class="weapData">
+							<div class="name"></div>
+							<div class="ammo"></div>
+						</div>
 					</div>
-				</div>
-				<div class="box weaponSlot">
-					<img class="weapImg" draggable="false" />
-					<div class="weapData">
-						<div class="name"></div>
-						<div class="ammo">
-							<span class="clip"></span> /
-							<span class="total"></span>
+					<div class="box weaponSlot">
+						<img class="weapImg" draggable="false" />
+						<div class="weapData">
+							<div class="name"></div>
+							<div class="ammo">
+								<span class="clip"></span> /
+								<span class="total"></span>
+							</div>
+						</div>
+					</div>
+					<div class="box weaponSlot">
+						<img class="weapImg" draggable="false" />
+						<div class="weapData">
+							<div class="name"></div>
+						</div>
+					</div>
+					<div class="box weaponSlot">
+						<img class="weapImg" draggable="false" />
+						<div class="weapData">
+							<div class="name"></div>
+							<div class="ammo">
+								<span class="clip"></span> /
+								<span class="total"></span>
+							</div>
 						</div>
 					</div>
 				</div>
-				<div class="box weaponSlot">
-					<img class="weapImg" draggable="false" />
-					<div class="weapData">
-						<div class="name"></div>
+				<div class="bottom center">
+					<div class="healthBar box">
+						<div id="drugsAmnt"></div>
+						<div id="healthAmnt"></div>
 					</div>
 				</div>
-				<div class="box weaponSlot">
-					<img class="weapImg" draggable="false" />
-					<div class="weapData">
-						<div class="name"></div>
-						<div class="ammo">
-							<span class="clip"></span> /
-							<span class="total"></span>
+				<div class="middle">
+					<div class="pauseMenu hidden">
+						<img class="logo" src="./img/UI/logo_large.png?as=webp&width=400" />
+						<div class="box">
+							<h1>Pause Menu</h1>
 						</div>
 					</div>
-				</div>
-			</div>
-			<div class="bottom center">
-				<div class="healthBar box">
-					<div id="drugsAmnt"></div>
-					<div id="healthAmnt"></div>
-				</div>
-			</div>
-			<div class="middle">
-				<div class="pauseMenu hidden">
-					<img class="logo" src="./img/UI/logo_large.png?as=webp&width=400" />
-					<div class="box">
-						<h1>Pause Menu</h1>
+					<!-- B to activate, can only be opened before round starts -->
+					<div class="buyMenu hidden">
+						<div class="box"></div>
 					</div>
 				</div>
-				<!-- B to activate, can only be opened before round starts -->
-				<div class="buyMenu hidden">
-					<div class="box"></div>
+				<div class="box interact hidden">
+					<span class="key">F</span>Pickup<span class="item"></span>
 				</div>
 			</div>
-			<div class="box interact hidden">
-				<span class="key">F</span>Pickup<span class="item"></span>
-			</div>
-		</div>
 
-		<div id="death" class="hidden">
-			<div class="box">
-				<h1>YOU DIED!</h1>
-				<div class="button" id="playAgain">Play again?</div>
-			</div>
-		</div>
-
-		<div id="lobby">
-			<div class="centerMenu">
-				<img
-					class="logo"
-					src="./img/UI/logo_large.png?as=webp&width=400"
-					draggable="false"
-				/>
+			<div id="death" class="hidden">
 				<div class="box">
-					<button class="button" id="play">PLAY</button>
+					<h1>YOU DIED!</h1>
+					<div class="button" id="playAgain">Play again?</div>
 				</div>
 			</div>
-			<div class="topMenu box">
-				<div class="navItem active" id="casualMode" onclick="setMode('#casualMode')">
-					Casual
-				</div>
-				<div class="navItem" id="competitiveMode" onclick="setMode('#competitiveMode')">
-					Competitive
-				</div>
-				<div class="navItem" id="deathmatchMode" onclick="setMode('#deathmatchMode')">
-					Deathmatch
-				</div>
-			</div>
-			<div class="sideMenu box">
-				<div class="menu">
-					<div class="menuItem" onclick="showMenu('.settings')">
-						<img class="icon" src="./img/UI/settings_icon.png?as=webp&width=25" />
-						<span class="menuTitle navItem">Settings</span>
-					</div>
-					<div class="menuItem" onclick="showMenu('.friends')">
-						<img class="icon" src="./img/UI/friends_icon.png?as=webp&width=25" />
-						<span class="menuTitle navItem">Friends</span>
-					</div>
-					<div class="menuItem" onclick="showMenu('.account')">
-						<img class="icon" src="./img/UI/user_icon.png?as=webp&width=25" />
-						<span class="menuTitle navItem">Account</span>
-					</div>
-					<div class="menuItem" onclick="showMenu('.leaderboard')">
-						<img class="icon" src="./img/UI/trophy_icon.png?as=webp&width=25" />
-						<span class="menuTitle navItem">Leaderboard</span>
-					</div>
-				</div>
 
-				<div class="back hidden">
-					<div class="menuItem" onclick="showMenu()">
-						<img class="icon" src="./img/UI/back_icon.png?as=webp&width=25" />
-						<span class="menuTitle navItem">Back</span>
+			<div id="lobby">
+				<div class="centerMenu">
+					<img
+						class="logo"
+						src="./img/UI/logo_large.png?as=webp&width=400"
+						draggable="false"
+					/>
+					<div class="box">
+						<button class="button" id="play">PLAY</button>
 					</div>
 				</div>
-
-				<div class="settings hidden">
-					<label>Language:</label>
-					<select id="lang">
-						<option value="en">English</option>
-						<option value="es">Español</option>
-					</select>
-					<label>Music Volume:</label>
-					<input type="range" id="music_vol" value="100" min="0" max="100" />
-					<label>SFX Volume:</label>
-					<input type="range" id="sfx_vol" value="100" min="0" max="100" />
+				<div class="topMenu box">
+					<div class="navItem active" id="casualMode" onclick="setMode('#casualMode')">
+						Casual
+					</div>
+					<div class="navItem" id="competitiveMode" onclick="setMode('#competitiveMode')">
+						Competitive
+					</div>
+					<div class="navItem" id="deathmatchMode" onclick="setMode('#deathmatchMode')">
+						Deathmatch
+					</div>
 				</div>
-				<div class="friends hidden">
-					<div class="loggedIn hidden"></div>
-					<div class="loggedOut">Not signed in.</div>
-				</div>
-				<div class="account hidden">
-					<div class="loggedIn hidden"></div>
-					<div class="loggedOut">
-						<div class="" id="login">
-							<label>Username:</label>
-							<input type="text" id="username_login" />
-							<label>Password:</label>
-							<input type="password" id="password_login" />
-							<button onclick="login()">Login</button>
-							<a href="javascript:showSignup()">Need an account?</a>
+				<div class="sideMenu box">
+					<div class="menu">
+						<div class="menuItem" onclick="showMenu('.settings')">
+							<img class="icon" src="./img/UI/settings_icon.png?as=webp&width=25" />
+							<span class="menuTitle navItem">Settings</span>
 						</div>
-						<div class="hidden" id="signup">
-							<label>Username:</label>
-							<input type="text" id="username_signup" />
-							<label>Email:</label>
-							<input type="email" id="email_signup" />
-							<label>Password:</label>
-							<input type="password" id="password_signup" />
-							<button onclick="signup()">Register</button>
-							<a href="javascript:showLogin()">Have an account?</a>
+						<div class="menuItem" onclick="showMenu('.friends')">
+							<img class="icon" src="./img/UI/friends_icon.png?as=webp&width=25" />
+							<span class="menuTitle navItem">Friends</span>
+						</div>
+						<div class="menuItem" onclick="showMenu('.account')">
+							<img class="icon" src="./img/UI/user_icon.png?as=webp&width=25" />
+							<span class="menuTitle navItem">Account</span>
+						</div>
+						<div class="menuItem" onclick="showMenu('.leaderboard')">
+							<img class="icon" src="./img/UI/trophy_icon.png?as=webp&width=25" />
+							<span class="menuTitle navItem">Leaderboard</span>
 						</div>
 					</div>
-				</div>
-				<div class="leaderboard hidden">No users found.</div>
-			</div>
-		</div>
 
-		<div id="footer">
-			<span>&copy; 2022 SycoStudios</span>
-			<div class="spacer"></div>
-			<div id="info">
-				<a href="javascript:showModal('.changelog')">v0.0.1</a> |
-				<a href="javascript:showModal('.privacy')">Privacy</a> |
-				<a href="javascript:showModal('.terms')">Terms</a> |
-				<a href="javascript:showModal('.socials')">Game Info</a>
-			</div>
-		</div>
+					<div class="back hidden">
+						<div class="menuItem" onclick="showMenu()">
+							<img class="icon" src="./img/UI/back_icon.png?as=webp&width=25" />
+							<span class="menuTitle navItem">Back</span>
+						</div>
+					</div>
 
-		<div id="modal" class="hidden">
-			<div class="privacy hidden">
-				<div class="exit" onclick="showModal(false)"></div>
-				<h1>Privacy Policy</h1>
-				<p>
-					<i>
-						By using this site (Bomberz.io) you declare that you understand and agree
-						with the following Privacy Policy.
-					</i>
-				</p>
-				<h3>What we collect</h3>
-				<p>
-					We will collect your IP Address, Email Adress, Username, and Password if they
-					are supplied. The data will be stored to give you access to an Account and the
-					privileges/features that come with one. Accounts are not required. If you do not
-					create an Account, we will not store your IP Address, Email Address, Username,
-					or Password.
-				</p>
-				<h3>How we store data</h3>
-				<p>
-					When we store data, we store it with the most secure methods that will work with
-					our systems. We hash all IPs and Passwords supplied to us using the SHA-256
-					algorithm. Only you will know what your password is. Email Addresses are
-					encrypted using the AES-256 standard.
-				</p>
-				<h3>Modification of data</h3>
-				<p>
-					We allow you to modify your data. You can do so in your Account Settings (you
-					must be signed in). You can change your Password and Email Address. Your
-					Username is permanent unless specific permission is granted. To change your
-					Username, you may <a href="">contact us</a>.
-				</p>
-				<h3>Our commitments</h3>
-				<p>
-					We are committed to your privacy. We will <b>never</b> sell what little data we
-					do store (Email Addresses, IP Addresses, Passwords, & Usernames) to
-					<b>anyone</b>. We store the data on a server with restricted access, not just
-					anyone on the team can access it. Likewise, all the data files are in a
-					non-readable format.
-				</p>
-			</div>
-			<div class="terms hidden">
-				<div class="exit" onclick="showModal(false)"></div>
-				<h1>Terms & Conditions</h1>
-				<p>
-					<i>
-						By using this site (Bomberz.io) you declare that you understand and agree
-						with the following Terms & Conditions.
-					</i>
-				</p>
-			</div>
-			<div class="socials hidden">
-				<div class="exit" onclick="showModal(false)"></div>
-				<h1>About Bomberz.io</h1>
-				<p>
-					Bomberz.io is a fast-paced, 5v5, 2D shooter game inspired by CS:GO and Valorant.
-					The goals are simple: diffuse the bomb planted by the opposing team or defend
-					the bomb your team has planted.
-				</p>
-
-				<h3>Developers & Staff</h3>
-				<div class="indent">
-					<h4>Programmers</h4>
-					<ul>
-						<li><b>IceBurger</b> <i>Lead Dev.</i></li>
-						<li><b>SycoBak</b> <i>Gameplay Dev. / Project Lead</i></li>
-						<li><b>Chpsterz</b> <i>Jr. Gameplay Dev. / Staff Lead</i></li>
-					</ul>
-					<h4>Artists</h4>
-					<ul>
-						<li><b>Supreme</b> <i>Artist</i></li>
-						<li><b>Humphrey</b> <i>SFX Artist</i></li>
-					</ul>
-				</div>
-				<h3>Social Media</h3>
-				<div class="indent">
-					<h4>Discords</h4>
-					<ul>
-						<li>
-							<b
-								><a href="https://discord.gg/VnjKdzmFPY" target="_blank"
-									>Bomberz.io</a
-								></b
-							>
-						</li>
-						<li>
-							<b
-								><a href="https://discord.gg/xap5pDruxf" target="_blank"
-									>SycoStudios</a
-								></b
-							>
-						</li>
-					</ul>
+					<div class="settings hidden">
+						<label>Language:</label>
+						<select id="lang">
+							<option value="en">English</option>
+							<option value="es">Español</option>
+						</select>
+						<label>Screen Mode:</label>
+						<select id="screenMode">
+							<option value="es">Normal</option>
+							<option value="en">Fullscreen</option>
+						</select>
+						<label>Music Volume:</label>
+						<input type="range" id="music_vol" value="100" min="0" max="100" />
+						<label>SFX Volume:</label>
+						<input type="range" id="sfx_vol" value="100" min="0" max="100" />
+					</div>
+					<div class="friends hidden">
+						<div class="loggedIn hidden">
+							<div class="friendList">
+								<div class="friend">
+									<img src="./img/UI/logo_small.png" class="avatar" />
+									<div class="name">ABCDEFGHIJKLMNOP</div>
+									<div class="matchesFriend"></div>
+									<div class="inviteFriend"></div>
+									<div class="removeFriend"></div>
+								</div>
+							</div>
+						</div>
+						<div class="loggedOut">Not signed in.</div>
+					</div>
+					<div class="account hidden">
+						<div class="loggedIn hidden">
+							<!--Is font awesome here? no-->
+							<label id="username_info"></label>
+							<label id="username_password"></label>
+							<button>
+								<img src="./IMG/UI/eye-solid.svg" />
+							</button>
+							<button>Logout</button>
+						</div>
+						<div class="loggedOut">
+							<div id="login">
+								<label>Username:</label>
+								<input type="text" id="username_login" />
+								<label>Password:</label>
+								<input type="password" id="password_login" />
+								<button onclick="login()">Login</button>
+								<a href="javascript:showSignup()">Need an account?</a>
+							</div>
+							<div class="hidden" id="signup">
+								<label>Username:</label>
+								<input type="text" id="username_signup" />
+								<label>Email:</label>
+								<input type="email" id="email_signup" />
+								<label>Password:</label>
+								<input type="password" id="password_signup" />
+								<label>Confirm Password:</label>
+								<input type="password" id="password_confirm" />
+								<button onclick="signup()">Register</button>
+								<a href="javascript:showLogin()">Have an account?</a>
+							</div>
+						</div>
+					</div>
+					<div class="leaderboard hidden">No users found.</div>
 				</div>
 			</div>
-			<div class="changelog hidden">
-				<div class="exit" onclick="showModal(false)"></div>
-				<h1>Changelog</h1>
-				<p>The history of Bomberz.io, as recorded by the developers.</p>
-				<h4>v0.0.1</h4>
-				<ul>
-					<li>initial release</li>
-				</ul>
+
+			<div id="footer">
+				<span>&copy; 2022 SycoStudios</span>
+				<div class="spacer"></div>
+				<div id="info">
+					<a href="javascript:showModal('.changelog')">v0.0.1</a> |
+					<a href="javascript:showModal('.privacy')">Privacy</a> |
+					<a href="javascript:showModal('.terms')">Terms</a> |
+					<a href="javascript:showModal('.socials')">Game Info</a>
+				</div>
+			</div>
+
+			<div id="modal" class="hidden">
+				<div class="privacy hidden">
+					<div class="exit" onclick="showModal(false)"></div>
+					<h1>Privacy Policy</h1>
+					<p>
+						<i>
+							By using this site (Bomberz.io) you declare that you understand and
+							agree with the following Privacy Policy.
+						</i>
+					</p>
+					<h3>What we collect</h3>
+					<p>
+						We will collect your IP Address, Email Adress, Username, and Password if
+						they are supplied. The data will be stored to give you access to an Account
+						and the privileges/features that come with one. Accounts are not required.
+						If you do not create an Account, we will not store your IP Address, Email
+						Address, Username, or Password.
+					</p>
+					<h3>How we store data</h3>
+					<p>
+						When we store data, we store it with the most secure methods that will work
+						with our systems. We hash all IPs and Passwords supplied to us using the
+						SHA-256 algorithm. Only you will know what your password is. Email Addresses
+						are encrypted using the AES-256 standard.
+					</p>
+					<h3>Modification of data</h3>
+					<p>
+						We allow you to modify your data. You can do so in your Account Settings
+						(you must be signed in). You can change your Password and Email Address.
+						Your Username is permanent unless specific permission is granted. To change
+						your Username, you may <a href="">contact us</a>.
+					</p>
+					<h3>Our commitments</h3>
+					<p>
+						We are committed to your privacy. We will <b>never</b> sell what little data
+						we do store (Email Addresses, IP Addresses, Passwords, & Usernames) to
+						<b>anyone</b>. We store the data on a server with restricted access, not
+						just anyone on the team can access it. Likewise, all the data files are in a
+						non-readable format.
+					</p>
+				</div>
+				<div class="terms hidden">
+					<div class="exit" onclick="showModal(false)"></div>
+					<h1>Terms & Conditions</h1>
+					<p>
+						<i>
+							By using this site (Bomberz.io) you declare that you understand and
+							agree with the following Terms & Conditions.
+						</i>
+					</p>
+				</div>
+				<div class="socials hidden">
+					<div class="exit" onclick="showModal(false)"></div>
+					<h1>About Bomberz.io</h1>
+					<p>
+						Bomberz.io is a fast-paced, 5v5, 2D shooter game inspired by CS:GO and
+						Valorant. The goals are simple: diffuse the bomb planted by the opposing
+						team or defend the bomb your team has planted.
+					</p>
+
+					<h3>Developers & Staff</h3>
+					<div class="indent">
+						<h4>Programmers</h4>
+						<ul>
+							<li><b>IceBurger</b> <i>Lead Dev.</i></li>
+							<li><b>SycoBak</b> <i>Gameplay Dev. / Project Lead</i></li>
+							<li><b>Chpsterz</b> <i>Jr. Gameplay Dev. / Staff Lead</i></li>
+						</ul>
+						<h4>Artists</h4>
+						<ul>
+							<li><b>Supreme</b> <i>Artist</i></li>
+							<li><b>Humphrey</b> <i>SFX Artist</i></li>
+						</ul>
+					</div>
+					<h3>Social Media</h3>
+					<div class="indent">
+						<h4>Discords</h4>
+						<ul>
+							<li>
+								<b>
+									<a href="https://discord.gg/VnjKdzmFPY" target="_blank">
+										Bomberz.io
+									</a>
+								</b>
+							</li>
+							<li>
+								<b>
+									<a href="https://discord.gg/xap5pDruxf" target="_blank">
+										SycoStudios
+									</a>
+								</b>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="changelog hidden">
+					<div class="exit" onclick="showModal(false)"></div>
+					<h1>Changelog</h1>
+					<p>The history of Bomberz.io, as recorded by the developers.</p>
+					<h4>v0.0.1</h4>
+					<ul>
+						<li>initial release</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 

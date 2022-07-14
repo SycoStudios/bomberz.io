@@ -79,7 +79,7 @@ export class Player {
 			return;
 		}
 		if (this.skin == type) return;
-		//
+
 		this.skin = type;
 
 		let skinData = skins[type];

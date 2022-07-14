@@ -2,6 +2,32 @@
 @blur-amnt: 35px;
 @primary: #ecec21;
 
+@media screen and (max-width: 1536px) {
+	.rescale {
+		zoom: 0.8;
+	}
+
+	.healthBar {
+		width: 50vw !important;
+	}
+}
+
+@media screen and (max-width: 1152px) {
+	.rescale {
+		zoom: 0.6;
+	}
+
+	.healthBar {
+		width: 80vw !important;
+	}
+}
+
+@media screen and (max-width: 960px) {
+	.rescale {
+		zoom: 0.5;
+	}
+}
+
 body {
 	margin: 0;
 	font-family: "Fira Sans", Helvetica, sans-serif;
@@ -14,8 +40,8 @@ canvas {
 #ui {
 	pointer-events: none;
 	position: fixed;
-	height: 100vh;
-	width: 100vw;
+	height: 100%;
+	width: 100%;
 
 	& .bottom,
 	& .top,
@@ -33,7 +59,7 @@ canvas {
 		}
 
 		&.center {
-			left: 50vw;
+			left: 50%;
 			transform: translateX(-50%);
 		}
 
@@ -47,7 +73,7 @@ canvas {
 		margin: 0 !important;
 		width: fit-content;
 		position: fixed;
-		top: 50vh;
+		top: 50%;
 		left: calc(50% + 120px);
 		transform: translateY(-50%);
 		font-size: 20px;
@@ -67,7 +93,7 @@ canvas {
 	}
 
 	& .middle {
-		top: 50vh;
+		top: 50%;
 		transform: translateY(-50%);
 	}
 
@@ -215,8 +241,8 @@ canvas {
 	margin: auto;
 	background: #00000063;
 	backdrop-filter: blur(@blur-amnt);
-	width: 100vw;
-	height: 100vh;
+	width: 100%;
+	height: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -285,7 +311,7 @@ canvas {
 		justify-content: center;
 		align-items: center;
 		text-align: center;
-		height: 100vh;
+		height: 100%;
 		width: 100%;
 		margin: 0;
 		padding: 0;
@@ -324,9 +350,9 @@ canvas {
 		left: 0;
 		transform: translateY(-50%);
 		width: 69px;
-		height: 80vh;
+		height: 80%;
 		min-height: 500px;
-		max-height: calc(100vh - 200px);
+		max-height: calc(100% - 200px);
 		border-radius: 0 10px 10px 0;
 		overflow: hidden;
 		transition: background 0.3s ease, width 0.3s ease, height 0.3s ease, border-radius 0.3s ease;
@@ -335,7 +361,7 @@ canvas {
 
 		&:hover,
 		&.stayOpen {
-			width: 300px;
+			width: 400px;
 
 			& .menuItem {
 				padding-left: 30px;
@@ -397,7 +423,7 @@ canvas {
 			padding: 10px 30px;
 			display: none;
 			overflow: hidden;
-			width: 240;
+			width: 340;
 			color: white;
 
 			& label {
@@ -482,6 +508,62 @@ canvas {
 				border-radius: 5px;
 				outline: none;
 				border: none;
+			}
+		}
+
+		& .friendList {
+			& .friend {
+				user-select: none;
+				display: flex;
+				font-size: 20px;
+				align-items: center;
+				margin: 0 -30px;
+				padding: 10px 20px;
+				cursor: default;
+				transition: background @ui-speed ease;
+
+				&:hover {
+					background: #ffffff1a;
+				}
+
+				& img {
+					background: white;
+					border-radius: 100%;
+					width: 40px;
+					margin-right: 20px;
+				}
+
+				& .name {
+					flex: 1;
+					overflow: hidden;
+				}
+
+				& .removeFriend,
+				& .inviteFriend,
+				& .matchesFriend {
+					width: 25px;
+					height: 25px;
+					cursor: pointer;
+					filter: grayscale(1) brightness(2);
+					transition: filter @ui-speed ease;
+					margin-left: 10px;
+
+					&:hover {
+						filter: initial;
+					}
+				}
+
+				& .removeFriend {
+					background: url(../img/UI/exit_icon.png?as=webp&width=25);
+				}
+
+				& .inviteFriend {
+					background: url(../img/UI/invite_icon.png?as=webp&width=25);
+				}
+
+				& .matchesFriend {
+					background: url(../img/UI/history_icon.png?as=webp&width=25);
+				}
 			}
 		}
 	}
@@ -668,7 +750,7 @@ canvas {
 
 .logo {
 	max-width: 400px;
-	width: 50vw;
+	width: 50%;
 	margin-bottom: 50px;
 	filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.281));
 	//backdrop-filter: blur(@blur-amnt);
