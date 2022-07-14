@@ -64,10 +64,6 @@ canvas {
 		& .item {
 			margin-left: 6px;
 		}
-
-		&.hidden {
-			display: none;
-		}
 	}
 
 	& .middle {
@@ -211,11 +207,6 @@ canvas {
 			margin-bottom: 25px;
 		}
 	}
-
-	& .hidden {
-		display: none;
-		visibility: hidden;
-	}
 }
 
 #death {
@@ -231,10 +222,6 @@ canvas {
 	align-items: center;
 	justify-content: center;
 	z-index: 2;
-
-	&.hidden {
-		display: none;
-	}
 
 	h1 {
 		color: white;
@@ -283,10 +270,6 @@ canvas {
 	width: 100%;
 	height: 100%;
 	position: fixed;
-
-	&.hidden {
-		display: none;
-	}
 
 	& .box {
 		background: #00000038;
@@ -368,10 +351,6 @@ canvas {
 			& .account:not(.hidden) {
 				display: block;
 			}
-		}
-
-		& .hidden {
-			display: none;
 		}
 
 		& .menuItem {
@@ -642,11 +621,6 @@ canvas {
 			background: #cccccc;
 		}
 	}
-
-	&.hidden,
-	& .hidden {
-		display: none;
-	}
 }
 
 .logo {
@@ -656,4 +630,8 @@ canvas {
 	filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.281));
 	//backdrop-filter: blur(@blur-amnt);
 	border-radius: 20px;
+}
+
+.hidden {
+	display: none !important;
 }
