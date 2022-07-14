@@ -705,11 +705,13 @@ settings.addListener((type, value) => {
 document.querySelector("#play").onclick = () => {
 	startGame(() => {
 		document.querySelector("#lobby").classList.add("hidden");
+		document.querySelector("#info").classList.add("hidden");
 		audio.stopMenuTheme();
 	});
 };
 document.querySelector("#playAgain").onclick = () => {
 	document.querySelector("#lobby").classList.remove("hidden");
+	document.querySelector("#info").classList.remove("hidden");
 	document.querySelector("#death").classList.add("hidden");
 	audio.stopMenuTheme();
 };
@@ -728,7 +730,7 @@ window.showMenu = (menu) => {
 };
 window.showModal = (modal) => {
 	document
-		.querySelectorAll(".privacy, .terms, .socials")
+		.querySelectorAll(".privacy, .terms, .socials, .changelog")
 		.forEach((el) => el.classList.add("hidden"));
 
 	if (modal) {

@@ -494,25 +494,33 @@ canvas {
 			color: darken(@primary, 10%);
 		}
 	}
+}
 
-	& .footer {
-		position: fixed;
-		bottom: 8px;
-		left: 6px;
-		color: #dbdbdb;
-		font-size: 12px;
-		user-select: none;
+& #footer {
+	position: fixed;
+	bottom: 8px;
+	left: 6px;
+	right: 6px;
+	color: #dbdbdb;
+	font-size: 12px;
+	user-select: none;
+	display: flex;
+	align-items: center;
+	z-index: 5;
 
-		& a,
-		& span {
-			text-decoration: none;
-			color: white;
-			padding: 8px;
-		}
+	& .spacer {
+		flex: 1;
+	}
 
-		& a:hover {
-			color: #c9c9f5;
-		}
+	& a,
+	& span {
+		text-decoration: none;
+		color: white;
+		padding: 8px;
+	}
+
+	& a:hover {
+		color: #c9c9f5;
 	}
 }
 
@@ -534,7 +542,8 @@ canvas {
 
 	& .privacy,
 	& .socials,
-	& .terms {
+	& .terms,
+	& .changelog {
 		background: #363636;
 		color: white;
 		border-radius: 10px;
