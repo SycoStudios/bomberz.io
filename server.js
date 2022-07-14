@@ -77,6 +77,11 @@ const changeWeap = (id, dir, weapons) => {
 
 	return find(id + dir);
 };
+const loopAngle = (angle) => {
+	if (angle <= 180 && angle >= -180) return angle;
+	if (angle > 180) return loopAngle(angle - 360);
+	if (angle < -180) return loopAngle(angle + 360);
+};
 
 const Game = class {
 	constructor(server) {
@@ -144,7 +149,9 @@ const Game = class {
 		let bullet = new Bullet(
 			x + (weapons[type].width + animations[type].gun.x - 0.4) * Math.cos(dir * deg2Rad),
 			y + (weapons[type].width + animations[type].gun.x - 0.4) * Math.sin(dir * deg2Rad),
-			dir + (weapons[type].spread || 3) * (moving ? 2 : 1) * (2 * (Math.random() - 0.5))
+			loopAngle(
+				dir + (weapons[type].spread || 3) * (moving ? 2 : 1) * (2 * (Math.random() - 0.5))
+			)
 		);
 
 		bullet.owner = owner;
