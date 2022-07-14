@@ -9,6 +9,7 @@ export default class Settings {
 		};
 		this.settingsKey = settingsKey;
 		this.listeners = [];
+		this.token = "";
 
 		this.elements.sfxVol.addEventListener("mouseup", () => {
 			forEach(this.listeners, (onInput) => {
@@ -38,6 +39,11 @@ export default class Settings {
 		cb("lang", this.getInput("lang"));
 	}
 
+	setToken(token) {
+		this.token = token;
+		this.save();
+	}
+
 	getSlider(el, scale = 100) {
 		return this.getInput(el) / scale;
 	}
@@ -57,6 +63,7 @@ export default class Settings {
 			this.elements.sfxVol.value = storage.sfxVol * 100;
 			this.elements.musicVol.value = storage.musicVol * 100;
 			this.elements.lang.value = storage.lang;
+			this.token = storage.token;
 		}
 	}
 
@@ -67,7 +74,8 @@ export default class Settings {
 				JSON.stringify({
 					sfxVol: this.getSlider("sfxVol"),
 					musicVol: this.getSlider("musicVol"),
-					lang: this.getInput("lang")
+					lang: this.getInput("lang"),
+					token: this.token
 				})
 			).toString("base64")
 		);

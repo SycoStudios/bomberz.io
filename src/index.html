@@ -151,8 +151,33 @@
 					<label>SFX Volume:</label>
 					<input type="range" id="sfx_vol" value="100" min="0" max="100" />
 				</div>
-				<div class="friends hidden">Not signed in.</div>
-				<div class="account hidden">Not signed in.</div>
+				<div class="friends hidden">
+					<div class="loggedIn hidden"></div>
+					<div class="loggedOut">Not signed in.</div>
+				</div>
+				<div class="account hidden">
+					<div class="loggedIn hidden"></div>
+					<div class="loggedOut">
+						<div class="" id="login">
+							<label>Username:</label>
+							<input type="text" id="username_login" />
+							<label>Password:</label>
+							<input type="password" id="password_login" />
+							<button onclick="login()">Login</button>
+							<a href="javascript:showSignup()">Need an account?</a>
+						</div>
+						<div class="hidden" id="signup">
+							<label>Username:</label>
+							<input type="text" id="username_signup" />
+							<label>Email:</label>
+							<input type="email" id="email_signup" />
+							<label>Password:</label>
+							<input type="password" id="password_signup" />
+							<button onclick="signup()">Register</button>
+							<a href="javascript:showLogin()">Have an account?</a>
+						</div>
+					</div>
+				</div>
 				<div class="leaderboard hidden">No users found.</div>
 			</div>
 		</div>
@@ -242,9 +267,26 @@
 						<li><b>Humphrey</b> <i>SFX Artist</i></li>
 					</ul>
 				</div>
-
 				<h3>Social Media</h3>
-				<div class="indent"></div>
+				<div class="indent">
+					<h4>Discords</h4>
+					<ul>
+						<li>
+							<b
+								><a href="https://discord.gg/VnjKdzmFPY" target="_blank"
+									>Bomberz.io</a
+								></b
+							>
+						</li>
+						<li>
+							<b
+								><a href="https://discord.gg/xap5pDruxf" target="_blank"
+									>SycoStudios</a
+								></b
+							>
+						</li>
+					</ul>
+				</div>
 			</div>
 			<div class="changelog hidden">
 				<div class="exit" onclick="showModal(false)"></div>

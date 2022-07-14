@@ -1,23 +1,19 @@
-import geckos, { iceServers } from "@geckos.io/server";
-import crypto from "crypto";
 import { Player } from "./modules/player.js";
 import { Bullet } from "./modules/bullet.js";
 import { forEach, map, filter } from "./modules/optimized.js";
-import { gameState, welcomeState, inputState, localState } from "./models/index.js";
+import { gameState, welcomeState, inputState, localState, bullets } from "./models/index.js";
 import { actions } from "./modules/meta/actions.js";
 import { weapons, idFromWeap } from "./modules/meta/weapons.js";
 import { Circle, Box, System } from "detect-collisions";
 import { calcDistance, clamp, deg2Rad } from "./modules/math.js";
 import { animations } from "./modules/meta/animations.js";
 import { idFromItem, items } from "./modules/meta/itemTypes.js";
-import { messageIds } from "./modules/meta/messageIds.js";
-import { BitArray } from "@codezilluh/bitarray.js";
-import LootClass from "./modules/loot.js";
-import ObjectClass from "./modules/object.js";
 import { idFromObj, objects, objFromId } from "./modules/meta/objects.js";
 import { categoryFromId } from "./modules/meta/objCategories.js";
-import bullets from "./models/bullets.js";
 import { gameModes } from "./modules/meta/gameModes.js";
+import LootClass from "./modules/loot.js";
+import ObjectClass from "./modules/object.js";
+import crypto from "crypto";
 
 const mapPlayers = (players) =>
 	map(players, (p) => {
@@ -83,7 +79,7 @@ const loopAngle = (angle) => {
 	if (angle < -180) return loopAngle(angle + 360);
 };
 
-const Game = class {
+export default class Game {
 	constructor(server) {
 		this.fps = 60;
 		this.sendRate = 30;
@@ -630,14 +626,10 @@ const Game = class {
 		}
 	}
 
-	disconnect(id) {
-		this.players[id].disconnected = true;
-	}
-
 	playerLeft(channel) {
-		if (!channel.id || !this.players[channel.id]) return;
+		if (!channel.pid || !this.players[channel.pid]) return;
 
-		this.players[channel.id].disconnected = true;
+		this.players[channel.pid].disconnected = true;
 	}
 
 	addPlayer(channel) {
@@ -661,43 +653,4 @@ const Game = class {
 			})
 		);
 	}
-};
-
-const io = geckos({
-	authorization: (auth, request) => {
-		return true;
-	},
-	cors: {
-		origin: (req) => {
-			return "*";
-		}
-	},
-	iceServers
-});
-const game = new Game(io);
-
-io.listen(3000);
-io.onConnection((channel) => {
-	channel.onDisconnect(() => {
-		game.playerLeft(channel);
-	});
-
-	channel.onRaw(({ buffer }) => {
-		let arr = new BitArray(buffer);
-		let messageType = arr.getUint(3);
-
-		switch (messageType) {
-			case messageIds.input: {
-				//inputState.decode(arr);
-				game.playerInput(channel.pid, inputState.decode(arr));
-				break;
-			}
-		}
-	});
-
-	channel.onDisconnect(() => {
-		game.disconnect(channel.pid);
-	});
-
-	game.addPlayer(channel);
-});
+}

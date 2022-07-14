@@ -2,8 +2,7 @@ import { Application, Container, Text, TextStyle, Sprite, Graphics } from "pixi.
 import { Bullet } from "../../modules/bullet";
 import { Input } from "../../modules/input";
 import { Player } from "../../modules/player";
-import { gameState, welcomeState, inputState, localState, checkSchemaId } from "../../models/index";
-import geckos from "@geckos.io/client";
+import { gameState, welcomeState, inputState, localState, bullets } from "../../models/index";
 import { filter, forEach, map } from "../../modules/optimized";
 import { actions } from "../../modules/meta/actions";
 import { weapons, weapFromId } from "../../modules/meta/weapons";
@@ -14,14 +13,15 @@ import { Audio } from "../../modules/audio";
 import { itemFromId } from "../../modules/meta/itemTypes";
 import { BitArray } from "@codezilluh/bitarray.js";
 import { messageIds } from "../../modules/meta/messageIds";
-import LootClass from "../../modules/loot.js";
-import ObjectClass from "../../modules/object.js";
-import bullets from "../../models/bullets";
 import { objFromId, objects as objectData } from "../../modules/meta/objects";
 import { Circle, Box, System } from "detect-collisions";
+import LootClass from "../../modules/loot.js";
+import ObjectClass from "../../modules/object.js";
 import Settings from "../../modules/settings.js";
+import geckos from "@geckos.io/client";
 
 let listeners = [];
+let loggedIn = false;
 
 const audio = new Audio();
 const settings = new Settings("game-settings", {
@@ -647,6 +647,7 @@ const startGame = (done) => {
 						);
 
 						if (!weapSlots[i].children[1].children[1]) continue;
+						if (!weapSlots[i].children[1].children[1].children.length) continue;
 
 						weapSlots[i].children[1].children[1].children[0].innerText = weaps[i].ammo;
 						weapSlots[i].children[1].children[1].children[1].innerText = "200";
@@ -685,6 +686,30 @@ const startGame = (done) => {
 		});
 	});
 };
+const loadUserData = () => {
+	fetch(
+		"/api/user_data/?" +
+			new URLSearchParams({
+				token: settings.token
+			}),
+		{
+			method: "post"
+		}
+	)
+		.then((e) => e.json())
+		.then(({ data, error }) => {
+			if (error) {
+				settings.setToken(false);
+				return;
+			}
+
+			loggedIn = true;
+
+			document.querySelectorAll(".loggedIn").forEach((e) => e.classList.remove("hidden"));
+			document.querySelectorAll(".loggedOut").forEach((e) => e.classList.add("hidden"));
+			console.log(data);
+		});
+};
 
 audio.playMenuTheme();
 settings.load();
@@ -701,6 +726,10 @@ settings.addListener((type, value) => {
 			break;
 	}
 });
+
+if (settings.token) {
+	loadUserData();
+}
 
 document.querySelector("#play").onclick = () => {
 	startGame(() => {
@@ -727,8 +756,10 @@ window.showMenu = (menu) => {
 	if (menu) {
 		document.querySelector(menu).classList.remove("hidden");
 		document.querySelector(".back").classList.remove("hidden");
+		document.querySelector(".sideMenu").classList.add("stayOpen");
 	} else {
 		document.querySelector(".menu").classList.remove("hidden");
+		document.querySelector(".sideMenu").classList.remove("stayOpen");
 	}
 };
 window.showModal = (modal) => {
@@ -743,6 +774,14 @@ window.showModal = (modal) => {
 		document.querySelector("#modal").classList.add("hidden");
 	}
 };
+window.showSignup = () => {
+	document.querySelector("#signup").classList.remove("hidden");
+	document.querySelector("#login").classList.add("hidden");
+};
+window.showLogin = () => {
+	document.querySelector("#login").classList.remove("hidden");
+	document.querySelector("#signup").classList.add("hidden");
+};
 window.setMode = (mode) => {
 	document
 		.querySelectorAll("#casualMode, #competitiveMode, #deathmatchMode")
@@ -753,4 +792,60 @@ window.setMode = (mode) => {
 	} else {
 		document.querySelector("#casualMode").classList.add("active");
 	}
+};
+window.login = () => {
+	let username = document.querySelector("#username_login").value;
+	let password = document.querySelector("#password_login").value;
+
+	fetch(
+		"/api/login/?" +
+			new URLSearchParams({
+				username,
+				password
+			}),
+		{
+			method: "post"
+		}
+	)
+		.then((e) => e.json())
+		.then(({ error, data }) => {
+			if (error) return;
+
+			console.log(error, data);
+
+			if (data.token) {
+				settings.setToken(data.token);
+				loggedIn = true;
+				loadUserData();
+			}
+		});
+};
+window.signup = () => {
+	let username = document.querySelector("#username_signup").value;
+	let password = document.querySelector("#password_signup").value;
+	let email = document.querySelector("#email_signup").value;
+
+	fetch(
+		"/api/register/?" +
+			new URLSearchParams({
+				username,
+				password,
+				email
+			}),
+		{
+			method: "post"
+		}
+	)
+		.then((e) => e.json())
+		.then(({ error, data }) => {
+			if (error) return;
+
+			console.log(error, data);
+
+			if (data.token) {
+				settings.setToken(data.token);
+				loggedIn = true;
+				loadUserData();
+			}
+		});
 };
