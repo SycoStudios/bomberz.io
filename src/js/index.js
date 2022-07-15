@@ -2,7 +2,14 @@ import { Application, Container, Text, TextStyle, Sprite, Graphics } from "pixi.
 import { Bullet } from "../../modules/bullet";
 import { Input } from "../../modules/input";
 import { Player } from "../../modules/player";
-import { gameState, welcomeState, inputState, localState, bullets } from "../../models/index";
+import {
+	gameState,
+	welcomeState,
+	inputState,
+	localState,
+	bullets,
+	roundInfo
+} from "../../models/index";
 import { filter, forEach, map } from "../../modules/optimized";
 import { actions } from "../../modules/meta/actions";
 import { weapons, weapFromId } from "../../modules/meta/weapons";
@@ -106,8 +113,8 @@ const startGame = (done) => {
 		app.stage.addChild(
 			layers.floors,
 			layers.objects,
-			layers.bullets,
 			layers.players,
+			layers.bullets,
 			layers.roofs
 		);
 	};
@@ -159,6 +166,7 @@ const startGame = (done) => {
 
 				if (!data.players[player.id]) {
 					data.players[player.id] = new Player(true);
+					data.players[player.id].id = player.id;
 
 					layers.players.addChild(
 						data.players[player.id].create(
@@ -188,12 +196,14 @@ const startGame = (done) => {
 
 				if (!player.dead) {
 					if (player.id == data.pov && !data.spectating) {
+						data.team = player.team;
 						p.actualX = player.x;
 						p.actualY = player.y;
 					} else {
 						p.rotate(player.angle);
 						p.move(player.x, player.y);
 					}
+					p.team = player.team;
 					p.curWeap = weapFromId(player.curWeap);
 					p.action = player.action;
 
@@ -336,6 +346,7 @@ const startGame = (done) => {
 					b.speed = bullet.speed;
 					b.angle = bullet.angle;
 					b.bulletType = bullet.type;
+					b.team = bullet.team;
 					b.range = weapons[weapFromId(bullet.type)].range || 100;
 
 					b.update();
@@ -416,6 +427,12 @@ const startGame = (done) => {
 				return (p._weapon.visible = false);
 			}
 
+			if (p.team !== data.team) {
+				p._playerSkin.tint = 0xff0000;
+			} else {
+				p._playerSkin.tint = 0xffffff;
+			}
+
 			switch (p.action) {
 				case actions.punch:
 				case actions.shoot: {
@@ -492,6 +509,8 @@ const startGame = (done) => {
 
 			potentials.some((collider) => {
 				if (collider.__type == "bullet" || collider.__type == "loot") return false;
+				if (collider.__type == "player" && data.players[collider.__pid].team == bullet.team)
+					return false;
 
 				if (data.collisionSystem.checkCollision(bullet._collider, collider)) {
 					const { overlap, overlapN } = data.collisionSystem.response;
@@ -656,6 +675,9 @@ const startGame = (done) => {
 					document.querySelector("#healthAmnt").style.width = `${health}%`;
 
 					break;
+				}
+				case messageIds.roundInfo: {
+					//console.log(roundInfo.decode(arr));
 				}
 			}
 		});

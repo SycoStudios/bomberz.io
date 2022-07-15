@@ -1,7 +1,7 @@
 import { Player } from "./modules/player.js";
 import { Bullet } from "./modules/bullet.js";
 import { forEach, map, filter } from "./modules/optimized.js";
-import { gameState, welcomeState, inputState, localState, bullets } from "./models/index.js";
+import { gameState, welcomeState, localState, bullets, roundInfo } from "./models/index.js";
 import { actions } from "./modules/meta/actions.js";
 import { weapons, idFromWeap } from "./modules/meta/weapons.js";
 import { Circle, Box, System } from "detect-collisions";
@@ -14,6 +14,9 @@ import { gameModes } from "./modules/meta/gameModes.js";
 import LootClass from "./modules/loot.js";
 import ObjectClass from "./modules/object.js";
 import crypto from "crypto";
+
+let seconds = 1000;
+let minutes = 60 * seconds;
 
 const mapPlayers = (players) =>
 	map(players, (p) => {
@@ -29,7 +32,8 @@ const mapPlayers = (players) =>
 						: actions.shoot
 					: actions.none,
 			curWeap: idFromWeap(p.weapons[p.curWeap].type),
-			id: p.id
+			id: p.id,
+			team: p.team
 		};
 	});
 const mapObjects = (objects) =>
@@ -52,7 +56,8 @@ const mapBullets = (bullets) =>
 			startY: b.startY,
 			speed: b.speed,
 			angle: b.angle,
-			type: b.bulletType
+			type: b.bulletType,
+			team: b.team
 		};
 	});
 const cycle = (num) => {
@@ -79,6 +84,60 @@ const loopAngle = (angle) => {
 	if (angle < -180) return loopAngle(angle + 360);
 };
 
+const Round = class Round {
+	constructor(roundLength, roundCoolDown) {
+		this.startTime = Date.now();
+		this.roundLength = roundLength;
+		this.roundCoolDown = roundCoolDown;
+		this.winningTeam = undefined;
+		this.bombPlanted = undefined;
+		this.done = 0;
+	}
+
+	get inCoolDown() {
+		return Date.now() - this.startTime < this.roundCoolDown;
+	}
+
+	get isOver() {
+		if (this.winningTeam) return true;
+
+		let over = this.bombPlanted
+			? Date.now() - this.bombPlanted >= this.roundLength * 0.45
+			: Date.now() - this.startTime >= this.roundLength;
+
+		if (over) this.done = Date.now();
+
+		return over;
+	}
+
+	get timeLeft() {
+		if (this.isOver) return 0;
+
+		return this.inCoolDown
+			? this.roundCoolDown - (Date.now() - this.startTime)
+			: this.bombPlanted
+			? this.roundLength * 0.45 - (Date.now() - this.bombPlanted)
+			: this.roundLength - (Date.now() - this.startTime);
+	}
+
+	get active() {
+		return !this.inCoolDown && !this.isOver;
+	}
+
+	get timeTaken() {
+		return this.done - this.startTime;
+	}
+
+	bombPlanted() {
+		this.bombPlanted = Date.now();
+	}
+
+	setWinners(team) {
+		this.done = Date.now();
+		this.winningTeam = team;
+	}
+};
+
 export default class Game {
 	constructor(server) {
 		this.fps = 60;
@@ -96,11 +155,17 @@ export default class Game {
 		this.objects = [];
 		this.bullets = [];
 
+		this.currentRound = 0;
+		this.rounds = [];
+		this.roundLength = 100 * seconds;
+		this.roundCoolDown = 30 * seconds;
+
 		this.map = {
 			min: -300,
 			max: 300,
 			pad: 24
 		};
+		this.teams = [[], []];
 
 		this.collisionSystem = new System();
 
@@ -141,6 +206,35 @@ export default class Game {
 		gameLoop();
 	}
 
+	get round() {
+		return this.rounds[this.currentRound];
+	}
+
+	sendRoundInfo() {
+		let info = {
+			id: this.currentRound,
+			timeLeft: Math.round(this.round.timeLeft / seconds),
+			team0Wins: filter(this.rounds, (e) => e.winningTeam && e.winningTeam == 0).length,
+			team1Wins: filter(this.rounds, (e) => e.winningTeam && e.winningTeam == 1).length,
+			team0Alive: filter(this.players, (e) => !e.dead && e.team == 0).length,
+			team1Alive: filter(this.players, (e) => !e.dead && e.team == 1).length,
+			coolDown: this.round.inCoolDown
+		};
+
+		this.room.emit(roundInfo.encode(info));
+	}
+
+	addRound() {
+		let round = new Round(this.roundLength, this.roundCoolDown);
+
+		this.rounds.push(round);
+		this.currentRound = this.rounds.length - 1;
+	}
+
+	onSameTeam(id1, id2) {
+		return this.players[id1].team === this.players[id2].team;
+	}
+
 	spawnBullet(x, y, dir, owner, type, moving) {
 		let bullet = new Bullet(
 			x + (weapons[type].width + animations[type].gun.x - 0.3) * Math.cos(dir * deg2Rad),
@@ -156,6 +250,7 @@ export default class Game {
 		bullet.damage = weapons[type].damage || 5;
 		bullet.bulletType = idFromWeap(type);
 		bullet.start = Date.now();
+		bullet.team = this.players[owner].team;
 		bullet.create({ system: this.collisionSystem, Circle });
 
 		this.bullets.push(bullet);
@@ -210,11 +305,23 @@ export default class Game {
 
 	update(delta) {
 		if (this.inLoop) return;
+		if (!this.round) {
+			this.addRound();
+		}
+		if (this.round.isOver) {
+			this.round.setWinners(1);
+			this.addRound();
+		}
 
 		this.inLoop = true;
 
 		let now = Date.now();
 		let shouldSend = now - this.previousSend >= 1000 / this.sendRate;
+
+		if (now - (this.lastRoundInfo || 0) > seconds) {
+			this.sendRoundInfo();
+			this.lastRoundInfo = now;
+		}
 
 		// do logic
 		forEach(this.bullets, (bullet) => {
@@ -234,6 +341,11 @@ export default class Game {
 						collider.__type == "bullet" ||
 						collider.__type == "loot" ||
 						(collider.__type == "player" && collider.__pid == bullet.owner)
+					)
+						return false;
+					if (
+						collider.__type == "player" &&
+						this.onSameTeam(collider.__pid, bullet.owner)
 					)
 						return false;
 
@@ -270,195 +382,221 @@ export default class Game {
 				}
 			}
 		});
-		forEach(this.players, (player) => {
-			if (player.dead) return;
-			if (player.disconnected) return;
-			if (!player.lastHealth) {
-				player.lastHealth = player.health;
-			}
+		if (this.round.active) {
+			forEach(this.players, (player) => {
+				if (player.dead) return;
+				if (player.disconnected) return;
+				if (!player.lastHealth) {
+					player.lastHealth = player.health;
+				}
 
-			let moveX = player.moveRight - player.moveLeft;
-			let moveY = player.moveDown - player.moveUp;
+				let moveX = player.moveRight - player.moveLeft;
+				let moveY = player.moveDown - player.moveUp;
 
-			if (moveX || moveY) {
-				let moveDir = Math.atan2(moveY, moveX);
+				if (moveX || moveY) {
+					let moveDir = Math.atan2(moveY, moveX);
 
-				player.move(
-					Math.cos(moveDir) * player.speed * delta,
-					Math.sin(moveDir) * player.speed * delta,
-					false
-				);
-			}
+					player.move(
+						Math.cos(moveDir) * player.speed * delta,
+						Math.sin(moveDir) * player.speed * delta,
+						false
+					);
+				}
 
-			if (!this.inMap(player.x, player.y, false, 1)) {
-				player.move(
-					clamp(player.x, this.map.min + 1, this.map.max - 1),
-					clamp(player.y, this.map.min + 1, this.map.max - 1),
-					true
-				);
-			}
+				if (!this.inMap(player.x, player.y, false, 1)) {
+					player.move(
+						clamp(player.x, this.map.min + 1, this.map.max - 1),
+						clamp(player.y, this.map.min + 1, this.map.max - 1),
+						true
+					);
+				}
 
-			let weap = player.weapons[player.curWeap] || {};
-			let weapStats = weapons[weap.type];
+				let weap = player.weapons[player.curWeap] || {};
+				let weapStats = weapons[weap.type];
 
-			if (!weapStats) {
-				player.curWeap = 2;
-				weap = player.weapons[2];
-				weapStats = weapons[weap.type];
-			}
+				if (!weapStats) {
+					player.curWeap = 2;
+					weap = player.weapons[2];
+					weapStats = weapons[weap.type];
+				}
 
-			if (!player.lastShot) player.lastShot = 0;
+				if (!player.lastShot) player.lastShot = 0;
 
-			player.shooting = false;
+				player.shooting = false;
 
-			if (!player.mouseDown && player.mouseWasDown) {
-				player.change();
-				player.mouseWasDown = false;
-			}
-			if (player.mouseDown && now - player.lastShot > (weapStats.shootDelay || 150)) {
-				switch (weapStats.type) {
-					case "melee": {
-						if (!player.mouseWasDown) {
-							player.shooting = true;
-							player.change();
-							player.lastShot = now;
-						}
-						break;
+				if (!player.mouseDown && player.mouseWasDown) {
+					player.change();
+					player.mouseWasDown = false;
+				}
+
+				if (weapStats.burst) {
+					if (!player.mouseDown && player.shotInBurst == 3) {
+						player.shotInBurst = 0;
 					}
-					case "gun": {
-						if (weap.ammo > -1) {
-							let shouldShoot = weapStats.semi ? !player.mouseWasDown : true;
+				} else {
+					player.shotInBurst = 0;
+				}
 
-							if (shouldShoot) {
+				if (
+					(player.mouseDown ||
+						(weapStats.burst && player.shotInBurst !== 0 && player.shotInBurst < 3)) &&
+					now - player.lastShot >
+						((player.shotInBurst == 0 ? weapStats.shootDelay : weapStats.burstDelay) ||
+							150)
+				) {
+					switch (weapStats.type) {
+						case "melee": {
+							if (!player.mouseWasDown) {
 								player.shooting = true;
-								for (var i = 0; i < (weapStats.bulletCount || 1); i++) {
-									this.spawnBullet(
-										player.x,
-										player.y,
-										player.angle,
-										player.id,
-										weap.type,
-										moveX || moveY
-									);
-								}
 								player.change();
 								player.lastShot = now;
 							}
+							break;
 						}
-						break;
+						case "gun": {
+							if (weap.ammo > -1) {
+								if (!player.shotInBurst) player.shotInBurst = 0;
+								let shouldShoot = weapStats.semi
+									? !player.mouseWasDown
+									: weapStats.burst
+									? player.shotInBurst < 3
+									: true;
+
+								if (shouldShoot) {
+									player.shotInBurst++;
+									player.shooting = true;
+									for (var i = 0; i < (weapStats.bulletCount || 1); i++) {
+										this.spawnBullet(
+											player.x,
+											player.y,
+											player.angle,
+											player.id,
+											weap.type,
+											moveX || moveY
+										);
+									}
+									player.change();
+									player.lastShot = now;
+								}
+							}
+							break;
+						}
 					}
+
+					player.mouseWasDown = true;
+				}
+				if (player.inputChanged) {
+					player.change();
+					player.inputChanged = false;
+				}
+				if (player.invChanged || player.health !== player.lastHealth) {
+					player.channel.raw.emit(
+						localState.encode({
+							weapon1Type: idFromWeap(player.weapons[0].type),
+							weapon2Type: idFromWeap(player.weapons[1].type),
+							weapon3Type: idFromWeap(player.weapons[2].type),
+							weapon4Type: idFromWeap(player.weapons[3].type),
+							weapon1Ammo: player.weapons[0].ammo,
+							weapon2Ammo: player.weapons[1].ammo,
+							weapon3Ammo: player.weapons[2].ammo,
+							weapon4Ammo: player.weapons[3].ammo,
+							weapId: player.curWeap,
+							health: player.health
+						})
+					);
+					player.change();
+					player.invChanged = false;
+					player.lastHealth = player.health;
 				}
 
-				player.mouseWasDown = true;
-			}
-			if (player.inputChanged) {
-				player.change();
-				player.inputChanged = false;
-			}
-			if (player.invChanged || player.health !== player.lastHealth) {
-				player.channel.raw.emit(
-					localState.encode({
-						weapon1Type: idFromWeap(player.weapons[0].type),
-						weapon2Type: idFromWeap(player.weapons[1].type),
-						weapon3Type: idFromWeap(player.weapons[2].type),
-						weapon4Type: idFromWeap(player.weapons[3].type),
-						weapon1Ammo: player.weapons[0].ammo,
-						weapon2Ammo: player.weapons[1].ammo,
-						weapon3Ammo: player.weapons[2].ammo,
-						weapon4Ammo: player.weapons[3].ammo,
-						weapId: player.curWeap,
-						health: player.health
-					})
-				);
-				player.change();
-				player.invChanged = false;
-				player.lastHealth = player.health;
-			}
+				if (!player.interact) player.alreadyInteracted = false;
+				player.lastInteraction = player.lastInteraction || 0;
+				player.lastNonInteract = player.lastNonInteract || 0;
 
-			if (!player.interact) player.alreadyInteracted = false;
-			player.lastInteraction = player.lastInteraction || 0;
-			player.lastNonInteract = player.lastNonInteract || 0;
+				const potentials = this.collisionSystem.getPotentials(player._collider);
 
-			const potentials = this.collisionSystem.getPotentials(player._collider);
+				forEach(
+					potentials.sort(
+						(a, b) =>
+							calcDistance(a.pos.x, a.pos.y, player.x, player.y) -
+							calcDistance(b.pos.x, b.pos.y, player.x, player.y)
+					),
+					(collider) => {
+						if (collider.__type == "bullet" || collider.__type == "player") return;
 
-			forEach(
-				potentials.sort(
-					(a, b) =>
-						calcDistance(a.pos.x, a.pos.y, player.x, player.y) -
-						calcDistance(b.pos.x, b.pos.y, player.x, player.y)
-				),
-				(collider) => {
-					if (collider.__type == "bullet" || collider.__type == "player") return;
-
-					if (this.collisionSystem.checkCollision(player._collider, collider)) {
-						if (collider.__oid != undefined && this.objects[collider.__oid].destroyed)
-							return;
-
-						if (collider.__type == "loot") {
+						if (this.collisionSystem.checkCollision(player._collider, collider)) {
 							if (
-								player.interact &&
-								!player.alreadyInteracted &&
-								now - player.lastInteraction >= 100 &&
-								now - player.lastNonInteract <= 50
-							) {
-								player.alreadyInteracted = true;
-								player.lastInteraction = now;
+								collider.__oid != undefined &&
+								this.objects[collider.__oid].destroyed
+							)
+								return;
 
-								let obj = this.objects[collider.__oid];
-								let item = obj.item;
+							if (collider.__type == "loot") {
+								if (
+									player.interact &&
+									!player.alreadyInteracted &&
+									now - player.lastInteraction >= 100 &&
+									now - player.lastNonInteract <= 50
+								) {
+									player.alreadyInteracted = true;
+									player.lastInteraction = now;
 
-								switch (items[item].type) {
-									case "gun": {
-										if (
-											player.weapons[0].type != "" &&
-											player.weapons[1].type != ""
-										) {
+									let obj = this.objects[collider.__oid];
+									let item = obj.item;
+
+									switch (items[item].type) {
+										case "gun": {
 											if (
-												player.curWeap != 2 &&
-												player.weapons[player.curWeap].type !== item
+												player.weapons[0].type != "" &&
+												player.weapons[1].type != ""
 											) {
-												obj.item = player.weapons[player.curWeap].type;
-												obj.change();
-												player.weapons[player.curWeap].type = item;
-												player.weapons[player.curWeap].ammo = obj.qty;
-												//obj.destroy(this.collisionSystem);
+												if (
+													player.curWeap != 2 &&
+													player.weapons[player.curWeap].type !== item
+												) {
+													obj.item = player.weapons[player.curWeap].type;
+													obj.change();
+													player.weapons[player.curWeap].type = item;
+													player.weapons[player.curWeap].ammo = obj.qty;
+													//obj.destroy(this.collisionSystem);
+												}
+											} else {
+												if (player.weapons[0].type == "") {
+													player.weapons[0].type = item;
+													player.weapons[0].ammo = obj.qty;
+													player.curWeap = 0;
+													obj.destroy(this.collisionSystem);
+												} else if (player.weapons[1].type == "") {
+													player.weapons[1].type = item;
+													player.weapons[1].ammo = obj.qty;
+													player.curWeap = 1;
+													obj.destroy(this.collisionSystem);
+												}
 											}
-										} else {
-											if (player.weapons[0].type == "") {
-												player.weapons[0].type = item;
-												player.weapons[0].ammo = obj.qty;
-												player.curWeap = 0;
-												obj.destroy(this.collisionSystem);
-											} else if (player.weapons[1].type == "") {
-												player.weapons[1].type = item;
-												player.weapons[1].ammo = obj.qty;
-												player.curWeap = 1;
-												obj.destroy(this.collisionSystem);
-											}
-										}
 
-										player.invChanged = true;
-										break;
+											player.invChanged = true;
+											break;
+										}
 									}
+								} else {
+									if (!player.interact) player.lastNonInteract = now;
 								}
 							} else {
-								if (!player.interact) player.lastNonInteract = now;
-							}
-						} else {
-							const { overlapV } = this.collisionSystem.response;
+								const { overlapV } = this.collisionSystem.response;
 
-							player.move(-overlapV.x, -overlapV.y, false);
+								player.move(-overlapV.x, -overlapV.y, false);
 
-							let object = this.objects[collider.__oid];
+								let object = this.objects[collider.__oid];
 
-							if (object.damage && player.shooting && weapStats.type == "melee") {
-								object.damage(weapStats.damage, this.collisionSystem);
+								if (object.damage && player.shooting && weapStats.type == "melee") {
+									object.damage(weapStats.damage, this.collisionSystem);
+								}
 							}
 						}
 					}
-				}
-			);
-		});
+				);
+			});
+		}
 		forEach(this.objects, (object) => {
 			if (object.destroyed) return;
 			if (categoryFromId(object.category) == "object") return;
@@ -489,8 +627,7 @@ export default class Game {
 		// Remove bullets that are "done"
 		this.bullets = filter(this.bullets, (bullet) => !bullet.done);
 
-		// Send unique message to each player based on
-		// 		what the player can see and what has changed
+		// Send unique message to each player based on what the player can see and what has changed
 		// Only send when it is time
 		if (shouldSend) {
 			this.previousSend = now;
@@ -516,6 +653,8 @@ export default class Game {
 				let players = mapPlayers(
 					filter(this.players, (p) => {
 						if (!p.seenList) p.seenList = [];
+
+						let weapStats = weapons[p.weapons[p.curWeap].type];
 
 						p.lastShouldSendShoot = p.shouldSendShoot;
 						p.shouldSendShoot =
@@ -645,6 +784,16 @@ export default class Game {
 		channel.join(this.gameId);
 
 		this.players.push(player);
+
+		if (this.teams[0].length > this.teams[1].length) {
+			player.team = 1;
+			this.teams[1].push(player.id);
+		} else {
+			player.team = 0;
+			this.teams[0].push(player.id);
+		}
+
+		console.log(this.teams);
 
 		player.channel.raw.emit(
 			welcomeState.encode({

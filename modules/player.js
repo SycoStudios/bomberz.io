@@ -11,8 +11,8 @@ export class Player {
 		this.health = 100;
 		this.dead = false;
 		this.weapons = [
-			{ type: "r870", ammo: 1 },
-			{ type: "m1911", ammo: 1 },
+			{ type: "pump_shotgun", ammo: 1 },
+			{ type: "burst_rifle", ammo: 1 },
 			{ type: "fists", ammo: "" },
 			{ type: "", ammo: "" }
 		];

@@ -200,7 +200,7 @@ canvas {
 		background: #00000038;
 		border-radius: 5px;
 		display: flex;
-		backdrop-filter: blur(@blur-amnt);
+		//backdrop-filter: blur(@blur-amnt);
 		outline: 2px solid #0000005e;
 		user-select: none;
 		align-items: center;
@@ -213,6 +213,7 @@ canvas {
 			width: 30vw;
 			padding: 5px;
 			flex-direction: column;
+			align-items: flex-start;
 
 			& #healthAmnt {
 				height: 30px;
@@ -253,6 +254,7 @@ canvas {
 				margin: 0;
 				display: block;
 				margin-right: 10px;
+				transform: rotate(30deg);
 			}
 
 			& .weapData {
@@ -517,7 +519,7 @@ canvas {
 
 			& label {
 				font-size: 18px;
-				display: block;
+				display: inline-block;
 				margin-bottom: 5px;
 			}
 

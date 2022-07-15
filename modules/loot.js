@@ -39,8 +39,9 @@ export default class Loot {
 			this._background.anchor.set(0.5, 0.5);
 			this._background.alpha = 0.7;
 
-			this._item.width = 1.6;
-			this._item.height = 1.6;
+			this._item.width = 1.5;
+			this._item.height = 1.5;
+			this._item.rotation = 30 * deg2Rad;
 			this._item.anchor.set(0.5, 0.5);
 
 			this._container.addChild(this._background, this._item);

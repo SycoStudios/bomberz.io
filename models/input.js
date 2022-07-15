@@ -1,7 +1,7 @@
 import { BitArray } from "@codezilluh/bitarray.js";
 import { messageIds } from "../modules/meta/messageIds.js";
 
-let fraction = 2 ** 14 / 180;
+let fraction = (2 ** 14 - 1) / 180;
 
 const encode = ({
 	moveLeft,

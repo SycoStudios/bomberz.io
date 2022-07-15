@@ -41,7 +41,7 @@ export const weapons = {
 		bulletSpeed: 0.5,
 		shootDelay: 100,
 		range: 55,
-		spread: 1,
+		spread: 2,
 		damage: 9,
 		lootImage: new URL(
 			"../../src/img/assault_rifle_item.png?as=webp&width=120",
@@ -57,10 +57,12 @@ export const weapons = {
 		height: 0.49,
 		width: 2.22,
 		bulletSpeed: 0.5,
-		shootDelay: 100,
+		shootDelay: 200,
+		burstDelay: 40,
 		range: 55,
-		spread: 1,
-		damage: 9,
+		spread: 1.5,
+		damage: 7,
+		burst: true,
 		lootImage: new URL("../../src/img/burst_rifle_item.png?as=webp&width=120", import.meta.url)
 			.href,
 		bodyImage: new URL("../../src/img/burst_rifle_body.png?as=webp&width=300", import.meta.url)
@@ -68,16 +70,22 @@ export const weapons = {
 	},
 	marksman_rifle: {
 		type: "gun",
-		height: 0.36,
-		width: 3.42,
+		height: 0.42,
+		width: 3.02,
 		bulletSpeed: 0.6,
-		shootDelay: 86,
+		shootDelay: 180,
 		range: 62,
-		spread: 1,
-		damage: 8,
+		spread: 0.5,
+		damage: 13,
 		semi: true,
-		lootImage: new URL("../../src/img/m14_item.png?as=webp&width=120", import.meta.url).href,
-		bodyImage: new URL("../../src/img/m14_body.png?as=webp&width=300", import.meta.url).href
+		lootImage: new URL(
+			"../../src/img/marksman_rifle_item.png?as=webp&width=120",
+			import.meta.url
+		).href,
+		bodyImage: new URL(
+			"../../src/img/marksman_rifle_body.png?as=webp&width=300",
+			import.meta.url
+		).href
 	},
 	pump_shotgun: {
 		type: "gun",

@@ -5,7 +5,12 @@ export const dictionary = {
 		es: "Puños"
 	},
 	assault_rifle: {
-		en: "Rifle de Asalto"
+		en: "Assault Rifle",
+		es: "Rifle de Asalto"
+	},
+	burst_rifle: {
+		en: "Burst Rifle",
+		es: "Rifle de Ráfaga"
 	},
 	smg: {
 		en: "SMG",

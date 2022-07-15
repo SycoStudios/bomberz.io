@@ -1,7 +1,7 @@
 import { BitArray } from "@codezilluh/bitarray.js";
 import { messageIds } from "../modules/meta/messageIds.js";
 
-let fraction = 2 ** 14 / 180;
+let fraction = (2 ** 14 - 1) / 180;
 
 const encode = ({ players, objects }) => {
 	let arr = new BitArray();
@@ -20,6 +20,7 @@ const encode = ({ players, objects }) => {
 		arr.addUint(player.action, 4);
 		arr.addUint(player.curWeap, 5);
 		arr.addBit(player.dead);
+		arr.addBit(player.team);
 	}
 
 	for (var i = 0; i < objects.length; i++) {
@@ -46,7 +47,7 @@ const decode = (arr) => {
 	let objectLength = arr.getUint(6, 10);
 
 	for (var i = 0; i < playerLength; i++) {
-		let offset = 16 + i * 78;
+		let offset = 16 + i * 79;
 
 		data.players.push({
 			id: arr.getUint(7, offset),
@@ -55,12 +56,13 @@ const decode = (arr) => {
 			angle: arr.getInt(15, 53 + offset) / fraction,
 			action: arr.getUint(4, 68 + offset),
 			curWeap: arr.getUint(5, 72 + offset),
-			dead: arr.getBit(77 + offset)
+			dead: arr.getBit(77 + offset),
+			team: arr.getBit(78 + offset)
 		});
 	}
 
 	for (var i = 0; i < objectLength; i++) {
-		let offset = 16 + playerLength * 78 + i * 56;
+		let offset = 16 + playerLength * 79 + i * 56;
 
 		data.objects.push({
 			id: arr.getUint(11, offset),

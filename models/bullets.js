@@ -1,7 +1,7 @@
 import { BitArray } from "@codezilluh/bitarray.js";
 import { messageIds } from "../modules/meta/messageIds.js";
 
-let fraction = 2 ** 14 / 180;
+let fraction = (2 ** 14 - 1) / 180;
 
 const encode = ({ bullets }) => {
 	let arr = new BitArray();
@@ -19,6 +19,7 @@ const encode = ({ bullets }) => {
 		arr.addInt(Math.round(bullet.angle * fraction), 15);
 		arr.addUint(Math.round(bullet.speed * 100), 8);
 		arr.addUint(bullet.type, 5);
+		arr.addBit(bullet.team);
 	}
 
 	return arr.encode();
@@ -32,7 +33,7 @@ const decode = (arr) => {
 	let bulletLength = arr.getUint(10, 3);
 
 	for (var i = 0; i < bulletLength; i++) {
-		let offset = 13 + i * 92;
+		let offset = 13 + i * 93;
 
 		data.bullets.push({
 			x: arr.getInt(16, offset) / 10 ** 2,
@@ -41,7 +42,8 @@ const decode = (arr) => {
 			startY: arr.getInt(16, 48 + offset) / 10 ** 2,
 			angle: arr.getInt(15, 64 + offset) / fraction,
 			speed: arr.getUint(8, 79 + offset) / 100,
-			type: arr.getUint(5, 87 + offset)
+			type: arr.getUint(5, 87 + offset),
+			team: arr.getBit(92 + offset)
 		});
 	}
 
