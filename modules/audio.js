@@ -4,19 +4,22 @@ import { calcDistance, clamp } from "./math";
 export const Audio = class {
 	constructor() {
 		this.sounds = {
-			ak47_shoot: new Howl({
+			assault_rifle_shoot: new Howl({
 				src: new URL("../src/audio/ak47_shoot.mp3", import.meta.url).href
 			}),
-			m1911_shoot: new Howl({
+			burst_rifle_shoot: new Howl({
+				src: new URL("../src/audio/ak47_shoot.mp3", import.meta.url).href
+			}),
+			pistol_shoot: new Howl({
 				src: new URL("../src/audio/m1911_shoot.mp3", import.meta.url).href
 			}),
-			mp5_shoot: new Howl({
+			smg_shoot: new Howl({
 				src: new URL("../src/audio/mp5_shoot.mp3", import.meta.url).href
 			}),
-			m14_shoot: new Howl({
+			marksman_rifle_shoot: new Howl({
 				src: new URL("../src/audio/m14_shoot.mp3", import.meta.url).href
 			}),
-			r870_shoot: new Howl({
+			pump_shotgun_shoot: new Howl({
 				src: new URL("../src/audio/r870_shoot.mp3", import.meta.url).href
 			}),
 			title_looped: new Howl({

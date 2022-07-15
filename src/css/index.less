@@ -68,6 +68,94 @@ canvas {
 		}
 	}
 
+	& .buyMenu {
+		display: flex;
+		position: fixed;
+		flex-direction: column;
+		user-select: none;
+		pointer-events: auto;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		align-items: center;
+		z-index: 10;
+		backdrop-filter: blur(@blur-amnt) grayscale(0.8) brightness(1.2);
+
+		& .section {
+			display: flex;
+			padding: 20px;
+			padding-bottom: 55px;
+			overflow: auto;
+			flex: 1;
+		}
+
+		& .sideArms,
+		& .primary,
+		& .armor {
+			display: flex;
+			flex-direction: column;
+
+			& div:not(.box) {
+				overflow: auto;
+
+				&::-webkit-scrollbar {
+					width: 0;
+				}
+			}
+
+			& .box {
+				border-radius: 0;
+				color: white;
+				display: flex;
+				flex-direction: column;
+				margin-bottom: 2px;
+				outline: 2px solid #3f3f3f;
+				backdrop-filter: unset;
+
+				& img {
+					width: 100%;
+					filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.397))
+					//transform: scale(1.2);
+				}
+
+				& div {
+					display: flex;
+					width: 100%;
+
+					& .name {
+						flex: 1;
+					}
+
+					& .cost {
+						color: @primary;
+					}
+				}
+
+				&.label {
+					border-top-left-radius: 5px;
+					border-top-right-radius: 5px;
+					background: #ffffff2a;
+				}
+			}
+
+			& .box:nth-last-child(1) {
+				border-bottom-left-radius: 5px;
+				border-bottom-right-radius: 5px;
+			}
+		}
+
+		& .sideArms {
+			//margin-right: 20px;
+			margin-left: -10px;
+		}
+
+		& .armor {
+			//margin-left: 20px;
+			margin-right: -10px;
+		}
+	}
+
 	& .interact {
 		color: white;
 		margin: 0 !important;
@@ -115,6 +203,7 @@ canvas {
 		backdrop-filter: blur(@blur-amnt);
 		outline: 2px solid #0000005e;
 		user-select: none;
+		align-items: center;
 
 		&.active {
 			outline: 2px solid @primary;

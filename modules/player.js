@@ -122,7 +122,7 @@ export class Player {
 				new URL("../src/img/player_fist.png?as=webp&width=100", import.meta.url).href
 			);
 			this._weapsContainer = new Container();
-			this._weapon = Sprite.from(weapons.mp5.bodyImage);
+			this._weapon = Sprite.from(weapons.smg.bodyImage);
 			this._playerRip = Sprite.from(
 				new URL("../src/img/rip.png?as=webp&width=200", import.meta.url).href
 			);

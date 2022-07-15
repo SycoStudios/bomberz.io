@@ -106,7 +106,7 @@ export default class Game {
 
 		// Loot Spawning from Objects.js
 		for (var i = 0; i < 20; i++) {
-			this.spawnLoot(0, 5, Math.random() > 0.5 ? "ak47" : "m14");
+			this.spawnLoot(0, 5, Math.random() > 0.5 ? "assault_rifle" : "marksman_rifle");
 		}
 
 		// Object Spawning from Objects.js
@@ -143,8 +143,8 @@ export default class Game {
 
 	spawnBullet(x, y, dir, owner, type, moving) {
 		let bullet = new Bullet(
-			x + (weapons[type].width + animations[type].gun.x - 0.4) * Math.cos(dir * deg2Rad),
-			y + (weapons[type].width + animations[type].gun.x - 0.4) * Math.sin(dir * deg2Rad),
+			x + (weapons[type].width + animations[type].gun.x - 0.3) * Math.cos(dir * deg2Rad),
+			y + (weapons[type].width + animations[type].gun.x - 0.3) * Math.sin(dir * deg2Rad),
 			loopAngle(
 				dir + (weapons[type].spread || 3) * (moving ? 2 : 1) * (2 * (Math.random() - 0.5))
 			)
@@ -198,7 +198,7 @@ export default class Game {
 	crateDestroyed(x, y, type) {
 		let rarity = objects[type].contentRarity;
 
-		this.spawnLoot(x, y, "mp5");
+		this.spawnLoot(x, y, "smg");
 	}
 
 	inMap(x, y, pad = false, rad = 0) {

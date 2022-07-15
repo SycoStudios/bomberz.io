@@ -4,42 +4,24 @@ export const dictionary = {
 		en: "Fists",
 		es: "Puños"
 	},
-	ak47: {
-		en: "AK-47"
+	assault_rifle: {
+		en: "Rifle de Asalto"
 	},
-	mp5: {
-		en: "MP5"
+	smg: {
+		en: "SMG",
+		es: "Subfusil"
 	},
-	m9: {
-		en: "M9"
+	pistol: {
+		en: "Pistol",
+		es: "Pistola"
 	},
-	m1911: {
-		en: "M1911"
+	marksman_rifle: {
+		en: "Marksman Rifle",
+		es: "Rifle de Tirador"
 	},
-	m16: {
-		en: "M16"
-	},
-	m14: {
-		en: "M14"
-	},
-	r870: {
-		en: "R870"
-	},
-	// ammo types
-	9: {
-		en: "9mm"
-	},
-	762: {
-		en: "7.62mm"
-	},
-	45: {
-		en: ".45 ACP"
-	},
-	556: {
-		en: "5.56mm"
-	},
-	12: {
-		en: "12g"
+	pump_shotgun: {
+		en: "Pump Shotgun",
+		es: "Escopeta"
 	},
 	// interface
 	join: {

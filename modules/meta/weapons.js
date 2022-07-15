@@ -9,33 +9,7 @@ export const weapons = {
 		lootImage: new URL("../../src/img/fists_item.png?as=webp&width=60", import.meta.url).href,
 		damage: 17
 	},
-	mp5: {
-		type: "gun",
-		height: 0.34,
-		width: 1.6,
-		bulletSpeed: 0.4,
-		shootDelay: 66,
-		range: 30,
-		spread: 9,
-		damage: 8,
-		lootImage: new URL("../../src/img/mp5_item.png?as=webp&width=120", import.meta.url).href,
-		bodyImage: new URL("../../src/img/mp5_body.png?as=webp&width=200", import.meta.url).href,
-		ammoType: "9"
-	},
-	ak47: {
-		type: "gun",
-		height: 0.37,
-		width: 2.89,
-		bulletSpeed: 0.5,
-		shootDelay: 100,
-		range: 55,
-		spread: 1,
-		damage: 9,
-		lootImage: new URL("../../src/img/ak47_item.png?as=webp&width=120", import.meta.url).href,
-		bodyImage: new URL("../../src/img/ak47_body.png?as=webp&width=300", import.meta.url).href,
-		ammoType: "762"
-	},
-	m1911: {
+	pistol: {
 		type: "gun",
 		height: 0.35,
 		width: 1.36,
@@ -46,10 +20,53 @@ export const weapons = {
 		damage: 16,
 		semi: true,
 		lootImage: new URL("../../src/img/m1911_item.png?as=webp&width=120", import.meta.url).href,
-		bodyImage: new URL("../../src/img/m1911_body.png?as=webp&width=300", import.meta.url).href,
-		ammoType: "45"
+		bodyImage: new URL("../../src/img/m1911_body.png?as=webp&width=300", import.meta.url).href
 	},
-	m14: {
+	smg: {
+		type: "gun",
+		height: 0.34,
+		width: 1.6,
+		bulletSpeed: 0.4,
+		shootDelay: 66,
+		range: 30,
+		spread: 9,
+		damage: 8,
+		lootImage: new URL("../../src/img/mp5_item.png?as=webp&width=120", import.meta.url).href,
+		bodyImage: new URL("../../src/img/mp5_body.png?as=webp&width=200", import.meta.url).href
+	},
+	assault_rifle: {
+		type: "gun",
+		height: 0.53,
+		width: 3.7,
+		bulletSpeed: 0.5,
+		shootDelay: 100,
+		range: 55,
+		spread: 1,
+		damage: 9,
+		lootImage: new URL(
+			"../../src/img/assault_rifle_item.png?as=webp&width=120",
+			import.meta.url
+		).href,
+		bodyImage: new URL(
+			"../../src/img/assault_rifle_body.png?as=webp&width=300",
+			import.meta.url
+		).href
+	},
+	burst_rifle: {
+		type: "gun",
+		height: 0.49,
+		width: 2.22,
+		bulletSpeed: 0.5,
+		shootDelay: 100,
+		range: 55,
+		spread: 1,
+		damage: 9,
+		lootImage: new URL("../../src/img/burst_rifle_item.png?as=webp&width=120", import.meta.url)
+			.href,
+		bodyImage: new URL("../../src/img/burst_rifle_body.png?as=webp&width=300", import.meta.url)
+			.href
+	},
+	marksman_rifle: {
 		type: "gun",
 		height: 0.36,
 		width: 3.42,
@@ -60,10 +77,9 @@ export const weapons = {
 		damage: 8,
 		semi: true,
 		lootImage: new URL("../../src/img/m14_item.png?as=webp&width=120", import.meta.url).href,
-		bodyImage: new URL("../../src/img/m14_body.png?as=webp&width=300", import.meta.url).href,
-		ammoType: "762"
+		bodyImage: new URL("../../src/img/m14_body.png?as=webp&width=300", import.meta.url).href
 	},
-	r870: {
+	pump_shotgun: {
 		type: "gun",
 		height: 0.44,
 		width: 2.82,
@@ -75,8 +91,7 @@ export const weapons = {
 		spread: 9,
 		damage: 7,
 		lootImage: new URL("../../src/img/r870_item.png?as=webp&width=120", import.meta.url).href,
-		bodyImage: new URL("../../src/img/r870_body.png?as=webp&width=300", import.meta.url).href,
-		ammoType: "12"
+		bodyImage: new URL("../../src/img/r870_body.png?as=webp&width=300", import.meta.url).href
 	}
 };
 

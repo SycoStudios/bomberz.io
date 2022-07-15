@@ -783,14 +783,18 @@ window.showLogin = () => {
 	document.querySelector("#signup").classList.add("hidden");
 };
 window.setMode = (mode) => {
-	document
-		.querySelectorAll("#casualMode, #competitiveMode, #deathmatchMode")
-		.forEach((el) => el.classList.remove("active"));
-
-	if (mode) {
-		document.querySelector(mode).classList.add("active");
+	if (mode == "#competitiveMode" && !loggedIn) {
+		console.log("Must have an account to play competitive!");
 	} else {
-		document.querySelector("#casualMode").classList.add("active");
+		document
+			.querySelectorAll("#casualMode, #competitiveMode, #deathmatchMode")
+			.forEach((el) => el.classList.remove("active"));
+
+		if (mode) {
+			document.querySelector(mode).classList.add("active");
+		} else {
+			document.querySelector("#casualMode").classList.add("active");
+		}
 	}
 };
 window.login = () => {
