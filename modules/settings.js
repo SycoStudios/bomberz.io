@@ -34,9 +34,9 @@ export default class Settings {
 	addListener(cb) {
 		this.listeners.push(cb);
 
-		cb("sfxVol", this.getSlider("sfxVol"));
-		cb("musicVol", this.getSlider("musicVol"));
-		cb("lang", this.getInput("lang"));
+		cb("sfxVol", this.getSlider("sfxVol"), true);
+		cb("musicVol", this.getSlider("musicVol"), true);
+		cb("lang", this.getInput("lang"), true);
 	}
 
 	setToken(token) {

@@ -84,11 +84,11 @@ const send = (res, code, data) => {
 			error: code !== 200 ? true : undefined,
 			data:
 				code == 403
-					? "Forbidden"
+					? "forbidden"
 					: code == 404
-					? "Not found"
+					? "not_found"
 					: code == 500
-					? "Server Error"
+					? "server_error"
 					: data
 		})
 	);
@@ -163,6 +163,8 @@ app.post("/api/login", (req, res) => {
 		let user = getUser(username);
 
 		if (user.password == hash(password)) {
+			user.ip = hash(req.ip);
+			writeUser(user.username);
 			send(res, 200, { token: getToken(user.username) });
 		} else {
 			send(res);
@@ -172,7 +174,7 @@ app.post("/api/login", (req, res) => {
 app.post("/api/user_data", (req, res) => {
 	let valid = tokenValid(req.query.token, req);
 
-	if (!valid) return send(res, true, "Not signed in");
+	if (!valid) return send(res, true, "not_signed_in");
 
 	let user = getUser(valid.username);
 
@@ -190,7 +192,7 @@ app.post("/api/user_data", (req, res) => {
 app.post("/api/add_friend/:username", (req, res) => {
 	let valid = tokenValid(req.query.token, req);
 
-	if (!valid) return send(res, true, "Not signed in");
+	if (!valid) return send(res, true, "not_signed_in");
 	if (!req.params.username) return send(res);
 
 	let friend = getUser(req.params.username);
@@ -214,7 +216,7 @@ app.post("/api/add_friend/:username", (req, res) => {
 app.post("/api/accept_friend/:username", (req, res) => {
 	let valid = tokenValid(req.query.token, req);
 
-	if (!valid) return send(res, true, "Not signed in");
+	if (!valid) return send(res, true, "not_signed_in");
 	if (!req.params.username) return send(res);
 
 	let self = getUser(valid.username);
@@ -233,7 +235,7 @@ app.post("/api/accept_friend/:username", (req, res) => {
 app.post("/api/deny_friend/:username", (req, res) => {
 	let valid = tokenValid(req.query.token, req);
 
-	if (!valid) return send(res, true, "Not signed in");
+	if (!valid) return send(res, true, "not_signed_in");
 	if (!req.params.username) return send(res);
 
 	let self = getUser(valid.username);

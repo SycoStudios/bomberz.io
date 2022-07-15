@@ -277,61 +277,61 @@
 						draggable="false"
 					/>
 					<div class="box">
-						<button class="button" id="play">PLAY</button>
+						<button class="button" id="play">join</button>
 					</div>
 				</div>
 				<div class="topMenu box">
 					<div class="navItem active" id="casualMode" onclick="setMode('#casualMode')">
-						Casual
+						casual
 					</div>
 					<div class="navItem" id="competitiveMode" onclick="setMode('#competitiveMode')">
-						Competitive
+						competitive
 					</div>
 					<div class="navItem" id="deathmatchMode" onclick="setMode('#deathmatchMode')">
-						Deathmatch
+						deathmatch
 					</div>
 				</div>
 				<div class="sideMenu box">
 					<div class="menu">
 						<div class="menuItem" onclick="showMenu('.settings')">
 							<img class="icon" src="./img/UI/settings_icon.png?as=webp&width=25" />
-							<span class="menuTitle navItem">Settings</span>
+							<span class="menuTitle navItem">settings</span>
 						</div>
 						<div class="menuItem" onclick="showMenu('.friends')">
 							<img class="icon" src="./img/UI/friends_icon.png?as=webp&width=25" />
-							<span class="menuTitle navItem">Friends</span>
+							<span class="menuTitle navItem">friends</span>
 						</div>
 						<div class="menuItem" onclick="showMenu('.account')">
 							<img class="icon" src="./img/UI/user_icon.png?as=webp&width=25" />
-							<span class="menuTitle navItem">Account</span>
+							<span class="menuTitle navItem">account</span>
 						</div>
 						<div class="menuItem" onclick="showMenu('.leaderboard')">
 							<img class="icon" src="./img/UI/trophy_icon.png?as=webp&width=25" />
-							<span class="menuTitle navItem">Leaderboard</span>
+							<span class="menuTitle navItem">leaderboard</span>
 						</div>
 					</div>
 
 					<div class="back hidden">
 						<div class="menuItem" onclick="showMenu()">
 							<img class="icon" src="./img/UI/back_icon.png?as=webp&width=25" />
-							<span class="menuTitle navItem">Back</span>
+							<span class="menuTitle navItem">back</span>
 						</div>
 					</div>
 
 					<div class="settings hidden">
-						<label>Language:</label>
+						<label>language:</label>
 						<select id="lang">
 							<option value="en">English</option>
 							<option value="es">Español</option>
 						</select>
-						<label>Screen Mode:</label>
+						<label>screen_mode:</label>
 						<select id="screenMode">
 							<option value="n">Normal</option>
 							<option value="f">Fullscreen</option>
 						</select>
-						<label>Music Volume:</label>
+						<label>music_vol:</label>
 						<input type="range" id="music_vol" value="100" min="0" max="100" />
-						<label>SFX Volume:</label>
+						<label>sfx_vol:</label>
 						<input type="range" id="sfx_vol" value="100" min="0" max="100" />
 					</div>
 					<div class="friends hidden">
@@ -346,38 +346,39 @@
 								</div>
 							</div>
 						</div>
-						<div class="loggedOut">Not signed in.</div>
+						<div class="loggedOut">not_signed_in.</div>
 					</div>
 					<div class="account hidden">
 						<div class="loggedIn hidden">
-							<label id="username_info"></label>
-							<label id="username_password"></label>
-							<button>
-								<img src="./IMG/UI/eye-solid.svg" />
-							</button>
-							<button>Logout</button>
+							<label id="infoUsername"></label>
+
+							<div class="menuItem" onclick="logout()">
+								<img class="icon" src="./img/UI/leave_icon.png?as=webp&width=25" />
+								<span class="menuTitle navItem">logout</span>
+							</div>
 						</div>
 						<div class="loggedOut">
 							<div id="login">
-								<label>Username:</label>
+								<label>username:</label>
 								<input type="text" id="username_login" />
-								<label>Password:</label>
+								<label>password:</label>
 								<input type="password" id="password_login" />
-								<button onclick="login()">Login</button>
-								<a href="javascript:showSignup()">Need an account?</a>
+								<button onclick="login()">login</button>
+								<a href="javascript:showSignup()">need_an_account</a>
 							</div>
 							<div class="hidden" id="signup">
-								<label>Username:</label>
+								<label>username:</label>
 								<input type="text" id="username_signup" />
-								<label>Email:</label>
+								<label>email:</label>
 								<input type="email" id="email_signup" />
-								<label>Password:</label>
+								<label>password:</label>
 								<input type="password" id="password_signup" />
-								<label>Confirm Password:</label>
+								<label>confirm_password:</label>
 								<input type="password" id="password_confirm" />
-								<button onclick="signup()">Register</button>
-								<a href="javascript:showLogin()">Have an account?</a>
+								<button onclick="signup()">register</button>
+								<a href="javascript:showLogin()">have_an_account</a>
 							</div>
+							<div id="accountErr" class="err hidden"></div>
 						</div>
 					</div>
 					<div class="leaderboard hidden">No users found.</div>
@@ -389,9 +390,9 @@
 				<div class="spacer"></div>
 				<div id="info">
 					<a href="javascript:showModal('.changelog')">v0.0.1</a> |
-					<a href="javascript:showModal('.privacy')">Privacy</a> |
-					<a href="javascript:showModal('.terms')">Terms</a> |
-					<a href="javascript:showModal('.socials')">Game Info</a>
+					<a href="javascript:showModal('.privacy')">privacy</a> |
+					<a href="javascript:showModal('.terms')">terms</a> |
+					<a href="javascript:showModal('.socials')">game_info</a>
 				</div>
 			</div>
 

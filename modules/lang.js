@@ -77,6 +77,22 @@ export const dictionary = {
 		en: "SFX Volume",
 		es: "Volumen SFX"
 	},
+	not_found: {
+		en: "Not Found",
+		es: "No Encontrada"
+	},
+	forbidden: {
+		en: "Access Forbidden",
+		es: "Acceso Prohibido"
+	},
+	server_error: {
+		en: "Server Error",
+		es: "Error del Servidor"
+	},
+	wrong_ip: {
+		en: "Unrecognized IP Address",
+		es: "Dirección IP no reconocida"
+	},
 	not_signed_in: {
 		en: "Not signed in",
 		es: "No registrado"
@@ -93,9 +109,43 @@ export const dictionary = {
 		en: "Account",
 		es: "Perfil"
 	},
+	logout: {
+		en: "Logout",
+		es: "Cerrar Sesión"
+	},
+	login: {
+		en: "Login",
+		es: "Acceso"
+	},
+	register: {
+		en: "Register",
+		es: "Registrar"
+	},
+	username: {
+		en: "Username",
+		es: "Usuario"
+	},
+	password: {
+		en: "Password",
+		es: "Clave"
+	},
+	email: {
+		en: "Email"
+	},
+	confirm_password: {
+		en: "Confirm Password",
+		es: "Confirmar Clave"
+	},
+	need_an_account: {
+		en: "Need an Account?",
+		es: "¿Necesita una Cuenta?"
+	},
+	have_an_account: {
+		en: "¿Tienes una Cuenta?"
+	},
 	leaderboard: {
 		en: "Leaderboard",
-		es: "Tabla de Clasificación"
+		es: "Clasificación"
 	},
 	privacy: {
 		en: "Privacy",
@@ -105,9 +155,9 @@ export const dictionary = {
 		en: "Terms",
 		es: "Términos"
 	},
-	socials: {
-		en: "Socials",
-		es: "Redes Sociales"
+	game_info: {
+		en: "Game Info",
+		es: "Sobre"
 	},
 	casual: {
 		en: "Casual"
@@ -119,6 +169,14 @@ export const dictionary = {
 	deathmatch: {
 		en: "Deathmatch",
 		es: "Combate-a-Muerte"
+	},
+	back: {
+		en: "Back",
+		es: "Volver"
+	},
+	screen_mode: {
+		en: "Screen Mode",
+		es: "Modo de Pantalla"
 	}
 };
 

@@ -13,7 +13,7 @@ import {
 import { filter, forEach, map } from "../../modules/optimized";
 import { actions } from "../../modules/meta/actions";
 import { weapons, weapFromId } from "../../modules/meta/weapons";
-import { Language } from "../../modules/lang";
+import { dictionary, Language } from "../../modules/lang";
 import { categoryFromId } from "../../modules/meta/objCategories";
 import { calcAngle, calcDistance, clamp, deg2Rad, getRandomInt, lerp } from "../../modules/math";
 import { Audio } from "../../modules/audio";
@@ -53,6 +53,20 @@ const removeCanvases = () => {
 	forEach(canvases, (cvs) => {
 		document.body.removeChild(cvs);
 	});
+};
+const replaceInText = (element, pattern, replacement) => {
+	for (let node of element.childNodes) {
+		switch (node.nodeType) {
+			case Node.ELEMENT_NODE:
+				replaceInText(node, pattern, replacement);
+				break;
+			case Node.TEXT_NODE:
+				node.textContent = node.textContent.replace(pattern, replacement);
+				break;
+			case Node.DOCUMENT_NODE:
+				replaceInText(node, pattern, replacement);
+		}
+	}
 };
 const startGame = (done) => {
 	removeEventListeners();
@@ -677,6 +691,7 @@ const startGame = (done) => {
 					break;
 				}
 				case messageIds.roundInfo: {
+					let info = roundInfo.decode(arr);
 					//console.log(roundInfo.decode(arr));
 				}
 			}
@@ -727,6 +742,7 @@ const loadUserData = () => {
 
 			loggedIn = true;
 
+			document.querySelector("#infoUsername").innerText = data.username;
 			document.querySelectorAll(".loggedIn").forEach((e) => e.classList.remove("hidden"));
 			document.querySelectorAll(".loggedOut").forEach((e) => e.classList.add("hidden"));
 			console.log(data);
@@ -735,10 +751,11 @@ const loadUserData = () => {
 
 audio.playMenuTheme();
 settings.load();
-settings.addListener((type, value) => {
+settings.addListener((type, value, init) => {
 	switch (type) {
 		case "lang":
 			lang.setLang(value);
+			if (!init) location.reload();
 			break;
 		case "sfxVol":
 			audio.volume = value;
@@ -747,6 +764,10 @@ settings.addListener((type, value) => {
 			audio.sounds.title_looped.volume(value);
 			break;
 	}
+});
+
+forEach(Object.keys(dictionary), (term) => {
+	replaceInText(document.body, new RegExp(term, "g"), lang.getText(term));
 });
 
 if (settings.token) {
@@ -823,6 +844,8 @@ window.login = () => {
 	let username = document.querySelector("#username_login").value;
 	let password = document.querySelector("#password_login").value;
 
+	document.querySelector("#accountErr").classList.add("hidden");
+
 	fetch(
 		"/api/login/?" +
 			new URLSearchParams({
@@ -835,9 +858,13 @@ window.login = () => {
 	)
 		.then((e) => e.json())
 		.then(({ error, data }) => {
-			if (error) return;
-
-			console.log(error, data);
+			if (error) {
+				if (data) {
+					document.querySelector("#accountErr").innerText = lang.getText(data);
+					document.querySelector("#accountErr").classList.remove("hidden");
+				}
+				return;
+			}
 
 			if (data.token) {
 				settings.setToken(data.token);
@@ -850,6 +877,8 @@ window.signup = () => {
 	let username = document.querySelector("#username_signup").value;
 	let password = document.querySelector("#password_signup").value;
 	let email = document.querySelector("#email_signup").value;
+
+	document.querySelector("#accountErr").classList.add("hidden");
 
 	fetch(
 		"/api/register/?" +
@@ -864,9 +893,13 @@ window.signup = () => {
 	)
 		.then((e) => e.json())
 		.then(({ error, data }) => {
-			if (error) return;
-
-			console.log(error, data);
+			if (error) {
+				if (data) {
+					document.querySelector("#accountErr").innerText = lang.getText(data);
+					document.querySelector("#accountErr").classList.remove("hidden");
+				}
+				return;
+			}
 
 			if (data.token) {
 				settings.setToken(data.token);
@@ -874,4 +907,8 @@ window.signup = () => {
 				loadUserData();
 			}
 		});
+};
+window.logout = () => {
+	settings.setToken(false);
+	location.reload();
 };
