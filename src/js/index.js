@@ -28,6 +28,7 @@ import Settings from "../../modules/settings.js";
 import geckos from "@geckos.io/client";
 
 let listeners = [];
+let friends = [];
 let loggedIn = false;
 
 const audio = new Audio();
@@ -41,6 +42,14 @@ const addEventListener = (type, listener) => {
 	listeners.push([type, listener]);
 
 	window.addEventListener(type, listener);
+};
+const addFriend = (id) => {
+	let friend = friends[id];
+	let friendTemplate = `<div class="friend"><img src="${
+		new URL("../../src/img/UI/logo_small.png", import.meta.url).href
+	}" class="avatar" /><div class="name">${friend}</div><div class="matchesFriend"></div><div class="inviteFriend"></div><div class="removeFriend"></div></div>`;
+
+	document.querySelector(".friendList").innerHTML += friendTemplate;
 };
 const removeEventListeners = () => {
 	forEach(listeners, ([type, listener]) => {
@@ -741,6 +750,13 @@ const loadUserData = () => {
 			}
 
 			loggedIn = true;
+			friends = data.friends;
+
+			document.querySelector(".friendList").innerHTML = "";
+
+			for (var i = 0; i < friends.length; i++) {
+				addFriend(i);
+			}
 
 			document.querySelector("#infoUsername").innerText = data.username;
 			document.querySelectorAll(".loggedIn").forEach((e) => e.classList.remove("hidden"));
