@@ -115,7 +115,7 @@ canvas {
 
 				& img {
 					width: 100%;
-					filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.397))
+					filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.397));
 					//transform: scale(1.2);
 				}
 
@@ -324,6 +324,48 @@ canvas {
 			margin-bottom: 25px;
 		}
 	}
+	&.roundUi {
+		position: fixed;
+		top: 0;
+		max-width: 900px;
+		width: 100%;
+		left: 50%;
+		transform: translateX(-50%);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		user-select: none;
+
+		& .box {
+			width: 100%;
+			box-sizing: border-box;
+			height: 50px;
+			color: white;
+			pointer-events: auto;
+		}
+
+		& .leftTeam {
+			& .roundWins {
+				position: fixed;
+				right: 10px;
+			}
+			& .players {
+				padding: 3px;
+			}
+		}
+		& .timer {
+			width: 50px;
+		}
+		& .rightTeam {
+			& .roundWins {
+				position: fixed;
+				left: 10px;
+			}
+			& .players {
+				padding: 3px;
+			}
+		}
+	}
 }
 
 #death {
@@ -449,6 +491,8 @@ canvas {
 		transition: background 0.3s ease, width 0.3s ease, height 0.3s ease, border-radius 0.3s ease;
 		padding: 10px 0;
 		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
 
 		&:hover,
 		&.stayOpen {
@@ -516,6 +560,7 @@ canvas {
 			overflow: hidden;
 			width: 340;
 			color: white;
+			flex: 1;
 
 			& .menuItem {
 				margin: 0 -30px;
@@ -606,58 +651,91 @@ canvas {
 			}
 		}
 
-		& .friendList {
-			& .friend {
-				user-select: none;
+		& .friends {
+			user-select: none;
+
+			& div.loggedIn {
 				display: flex;
-				font-size: 20px;
-				align-items: center;
-				margin: 0 -30px;
-				padding: 10px 20px;
-				cursor: default;
-				transition: background @ui-speed ease;
+				flex-direction: column;
+				height: 100%;
+			}
 
-				&:hover {
-					background: #ffffff1a;
+			& .friendList {
+				flex: 1;
+				overflow-y: auto;
+				overflow-x: visible;
+				margin: 0 -30px 10px;
+
+				&::-webkit-scrollbar {
+					width: 0;
 				}
 
-				& img {
-					background: white;
-					border-radius: 100%;
-					width: 40px;
-					margin-right: 20px;
+				& hr {
+					margin: 5px 0;
+					visibility: hidden;
+					height: 0;
 				}
 
-				& .name {
-					flex: 1;
-					overflow: hidden;
+				label {
+					padding: 0 30px;
 				}
 
-				& .removeFriend,
-				& .inviteFriend,
-				& .matchesFriend {
-					width: 25px;
-					height: 25px;
-					cursor: pointer;
-					filter: grayscale(1) brightness(2);
-					transition: filter @ui-speed ease;
-					margin-left: 10px;
+				& .friend {
+					user-select: none;
+					display: flex;
+					font-size: 20px;
+					align-items: center;
+					padding: 10px 20px;
+					cursor: default;
+					transition: background @ui-speed ease;
 
 					&:hover {
-						filter: initial;
+						background: #ffffff1a;
 					}
-				}
 
-				& .removeFriend {
-					background: url(../img/UI/exit_icon.png?as=webp&width=25);
-				}
+					& img {
+						background: white;
+						border-radius: 100%;
+						width: 40px;
+						margin-right: 20px;
+					}
 
-				& .inviteFriend {
-					background: url(../img/UI/invite_icon.png?as=webp&width=25);
-				}
+					& .name {
+						flex: 1;
+						overflow: hidden;
+					}
 
-				& .matchesFriend {
-					background: url(../img/UI/history_icon.png?as=webp&width=25);
+					& .removeFriend,
+					& .inviteFriend,
+					& .acceptFriend,
+					& .matchesFriend {
+						width: 25px;
+						height: 25px;
+						cursor: pointer;
+						filter: grayscale(1) brightness(2);
+						transition: filter @ui-speed ease;
+						margin-left: 10px;
+
+						&:hover {
+							filter: initial;
+						}
+					}
+
+					& .removeFriend {
+						background: url(../img/UI/exit_icon.png?as=webp&width=25);
+					}
+
+					& .acceptFriend {
+						background: url(../img/UI/check_icon.png?as=webp&width=25);
+					}
+
+					& .inviteFriend {
+						background: url(../img/UI/invite_icon.png?as=webp&width=25);
+					}
+
+					& .matchesFriend {
+						background: url(../img/UI/history_icon.png?as=webp&width=25);
+					}
 				}
 			}
 		}
@@ -863,9 +941,9 @@ canvas {
 
 .err {
 	margin-top: 20px;
-    background: #ef354e;
-    padding: 4px 8px;
-    border-radius: 2px;
-    font-size: 18px;
-    font-weight: bold;
+	background: #ef354e;
+	padding: 4px 8px;
+	border-radius: 2px;
+	font-size: 18px;
+	font-weight: bold;
 }

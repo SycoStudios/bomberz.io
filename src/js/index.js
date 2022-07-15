@@ -22,6 +22,7 @@ import { BitArray } from "@codezilluh/bitarray.js";
 import { messageIds } from "../../modules/meta/messageIds";
 import { objFromId, objects as objectData } from "../../modules/meta/objects";
 import { Circle, Box, System } from "detect-collisions";
+import Swal from "sweetalert2";
 import LootClass from "../../modules/loot.js";
 import ObjectClass from "../../modules/object.js";
 import Settings from "../../modules/settings.js";
@@ -29,6 +30,7 @@ import geckos from "@geckos.io/client";
 
 let listeners = [];
 let friends = [];
+let friendReqs = [];
 let loggedIn = false;
 
 const audio = new Audio();
@@ -43,11 +45,15 @@ const addEventListener = (type, listener) => {
 
 	window.addEventListener(type, listener);
 };
-const addFriend = (id) => {
-	let friend = friends[id];
-	let friendTemplate = `<div class="friend"><img src="${
-		new URL("../../src/img/UI/logo_small.png", import.meta.url).href
-	}" class="avatar" /><div class="name">${friend}</div><div class="matchesFriend"></div><div class="inviteFriend"></div><div class="removeFriend"></div></div>`;
+const renderFriend = (id, req = false) => {
+	let friend = req ? friendReqs[id] : friends[id];
+	let friendTemplate = req
+		? `<div class="friend"><img src="${
+				new URL("../../src/img/UI/logo_small.png", import.meta.url).href
+		  }" class="avatar" /><div class="name">${friend}</div><div class="acceptFriend" onclick="acceptFriend('${friend}')"></div><div class="removeFriend" onclick="rejectFriend('${friend}')"></div></div>`
+		: `<div class="friend"><img src="${
+				new URL("../../src/img/UI/logo_small.png", import.meta.url).href
+		  }" class="avatar" /><div class="name">${friend}</div><div class="matchesFriend"></div><div class="inviteFriend"></div><div class="removeFriend"></div></div>`;
 
 	document.querySelector(".friendList").innerHTML += friendTemplate;
 };
@@ -733,15 +739,13 @@ const startGame = (done) => {
 	});
 };
 const loadUserData = () => {
-	fetch(
-		"/api/user_data/?" +
-			new URLSearchParams({
-				token: settings.token
-			}),
-		{
-			method: "post"
-		}
-	)
+	fetch("/api/user_data/", {
+		method: "post",
+		body: JSON.stringify({
+			token: settings.token
+		}),
+		headers: { "content-type": "application/json" }
+	})
 		.then((e) => e.json())
 		.then(({ data, error }) => {
 			if (error) {
@@ -751,14 +755,32 @@ const loadUserData = () => {
 
 			loggedIn = true;
 			friends = data.friends;
+			friendReqs = data.friendReqs;
 
 			document.querySelector(".friendList").innerHTML = "";
 
-			for (var i = 0; i < friends.length; i++) {
-				addFriend(i);
+			if (friendReqs.length > 0) {
+				document.querySelector(".friendList").innerHTML += `<label>${lang.getText(
+					"friend_requests"
+				)}:</label>`;
+
+				for (var i = 0; i < friendReqs.length; i++) {
+					renderFriend(i, true);
+				}
+
+				document.querySelector(".friendList").innerHTML += `<hr/>`;
 			}
 
-			document.querySelector("#infoUsername").innerText = data.username;
+			friends.length > 0 &&
+				(document.querySelector(".friendList").innerHTML += `<label>${lang.getText(
+					"friends"
+				)}:</label>`);
+
+			for (var i = 0; i < friends.length; i++) {
+				renderFriend(i);
+			}
+
+			//document.querySelector("#infoUsername").innerText = data.username;
 			document.querySelectorAll(".loggedIn").forEach((e) => e.classList.remove("hidden"));
 			document.querySelectorAll(".loggedOut").forEach((e) => e.classList.add("hidden"));
 			console.log(data);
@@ -862,20 +884,25 @@ window.login = () => {
 
 	document.querySelector("#accountErr").classList.add("hidden");
 
-	fetch(
-		"/api/login/?" +
-			new URLSearchParams({
-				username,
-				password
-			}),
-		{
-			method: "post"
-		}
-	)
+	fetch("/api/login/", {
+		method: "post",
+		body: JSON.stringify({
+			username,
+			password
+		}),
+		headers: { "content-type": "application/json" }
+	})
 		.then((e) => e.json())
 		.then(({ error, data }) => {
 			if (error) {
-				if (data) {
+				if (typeof data == "object" && data.length) {
+					data.forEach((d) => {
+						if (dictionary[d]) {
+							document.querySelector("#accountErr").innerText = lang.getText(d);
+							document.querySelector("#accountErr").classList.remove("hidden");
+						}
+					});
+				} else if (dictionary[data]) {
 					document.querySelector("#accountErr").innerText = lang.getText(data);
 					document.querySelector("#accountErr").classList.remove("hidden");
 				}
@@ -892,27 +919,42 @@ window.login = () => {
 window.signup = () => {
 	let username = document.querySelector("#username_signup").value;
 	let password = document.querySelector("#password_signup").value;
+	let passwordCheck = document.querySelector("#password_confirm").value;
 	let email = document.querySelector("#email_signup").value;
+
+	if (passwordCheck !== password) {
+		document.querySelector("#accountErr").innerText = lang.getText("password_check_fail");
+		document.querySelector("#accountErr").classList.remove("hidden");
+
+		return;
+	}
 
 	document.querySelector("#accountErr").classList.add("hidden");
 
-	fetch(
-		"/api/register/?" +
-			new URLSearchParams({
-				username,
-				password,
-				email
-			}),
-		{
-			method: "post"
-		}
-	)
+	fetch("/api/register/", {
+		method: "post",
+		body: JSON.stringify({
+			username,
+			password,
+			email
+		}),
+		headers: { "content-type": "application/json" }
+	})
 		.then((e) => e.json())
 		.then(({ error, data }) => {
 			if (error) {
 				if (data) {
-					document.querySelector("#accountErr").innerText = lang.getText(data);
-					document.querySelector("#accountErr").classList.remove("hidden");
+					if (typeof data == "object" && data.length) {
+						data.forEach((d) => {
+							if (dictionary[d]) {
+								document.querySelector("#accountErr").innerText = lang.getText(d);
+								document.querySelector("#accountErr").classList.remove("hidden");
+							}
+						});
+					} else if (dictionary[data]) {
+						document.querySelector("#accountErr").innerText = lang.getText(data);
+						document.querySelector("#accountErr").classList.remove("hidden");
+					}
 				}
 				return;
 			}
@@ -927,4 +969,74 @@ window.signup = () => {
 window.logout = () => {
 	settings.setToken(false);
 	location.reload();
+};
+window.addFriend = () => {
+	if (!loggedIn) return;
+
+	Swal.fire({
+		title: lang.getText("friends_name"),
+		input: "text",
+		inputAttributes: {
+			autocapitalize: "off"
+		},
+		showCancelButton: true,
+		confirmButtonText: lang.getText("add_friend"),
+		showLoaderOnConfirm: true,
+		preConfirm: (name) => {
+			return fetch(`/api/add_friend/${name}`, {
+				method: "post",
+				body: JSON.stringify({
+					token: settings.token
+				}),
+				headers: { "content-type": "application/json" }
+			})
+				.then((e) => e.json())
+				.catch((e) => {
+					Swal.showValidationMessage(lang.getText("server_error"));
+				});
+		},
+		allowOutsideClick: () => !Swal.isLoading()
+	}).then((result) => {
+		if (!result.error) {
+		} else {
+			Swal.fire({
+				title: `Error`,
+				text: result.data
+			});
+		}
+	});
+};
+window.acceptFriend = (name) => {
+	if (!loggedIn) return;
+
+	fetch(`/api/accept_friend/${name}`, {
+		method: "post",
+		body: JSON.stringify({
+			token: settings.token
+		}),
+		headers: { "content-type": "application/json" }
+	})
+		.then((e) => e.json())
+		.then(({ error, data }) => {
+			if (error) return;
+
+			loadUserData();
+		});
+};
+window.rejectFriend = (name) => {
+	if (!loggedIn) return;
+
+	fetch(`/api/deny_friend/${name}`, {
+		method: "post",
+		body: JSON.stringify({
+			token: settings.token
+		}),
+		headers: { "content-type": "application/json" }
+	})
+		.then((e) => e.json())
+		.then(({ error, data }) => {
+			if (error) return;
+
+			loadUserData();
+		});
 };

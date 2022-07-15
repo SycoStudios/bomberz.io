@@ -62,6 +62,18 @@ export const dictionary = {
 		en: "SFX Volume",
 		es: "Volumen SFX"
 	},
+	add_friend: {
+		en: "Add Friend",
+		es: "Agregar Amigo"
+	},
+	friends_name: {
+		en: "Enter your friend's name",
+		es: "Ingresa el nombre de tu amigo"
+	},
+	friend_requests: {
+		en: "Friend Requests",
+		es: "Peticiones de Amistad"
+	},
 	server_error: {
 		en: "Server Error",
 		es: "Error del Servidor"
@@ -85,6 +97,46 @@ export const dictionary = {
 	confirm_password: {
 		en: "Confirm Password",
 		es: "Confirmar Clave"
+	},
+	no_password: {
+		en: "Password cannot be blank",
+		es: "La contraseña no puede estar en blanco"
+	},
+	no_username: {
+		en: "Username cannot be blank",
+		es: "Nombre de usuario no puede estar en blanco"
+	},
+	no_email: {
+		en: "Email cannot be blank",
+		es: "El email no puede estar en blanco"
+	},
+	email_invalid: {
+		en: "Email must be valid",
+		es: "El email debe ser válido"
+	},
+	username_taken: {
+		en: "Username already taken",
+		es: "El nombre de usuario ya está en uso"
+	},
+	username_too_short: {
+		en: "Username too long",
+		es: "Nombre de usuario demasiado largo"
+	},
+	username_too_long: {
+		en: "Username too short",
+		es: "Nombre de usuario demasiado corto"
+	},
+	password_too_short: {
+		en: "Password too short",
+		es: "Contraseña demasiado corta"
+	},
+	password_too_long: {
+		en: "Password too long",
+		es: "Contraseña demasiado larga"
+	},
+	password_check_fail: {
+		en: "Passwords don't match",
+		es: "Las contraseñas no coinciden"
 	},
 	need_an_account: {
 		en: "Need an Account?",
@@ -136,6 +188,10 @@ export const dictionary = {
 	friends: {
 		en: "Friends",
 		es: "Amigos"
+	},
+	skins: {
+		en: "Skins",
+		es: "Pieles"
 	},
 	account: {
 		en: "Account",

@@ -1,4 +1,5 @@
 import express from "express";
+import bodyParser from "body-parser";
 import fs, { write } from "fs";
 import { decode, encode, Encrypter } from "./models/profile.js";
 import { createHash } from "crypto";
@@ -79,7 +80,7 @@ const tokenValid = (token, req) => {
 		: false;
 };
 const send = (res, code, data) => {
-	return res.status(code > 1 ? code : 200).send(
+	return res.status(200).send(
 		JSON.stringify({
 			error: code !== 200 ? true : undefined,
 			data:
@@ -100,25 +101,26 @@ const enc = new Encrypter("@VeryStrongPassword+Secret!");
 const emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/i;
 
 app.use(express.static("dist"));
+app.use(bodyParser.json());
 
 app.post("/api/register/", (req, res) => {
 	if (!req.headers.referer || blockedIPs.includes(req.ip)) {
 		return send(res, 403);
 	} else {
-		const username = clean(req.query.username || "");
-		const password = req.query.password;
-		const email = req.query.email;
+		const username = clean(req.body.username || "");
+		const password = req.body.password;
+		const email = req.body.email;
 
 		let errors = [];
 
-		if (!username) errors.push("No username");
-		if (!password) errors.push("No password");
-		if (!email) errors.push("No email");
+		if (!username) errors.push("no_username");
+		if (!password) errors.push("no_password");
+		if (!email) errors.push("no_email");
 		if (username && (username.length > 16 || username.length < 3))
-			errors.push(`Username too ${username.length > 16 ? "long" : "short"}`);
+			errors.push(`username_too_${username.length > 16 ? "long" : "short"}`);
 		if (password && (password.length < 6 || password.length > 32))
-			errors.push(`Password too ${password.length > 32 ? "long" : "short"}`);
-		if (email && !emailRegex.test(email)) errors.push("Email not valid");
+			errors.push(`password_too_${password.length > 32 ? "long" : "short"}`);
+		if (email && !emailRegex.test(email)) errors.push("email_invalid");
 
 		if (errors.length) {
 			return send(res, true, errors);
@@ -127,12 +129,12 @@ app.post("/api/register/", (req, res) => {
 		let file = `database/users/${username.toLowerCase()}`;
 
 		if (fs.existsSync(file)) {
-			errors.push("Username taken");
+			errors.push("username_taken");
 			return send(res, true, errors);
 		}
 
 		let profile = encode({
-			username: req.query.username.replace(/\W/gi, ""),
+			username: req.body.username.replace(/\W/gi, ""),
 			password: hash(password),
 			email: enc.encrypt(email),
 			ip: hash(req.ip),
@@ -146,17 +148,17 @@ app.post("/api/register/", (req, res) => {
 		return send(res, 200, { token: getToken(username) });
 	}
 });
-app.post("/api/login", (req, res) => {
+app.post("/api/login/", (req, res) => {
 	if (!req.headers.referer || blockedIPs.includes(req.ip)) {
 		return send(res, 403);
 	} else {
-		const username = req.query.username;
-		const password = req.query.password;
+		const username = req.body.username;
+		const password = req.body.password;
 
 		let errors = [];
 
-		if (!username) errors.push("No username");
-		if (!password) errors.push("No password");
+		if (!username) errors.push("no_username");
+		if (!password) errors.push("no_password");
 
 		if (errors.length > 0) return send(res, true, errors);
 
@@ -171,8 +173,8 @@ app.post("/api/login", (req, res) => {
 		}
 	}
 });
-app.post("/api/user_data", (req, res) => {
-	let valid = tokenValid(req.query.token, req);
+app.post("/api/user_data/", (req, res) => {
+	let valid = tokenValid(req.body.token, req);
 
 	if (!valid) return send(res, true, "not_signed_in");
 
@@ -190,7 +192,7 @@ app.post("/api/user_data", (req, res) => {
 	});
 });
 app.post("/api/add_friend/:username", (req, res) => {
-	let valid = tokenValid(req.query.token, req);
+	let valid = tokenValid(req.body.token, req);
 
 	if (!valid) return send(res, true, "not_signed_in");
 	if (!req.params.username) return send(res);
@@ -198,23 +200,25 @@ app.post("/api/add_friend/:username", (req, res) => {
 	let friend = getUser(req.params.username);
 	let self = getUser(valid.username);
 
-	if (self.friendReqs.includes(friend.username)) {
-		self.friends.push(friend.username);
-		friend.friends.push(self.username);
+	if (friend.username !== self.username && !self.friends.includes(friend.username)) {
+		if (self.friendReqs.includes(friend.username)) {
+			self.friends.push(friend.username);
+			friend.friends.push(self.username);
 
-		self.friendReqs = self.friendReqs.filter((name) => name !== friend.username);
+			self.friendReqs = self.friendReqs.filter((name) => name !== friend.username);
 
-		writeUser(self.username);
-	} else {
-		friend.friendReqs.push(valid.username);
+			writeUser(self.username);
+		} else {
+			friend.friendReqs.push(valid.username);
+		}
+
+		writeUser(friend.username);
 	}
-
-	writeUser(friend.username);
 
 	send(res, 200);
 });
 app.post("/api/accept_friend/:username", (req, res) => {
-	let valid = tokenValid(req.query.token, req);
+	let valid = tokenValid(req.body.token, req);
 
 	if (!valid) return send(res, true, "not_signed_in");
 	if (!req.params.username) return send(res);
@@ -231,9 +235,11 @@ app.post("/api/accept_friend/:username", (req, res) => {
 
 	writeUser(self.username);
 	writeUser(friend.username);
+
+	send(res, 200);
 });
 app.post("/api/deny_friend/:username", (req, res) => {
-	let valid = tokenValid(req.query.token, req);
+	let valid = tokenValid(req.body.token, req);
 
 	if (!valid) return send(res, true, "not_signed_in");
 	if (!req.params.username) return send(res);
@@ -243,6 +249,8 @@ app.post("/api/deny_friend/:username", (req, res) => {
 	self.friendReqs = self.friendReqs.filter((name) => name !== req.params.username);
 
 	writeUser(self.username);
+
+	send(res, 200);
 });
 
 // So that game servers can interact with the main storage server

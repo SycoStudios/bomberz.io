@@ -65,6 +65,30 @@
 						</div>
 					</div>
 				</div>
+				<div class="roundUi">
+					<div class="leftTeam box">
+						<div class="players">
+							<div class="player" id="player1">p1</div>
+							<!-- It will show players profile image-->
+							<div class="player" id="player2">p2</div>
+							<div class="player" id="player3">p3</div>
+							<div class="player" id="player4">p4</div>
+							<div class="player" id="player5">p5</div>
+						</div>
+						<div class="roundWins">0</div>
+					</div>
+					<div class="timer box">0:00</div>
+					<div class="rightTeam box">
+						<div class="players">
+							<div class="player" id="player1">p1</div>
+							<div class="player" id="player2">p2</div>
+							<div class="player" id="player3">p3</div>
+							<div class="player" id="player4">p4</div>
+							<div class="player" id="player5">p5</div>
+						</div>
+						<div class="roundWins">0</div>
+					</div>
+				</div>
 				<div class="bottom center">
 					<div class="healthBar box">
 						<div id="drugsAmnt"></div>
@@ -336,22 +360,25 @@
 					</div>
 					<div class="friends hidden">
 						<div class="loggedIn hidden">
-							<div class="friendList">
-								<div class="friend">
-									<img src="./img/UI/logo_small.png" class="avatar" />
-									<div class="name">ABCDEFGHIJKLMNOP</div>
-									<div class="matchesFriend"></div>
-									<div class="inviteFriend"></div>
-									<div class="removeFriend"></div>
-								</div>
+							<div class="friendList"></div>
+
+							<div class="menuItem addFriendButton" onclick="addFriend()">
+								<img class="icon" src="./img/UI/add_icon.png?as=webp&width=25" />
+								<span class="menuTitle navItem">add_friend</span>
 							</div>
 						</div>
 						<div class="loggedOut">not_signed_in.</div>
 					</div>
 					<div class="account hidden">
 						<div class="loggedIn hidden">
-							<label id="infoUsername"></label>
-
+							<div class="menuItem" onclick="">
+								<img class="icon" src="./img/UI/leave_icon.png?as=webp&width=25" />
+								<span class="menuTitle navItem">privacy</span>
+							</div>
+							<div class="menuItem" onclick="">
+								<img class="icon" src="./img/UI/leave_icon.png?as=webp&width=25" />
+								<span class="menuTitle navItem">skins</span>
+							</div>
 							<div class="menuItem" onclick="logout()">
 								<img class="icon" src="./img/UI/leave_icon.png?as=webp&width=25" />
 								<span class="menuTitle navItem">logout</span>
