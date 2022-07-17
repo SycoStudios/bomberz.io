@@ -29,7 +29,6 @@ export const dictionary = {
 		es: "Escopeta"
 	},
 	// interface
-
 	joining: {
 		en: "Joining game",
 		es: "Uniéndose al juego"

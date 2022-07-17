@@ -103,7 +103,7 @@ const Round = class Round {
 
 		let over = this.bombPlanted
 			? Date.now() - this.bombPlanted >= this.roundLength * 0.45
-			: Date.now() - this.startTime >= this.roundLength;
+			: Date.now() - this.startTime >= this.roundLength + this.roundCoolDown;
 
 		if (over) this.done = Date.now();
 
@@ -117,7 +117,7 @@ const Round = class Round {
 			? this.roundCoolDown - (Date.now() - this.startTime)
 			: this.bombPlanted
 			? this.roundLength * 0.45 - (Date.now() - this.bombPlanted)
-			: this.roundLength - (Date.now() - this.startTime);
+			: this.roundLength + this.roundCoolDown - (Date.now() - this.startTime);
 	}
 
 	get active() {

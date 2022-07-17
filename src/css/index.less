@@ -1,5 +1,7 @@
 @ui-speed: 0.1s;
 @blur-amnt: 35px;
+@box-bkg: #118b48;
+@box-outline: #126839;
 @primary: #ecec21;
 
 @media screen and (max-width: 1536px) {
@@ -197,11 +199,11 @@ canvas {
 		padding: 10px;
 		margin: 10px;
 		margin-top: 0;
-		background: #00000038;
+		background: @box-bkg;
 		border-radius: 5px;
 		display: flex;
 		//backdrop-filter: blur(@blur-amnt);
-		outline: 2px solid #0000005e;
+		outline: 2px solid @box-outline;
 		user-select: none;
 		align-items: center;
 
@@ -246,7 +248,7 @@ canvas {
 			}
 
 			&:hover:not(.none) {
-				background: #00000060;
+				background: fade(darken(@box-bkg, 10%), 60%);
 			}
 
 			& .weapImg {
@@ -324,46 +326,73 @@ canvas {
 			margin-bottom: 25px;
 		}
 	}
-	&.roundUi {
-		position: fixed;
-		top: 0;
+
+	& .roundInfo {
 		max-width: 900px;
 		width: 100%;
-		left: 50%;
-		transform: translateX(-50%);
 		display: flex;
-		justify-content: center;
-		align-items: center;
 		user-select: none;
+		justify-content: center;
+		color: white;
+		//margin-top: 10px;
 
-		& .box {
-			width: 100%;
-			box-sizing: border-box;
-			height: 50px;
-			color: white;
-			pointer-events: auto;
-		}
+		& .team {
+			display: flex;
+			flex-direction: row;
 
-		& .leftTeam {
 			& .roundWins {
-				position: fixed;
-				right: 10px;
+				display: flex;
+				height: 50px;
+				width: 40px;
+				justify-content: center;
+				align-items: center;
+				background: @box-bkg;
+				margin: 0 10px;
+				padding: 10px;
+				border-radius: 5px;
+				outline: 2px solid @box-outline;
+				font-size: 18px;
 			}
+
+			& .roundWins:nth-of-type(2) {
+				border-top-right-radius: 0;
+				border-bottom-right-radius: 0;
+				border-top-left-radius: 0;
+				margin-right: 0;
+			}
+
+			& .roundWins:nth-of-type(1) {
+				border-top-left-radius: 0;
+				border-bottom-left-radius: 0;
+				border-top-right-radius: 0;
+				margin-left: 0;
+			}
+
 			& .players {
-				padding: 3px;
+				display: flex;
+				margin-top: 10px;
+
+				& .player {
+					border-radius: 30px;
+					justify-content: center;
+					width: 30px;
+					height: 30px;
+					margin: 0 5px;
+				}
 			}
 		}
+
 		& .timer {
-			width: 50px;
-		}
-		& .rightTeam {
-			& .roundWins {
-				position: fixed;
-				left: 10px;
-			}
-			& .players {
-				padding: 3px;
-			}
+			display: flex;
+			width: 70px;
+			justify-content: center;
+			align-items: center;
+			height: 50px;
+			margin: 0;
+			padding: 10px;
+			background: @box-bkg;
+			outline: 2px solid @box-outline;
+			font-size: 18px;
 		}
 	}
 }
@@ -388,8 +417,8 @@ canvas {
 	}
 
 	& .box {
-		background: #00000038;
-		outline: 2px solid #0000005e;
+		background: @box-bkg;
+		outline: 2px solid @box-outline;
 		border-radius: 10px;
 		padding: 20px;
 		display: flex;
@@ -431,8 +460,8 @@ canvas {
 	position: fixed;
 
 	& .box {
-		background: #00000038;
-		outline: 2px solid #0000005e;
+		background: fade(@box-bkg, 50%);
+		outline: 2px solid @box-outline;
 		border-radius: 10px;
 		backdrop-filter: blur(@blur-amnt);
 	}

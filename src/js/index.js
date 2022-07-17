@@ -69,6 +69,24 @@ const removeCanvases = () => {
 		document.body.removeChild(cvs);
 	});
 };
+const secondsToDisplay = (sec) => {
+	if (sec < 60) {
+		if (sec.toString().length == 1) {
+			sec = `0${sec}`;
+		}
+
+		return `0:${sec}`;
+	} else {
+		let min = Math.floor(sec / 60);
+		let lsec = sec - min * 60;
+
+		if (lsec.toString().length == 1) {
+			lsec = `0${lsec}`;
+		}
+
+		return `${min}:${lsec}`;
+	}
+};
 const replaceInText = (element, pattern, replacement) => {
 	for (let node of element.childNodes) {
 		switch (node.nodeType) {
@@ -132,7 +150,16 @@ const startGame = (done) => {
 	const UI = {
 		interact: document.querySelector(".interact"),
 		deathScreen: document.querySelector("#death"),
-		pauseMenu: document.querySelector(".pauseMenu")
+		pauseMenu: document.querySelector(".pauseMenu"),
+		roundInfo: {
+			timeLeft: document.querySelector(".roundInfo .timer"),
+			team0: {
+				wins: document.querySelectorAll(".roundInfo .team .roundWins")[0]
+			},
+			team1: {
+				wins: document.querySelectorAll(".roundInfo .team .roundWins")[1]
+			}
+		}
 	};
 	const init = () => {
 		document.body.appendChild(app.view);
@@ -707,7 +734,10 @@ const startGame = (done) => {
 				}
 				case messageIds.roundInfo: {
 					let info = roundInfo.decode(arr);
-					//console.log(roundInfo.decode(arr));
+
+					UI.roundInfo.timeLeft.innerText = secondsToDisplay(info.timeLeft);
+					UI.roundInfo.team0.wins.innerText = info.team0Wins;
+					UI.roundInfo.team1.wins.innerText = info.team1Wins;
 				}
 			}
 		});
