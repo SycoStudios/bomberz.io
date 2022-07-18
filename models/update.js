@@ -3,12 +3,13 @@ import { messageIds } from "../modules/meta/messageIds.js";
 
 let fraction = (2 ** 14 - 1) / 180;
 
-const encode = ({ players, objects }) => {
+const encode = ({ players, objects, sec }) => {
 	let arr = new BitArray();
 
 	arr.addUint(messageIds.update, 3);
 	arr.addUint(players.length, 7);
 	arr.addUint(objects.length, 6);
+	arr.addUint(sec, 8);
 
 	for (var i = 0; i < players.length; i++) {
 		let player = players[i];
@@ -40,14 +41,17 @@ const encode = ({ players, objects }) => {
 const decode = (arr) => {
 	let data = {
 		players: [],
-		objects: []
+		objects: [],
+		sec: 0
 	};
 
 	let playerLength = arr.getUint(7, 3);
 	let objectLength = arr.getUint(6, 10);
 
+	data.sec = arr.getUint(8, 16);
+
 	for (var i = 0; i < playerLength; i++) {
-		let offset = 16 + i * 79;
+		let offset = 24 + i * 79;
 
 		data.players.push({
 			id: arr.getUint(7, offset),
@@ -62,7 +66,7 @@ const decode = (arr) => {
 	}
 
 	for (var i = 0; i < objectLength; i++) {
-		let offset = 16 + playerLength * 79 + i * 56;
+		let offset = 24 + playerLength * 79 + i * 56;
 
 		data.objects.push({
 			id: arr.getUint(11, offset),

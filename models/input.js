@@ -14,7 +14,8 @@ const encode = ({
 	nextWeap,
 	drop,
 	angle,
-	curWeap
+	curWeap,
+	sec
 }) => {
 	let arr = new BitArray();
 
@@ -28,6 +29,7 @@ const encode = ({
 	arr.addUint(drop, 4);
 	arr.addInt(Math.round(angle * fraction), 15);
 	arr.addUint(curWeap, 3);
+	arr.addUint(sec, 8);
 
 	return arr.encode();
 };
@@ -46,7 +48,8 @@ const decode = (arr) => {
 		nextWeap: interactions == 3,
 		drop: arr.getUint(4, 10),
 		angle: arr.getInt(15, 14) / fraction,
-		curWeap: arr.getUint(3, 29)
+		curWeap: arr.getUint(3, 29),
+		sec: arr.getUint(8, 32)
 	};
 };
 

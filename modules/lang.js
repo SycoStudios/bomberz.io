@@ -12,13 +12,65 @@ export const dictionary = {
 		en: "Burst Rifle",
 		es: "Rifle de Ráfaga"
 	},
+	enhanced_rifle: {
+		en: "Enhanced Rifle",
+		es: "Rifle Reforzada"
+	},
+	snipers: {
+		en: "Snipers",
+		es: "Francotiradores"
+	},
+	sniper: {
+		en: "Sniper",
+		es: "Tirador"
+	},
+	enhanced_sniper: {
+		en: "Enhanced Sniper",
+		es: "Tirador Reforzada"
+	},
+	shotguns: {
+		en: "Shotguns",
+		es: "Escopetas"
+	},
+	pump_shotgun: {
+		en: "Pump Shotgun",
+		es: "Escopeta de Bomba"
+	},
+	assault_shotgun: {
+		en: "Assault Shotgun",
+		es: "Escopeta de Asalto"
+	},
+	rifles: {
+		en: "Rifles",
+		es: "Fusiles"
+	},
 	smg: {
 		en: "SMG",
 		es: "Subfusil"
 	},
+	enhanced_smg: {
+		en: "Ehanced SMG",
+		es: "Subfusil Reforzada"
+	},
+	machine_pistol: {
+		en: "Machine Pistol",
+		es: "Pistola Automática"
+	},
+	enhanced_pistol: {
+		en: "Enhanced Pistol",
+		es: "Pistola Reforzada"
+	},
+	heavy_pistol: {
+		en: "Heavy Pistol",
+		es: "Pistola Fuerte"
+	},
 	pistol: {
 		en: "Pistol",
 		es: "Pistola"
+	},
+	sawn_off: {
+		en: "Sawn-Off",
+		es: "Aserrado"
 	},
 	marksman_rifle: {
 		en: "Marksman Rifle",
@@ -27,6 +79,30 @@ export const dictionary = {
 	pump_shotgun: {
 		en: "Pump Shotgun",
 		es: "Escopeta"
+	},
+	heavy: {
+		en: "Heavy",
+		es: "Fuerte"
+	},
+	lmg: {
+		en: "Light Machine Gun",
+		es: "Ametralladora Ligera"
+	},
+	grave_digger: {
+		en: "Grave Digger",
+		es: "Sepulturero"
+	},
+	armor: {
+		en: "Armor",
+		es: "Armadura"
+	},
+	heavy_armor: {
+		en: "Heavy Armor",
+		es: "Armadura Feurte"
+	},
+	light_armor: {
+		en: "Light Armor",
+		es: "Armadura Ligura"
 	},
 	// interface
 	joining: {
@@ -61,6 +137,10 @@ export const dictionary = {
 		en: "SFX Volume",
 		es: "Volumen SFX"
 	},
+	pause_menu: {
+		en: "Pause Menu",
+		es: "Menú de Pausa"
+	},
 	add_friend: {
 		en: "Add Friend",
 		es: "Agregar Amigo"
@@ -84,6 +164,10 @@ export const dictionary = {
 	game_info: {
 		en: "Game Info",
 		es: "Sobre"
+	},
+	starting_in: {
+		en: "Starting In",
+		es: "Comenzando En"
 	},
 	screen_mode: {
 		en: "Screen Mode",
@@ -144,6 +228,10 @@ export const dictionary = {
 	have_an_account: {
 		en: "Have an Account?",
 		es: "¿Tienes una Cuenta?"
+	},
+	sidearms: {
+		en: "Sidearms",
+		es: "Arma de Manos"
 	},
 	leaderboard: {
 		en: "Leaderboard",
@@ -218,6 +306,10 @@ export const dictionary = {
 	},
 	email: {
 		en: "Email"
+	},
+	round: {
+		en: "Round",
+		es: "Ronda"
 	},
 	language: {
 		en: "Language",
