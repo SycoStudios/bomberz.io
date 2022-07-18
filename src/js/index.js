@@ -158,7 +158,10 @@ const startGame = (done) => {
 			},
 			team1: {
 				wins: document.querySelectorAll(".roundInfo .team .roundWins")[1]
-			}
+			},
+			starting: document.querySelector(".starting"),
+			roundNum: document.querySelector(".starting #roundNum"),
+			startIn: document.querySelector(".starting #coolDown")
 		}
 	};
 	const init = () => {
@@ -735,9 +738,17 @@ const startGame = (done) => {
 				case messageIds.roundInfo: {
 					let info = roundInfo.decode(arr);
 
-					UI.roundInfo.timeLeft.innerText = secondsToDisplay(info.timeLeft);
 					UI.roundInfo.team0.wins.innerText = info.team0Wins;
 					UI.roundInfo.team1.wins.innerText = info.team1Wins;
+
+					if (info.coolDown) {
+						UI.roundInfo.starting.classList.remove("hidden");
+						UI.roundInfo.roundNum.innerText = info.id + 1;
+						UI.roundInfo.startIn.innerText = info.timeLeft;
+					} else {
+						UI.roundInfo.starting.classList.add("hidden");
+						UI.roundInfo.timeLeft.innerText = secondsToDisplay(info.timeLeft);
+					}
 				}
 			}
 		});
