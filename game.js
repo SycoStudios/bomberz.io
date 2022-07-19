@@ -696,7 +696,8 @@ export default class Game {
 					player.channel.raw.emit(
 						gameState.encode({
 							players,
-							objects
+							objects,
+							sec: player.sec
 						})
 					);
 			});
@@ -718,7 +719,8 @@ export default class Game {
 			prevWeap,
 			nextWeap,
 			curWeap,
-			drop
+			drop,
+			sec
 		}
 	) {
 		let player = this.players[id];
@@ -731,6 +733,7 @@ export default class Game {
 		player.moveUp = moveUp;
 		player.interact = interact;
 		player.mouseDown = mouseDown;
+		player.sec = sec;
 		player.rotate(angle);
 
 		if (!player.mouseDown) {

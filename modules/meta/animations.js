@@ -43,15 +43,15 @@ export const animations = {
 		length: 150
 	},
 	assault_rifle: {
-		right: { x: 1.3, y: 0.08 },
-		left: { x: 2.42, y: -0.08 },
-		gun: { x: 0.19, y: 0 },
+		right: { x: 1.25, y: 0.08 },
+		left: { x: 2.21, y: -0.08 },
+		gun: { x: 0.42, y: 0 },
 		length: 150
 	},
 	burst_rifle: {
-		right: { x: 1.46, y: 0.05 },
-		left: { x: 2.37, y: -0.03 },
-		gun: { x: 1.08, y: 0 },
+		right: { x: 1.75, y: 0.05 },
+		left: { x: 2.56, y: -0.04 },
+		gun: { x: 0.53, y: 0 },
 		length: 150
 	},
 	pistol: {
@@ -61,9 +61,9 @@ export const animations = {
 		length: 150
 	},
 	marksman_rifle: {
-		right: { x: 1.3, y: 0.04 },
-		left: { x: 2.25, y: -0.04 },
-		gun: { x: 0.44, y: 0 },
+		right: { x: 1.4, y: 0.04 },
+		left: { x: 2.35, y: -0.04 },
+		gun: { x: 0.51, y: 0 },
 		length: 150
 	},
 	pump_shotgun: {

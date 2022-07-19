@@ -36,8 +36,8 @@ export const weapons = {
 	},
 	assault_rifle: {
 		type: "gun",
-		height: 0.53,
-		width: 3.7,
+		height: 0.4,
+		width: 3.06,
 		bulletSpeed: 0.5,
 		shootDelay: 100,
 		range: 55,
@@ -54,8 +54,8 @@ export const weapons = {
 	},
 	burst_rifle: {
 		type: "gun",
-		height: 0.49,
-		width: 2.22,
+		height: 0.4,
+		width: 2.88,
 		bulletSpeed: 0.5,
 		shootDelay: 200,
 		burstDelay: 40,
@@ -70,8 +70,8 @@ export const weapons = {
 	},
 	marksman_rifle: {
 		type: "gun",
-		height: 0.42,
-		width: 3.02,
+		height: 0.4,
+		width: 3.06,
 		bulletSpeed: 0.6,
 		shootDelay: 180,
 		range: 62,

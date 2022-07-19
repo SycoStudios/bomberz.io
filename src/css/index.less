@@ -185,6 +185,10 @@ canvas {
 	& .middle {
 		top: 50%;
 		transform: translateY(-50%);
+
+		&.center {
+			transform: translate(-50%, -50%);
+		}
 	}
 
 	& .bottom {
@@ -393,6 +397,29 @@ canvas {
 			background: @box-bkg;
 			outline: 2px solid @box-outline;
 			font-size: 18px;
+		}
+	}
+
+	& .starting {
+		color: white;
+		display: flex;
+		flex-direction: column;
+		width: 300px;
+		height: 120px;
+		justify-content: center;
+		z-index: 5;
+
+		& div {
+			font-size: 25px;
+
+			&:nth-child(1) {
+				margin-bottom: 15px;
+			}
+		}
+
+		& #coolDown {
+			font-size: 45px;
+			line-height: 1;
 		}
 	}
 }

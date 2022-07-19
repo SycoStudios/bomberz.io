@@ -101,6 +101,11 @@ const replaceInText = (element, pattern, replacement) => {
 		}
 	}
 };
+const loopByte = (num) => {
+	if (num <= 255) return num;
+	if (num > 255) return loopByte(num - 255);
+	if (num < 0) return loopByte(num + 255);
+};
 const startGame = (done) => {
 	removeEventListeners();
 	removeCanvases();
@@ -138,7 +143,9 @@ const startGame = (done) => {
 			max: 300,
 			pad: 24
 		},
-		lastKeybind: {}
+		lastKeybind: {},
+		sec: 0,
+		recSec: 0
 	};
 	const layers = {
 		floors: new Container(),
@@ -158,7 +165,10 @@ const startGame = (done) => {
 			},
 			team1: {
 				wins: document.querySelectorAll(".roundInfo .team .roundWins")[1]
-			}
+			},
+			starting: document.querySelector(".starting"),
+			roundNum: document.querySelector(".starting #roundNum"),
+			startIn: document.querySelector(".starting #coolDown")
 		}
 	};
 	const init = () => {
@@ -189,6 +199,8 @@ const startGame = (done) => {
 			? 3
 			: 4;
 
+		data.sec = loopByte(data.sec + 1);
+
 		let msg = inputState.encode({
 			moveLeft: input.getKeyDown(keybinds.moveLeft),
 			moveRight: input.getKeyDown(keybinds.moveRight),
@@ -200,7 +212,8 @@ const startGame = (done) => {
 			nextWeap: input.weapChange > 0,
 			curWeap: weap != undefined ? weap : input.weapKey,
 			angle: input.mouseAngle,
-			drop
+			drop,
+			sec: data.sec
 		});
 
 		input.weapKey = 4;
@@ -213,9 +226,10 @@ const startGame = (done) => {
 		app.stage.position.set(window.innerWidth / 2, window.innerHeight / 2);
 		app.stage.scale.set(Math.sqrt(window.innerWidth ** 2 + window.innerHeight ** 2) / 28);
 	};
-	const dataUpdate = ({ players = [], objects = [], bullets = [] }) => {
+	const dataUpdate = ({ players = [], objects = [], bullets = [], sec }) => {
 		if (players.length > 0 || objects.length > 0) {
 			data.playersJustSeen = [];
+			data.recSec = sec;
 
 			forEach(players, (player) => {
 				data.playersJustSeen.push(player.id);
@@ -460,7 +474,7 @@ const startGame = (done) => {
 						player.move(-overlapV.x, -overlapV.y, false);
 					}
 				});
-			} else {
+			} else if (data.sec - data.recSec <= 1) {
 				player.move(
 					lerp(player.x, player.actualX, 0.35),
 					lerp(player.y, player.actualY, 0.35),
@@ -735,9 +749,17 @@ const startGame = (done) => {
 				case messageIds.roundInfo: {
 					let info = roundInfo.decode(arr);
 
-					UI.roundInfo.timeLeft.innerText = secondsToDisplay(info.timeLeft);
 					UI.roundInfo.team0.wins.innerText = info.team0Wins;
 					UI.roundInfo.team1.wins.innerText = info.team1Wins;
+
+					if (info.coolDown) {
+						UI.roundInfo.starting.classList.remove("hidden");
+						UI.roundInfo.roundNum.innerText = info.id + 1;
+						UI.roundInfo.startIn.innerText = info.timeLeft;
+					} else {
+						UI.roundInfo.starting.classList.add("hidden");
+						UI.roundInfo.timeLeft.innerText = secondsToDisplay(info.timeLeft);
+					}
 				}
 			}
 		});
@@ -835,7 +857,7 @@ settings.addListener((type, value, init) => {
 });
 
 forEach(Object.keys(dictionary), (term) => {
-	replaceInText(document.body, new RegExp(term, "g"), lang.getText(term));
+	replaceInText(document.body, new RegExp("tran_" + term, "g"), lang.getText(term));
 });
 
 if (settings.token) {
