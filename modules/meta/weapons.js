@@ -19,8 +19,12 @@ export const weapons = {
 		spread: 1,
 		damage: 16,
 		semi: true,
-		lootImage: new URL("../../src/img/m1911_item.png?as=webp&width=120", import.meta.url).href,
-		bodyImage: new URL("../../src/img/m1911_body.png?as=webp&width=300", import.meta.url).href
+		lootImage: new URL("../../src/img/m1911_item.png?as=webp&width=300", import.meta.url).href,
+		bodyImage: new URL("../../src/img/m1911_body.png?as=webp&width=300", import.meta.url).href,
+		storeData: {
+			cost: 0,
+			class: "sidearm"
+		}
 	},
 	smg: {
 		type: "gun",
@@ -31,8 +35,12 @@ export const weapons = {
 		range: 30,
 		spread: 9,
 		damage: 8,
-		lootImage: new URL("../../src/img/mp5_item.png?as=webp&width=120", import.meta.url).href,
-		bodyImage: new URL("../../src/img/mp5_body.png?as=webp&width=200", import.meta.url).href
+		lootImage: new URL("../../src/img/mp5_item.png?as=webp&width=300", import.meta.url).href,
+		bodyImage: new URL("../../src/img/mp5_body.png?as=webp&width=200", import.meta.url).href,
+		storeData: {
+			cost: 1000,
+			class: "smg"
+		}
 	},
 	assault_rifle: {
 		type: "gun",
@@ -44,13 +52,17 @@ export const weapons = {
 		spread: 2,
 		damage: 9,
 		lootImage: new URL(
-			"../../src/img/assault_rifle_item.png?as=webp&width=120",
+			"../../src/img/assault_rifle_item.png?as=webp&width=300",
 			import.meta.url
 		).href,
 		bodyImage: new URL(
 			"../../src/img/assault_rifle_body.png?as=webp&width=300",
 			import.meta.url
-		).href
+		).href,
+		storeData: {
+			cost: 1500,
+			class: "rifle"
+		}
 	},
 	burst_rifle: {
 		type: "gun",
@@ -63,10 +75,14 @@ export const weapons = {
 		spread: 1.5,
 		damage: 7,
 		burst: true,
-		lootImage: new URL("../../src/img/burst_rifle_item.png?as=webp&width=120", import.meta.url)
+		lootImage: new URL("../../src/img/burst_rifle_item.png?as=webp&width=300", import.meta.url)
 			.href,
 		bodyImage: new URL("../../src/img/burst_rifle_body.png?as=webp&width=300", import.meta.url)
-			.href
+			.href,
+		storeData: {
+			cost: 2100,
+			class: "rifle"
+		}
 	},
 	marksman_rifle: {
 		type: "gun",
@@ -79,13 +95,63 @@ export const weapons = {
 		damage: 13,
 		semi: true,
 		lootImage: new URL(
-			"../../src/img/marksman_rifle_item.png?as=webp&width=120",
+			"../../src/img/marksman_rifle_item.png?as=webp&width=300",
 			import.meta.url
 		).href,
 		bodyImage: new URL(
 			"../../src/img/marksman_rifle_body.png?as=webp&width=300",
 			import.meta.url
-		).href
+		).href,
+		storeData: {
+			cost: 2700,
+			class: "rifle"
+		}
+	},
+	sniper: {
+		type: "gun",
+		height: 0.4,
+		width: 3.06,
+		bulletSpeed: 0.6,
+		shootDelay: 180,
+		range: 62,
+		spread: 0.5,
+		damage: 13,
+		semi: true,
+		lootImage: new URL(
+			"../../src/img/marksman_rifle_item.png?as=webp&width=300",
+			import.meta.url
+		).href,
+		bodyImage: new URL(
+			"../../src/img/marksman_rifle_body.png?as=webp&width=300",
+			import.meta.url
+		).href,
+		storeData: {
+			cost: 1100,
+			class: "sniper"
+		}
+	},
+	lmg: {
+		type: "gun",
+		height: 0.4,
+		width: 3.06,
+		bulletSpeed: 0.6,
+		shootDelay: 180,
+		range: 62,
+		spread: 0.5,
+		damage: 13,
+		semi: true,
+		lootImage: new URL(
+			"../../src/img/marksman_rifle_item.png?as=webp&width=300",
+			import.meta.url
+		).href,
+		bodyImage: new URL(
+			"../../src/img/marksman_rifle_body.png?as=webp&width=300",
+			import.meta.url
+		).href,
+		storeData: {
+			cost: 1700,
+			class: "heavy"
+		}
 	},
 	pump_shotgun: {
 		type: "gun",
@@ -98,8 +164,12 @@ export const weapons = {
 		semi: true,
 		spread: 9,
 		damage: 7,
-		lootImage: new URL("../../src/img/r870_item.png?as=webp&width=120", import.meta.url).href,
-		bodyImage: new URL("../../src/img/r870_body.png?as=webp&width=300", import.meta.url).href
+		lootImage: new URL("../../src/img/r870_item.png?as=webp&width=300", import.meta.url).href,
+		bodyImage: new URL("../../src/img/r870_body.png?as=webp&width=300", import.meta.url).href,
+		storeData: {
+			cost: 900,
+			class: "shotgun"
+		}
 	}
 };
 

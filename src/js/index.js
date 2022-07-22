@@ -756,9 +756,18 @@ const startGame = (done) => {
 						UI.roundInfo.starting.classList.remove("hidden");
 						UI.roundInfo.roundNum.innerText = info.id + 1;
 						UI.roundInfo.startIn.innerText = info.timeLeft;
+						UI.roundInfo.timeLeft.innerText = secondsToDisplay(info.timeLeft);
+						UI.roundInfo.timeLeft.classList.add("cool");
+						UI.roundInfo.timeLeft.classList.remove("hot");
 					} else {
 						UI.roundInfo.starting.classList.add("hidden");
+						UI.roundInfo.timeLeft.classList.remove("cool");
+						UI.roundInfo.timeLeft.classList.remove("hot");
 						UI.roundInfo.timeLeft.innerText = secondsToDisplay(info.timeLeft);
+
+						if (info.timeLeft <= 20) {
+							UI.roundInfo.timeLeft.classList.add("hot");
+						}
 					}
 				}
 			}
@@ -857,7 +866,7 @@ settings.addListener((type, value, init) => {
 });
 
 forEach(Object.keys(dictionary), (term) => {
-	replaceInText(document.body, new RegExp("tran_" + term, "g"), lang.getText(term));
+	replaceInText(document.body, new RegExp(`:${term}:`, "g"), lang.getText(term));
 });
 
 if (settings.token) {
@@ -877,6 +886,31 @@ document.querySelector("#playAgain").onclick = () => {
 	document.querySelector("#death").classList.add("hidden");
 	audio.stopMenuTheme();
 };
+
+let weapNames = Object.keys(weapons);
+let storeData = map(
+	filter(Object.values(weapons), (weapon) => !!weapon.storeData).sort(
+		(a, b) => a.storeData.cost - b.storeData.cost
+	),
+	(weapon) => {
+		return {
+			class: weapon.storeData.class,
+			cost: weapon.storeData.cost,
+			image: weapon.lootImage,
+			name: filter(weapNames, (e) => weapons[e] == weapon)[0]
+		};
+	}
+);
+forEach(storeData, (weapon) => {
+	let gunTemplate = `<div class="box"><img src="${
+		weapon.image
+	}" /><div><span class="name">${lang.getText(weapon.name)}</span><span class="cost">${
+		weapon.cost ? weapon.cost.toLocaleString() : "FREE"
+	}</span></div></div>`;
+	let gunClass = document.querySelector(`.${weapon.class}s div:not(.label)`);
+
+	if (gunClass) gunClass.innerHTML += gunTemplate;
+});
 
 window.onload = () => {
 	document.querySelector("#loading").classList.add("hidden");

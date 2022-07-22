@@ -11,10 +11,10 @@ export class Player {
 		this.health = 100;
 		this.dead = false;
 		this.weapons = [
-			{ type: "pump_shotgun", ammo: 1 },
-			{ type: "burst_rifle", ammo: 1 },
-			{ type: "fists", ammo: "" },
-			{ type: "", ammo: "" }
+			{ type: "", ammo: 0 },
+			{ type: "", ammo: 0 },
+			{ type: "fists", ammo: 0 },
+			{ type: "", ammo: 0 }
 		];
 		this.curWeap = 0;
 		this.changed = false;

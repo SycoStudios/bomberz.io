@@ -171,7 +171,7 @@ export default class Game {
 
 		// Loot Spawning from Objects.js
 		for (var i = 0; i < 20; i++) {
-			this.spawnLoot(0, 5, Math.random() > 0.5 ? "assault_rifle" : "marksman_rifle");
+			//this.spawnLoot(0, 5, Math.random() > 0.5 ? "assault_rifle" : "marksman_rifle");
 		}
 
 		// Object Spawning from Objects.js
@@ -796,13 +796,13 @@ export default class Game {
 			this.teams[0].push(player.id);
 		}
 
-		console.log(this.teams);
-
 		player.channel.raw.emit(
 			welcomeState.encode({
 				pov: player.id,
 				gameMode: this.gameMode
 			})
 		);
+
+		this.lastRoundInfo = 0;
 	}
 }

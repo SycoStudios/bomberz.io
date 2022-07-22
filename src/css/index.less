@@ -92,9 +92,9 @@ canvas {
 			flex: 1;
 		}
 
-		& .sideArms,
+		& .sidearms,
 		& .primary,
-		& .armor {
+		& .armors {
 			display: flex;
 			flex-direction: column;
 
@@ -137,8 +137,11 @@ canvas {
 				&.label {
 					border-top-left-radius: 5px;
 					border-top-right-radius: 5px;
-					background: #ffffff2a;
 				}
+			}
+
+			& img {
+				-webkit-user-drag: none;
 			}
 
 			& .box:nth-last-child(1) {
@@ -147,14 +150,28 @@ canvas {
 			}
 		}
 
-		& .sideArms {
-			//margin-right: 20px;
-			margin-left: -10px;
+		& .primary {
+			& .label {
+				background: #4848d6;
+			}
 		}
 
-		& .armor {
+		& .sidearms {
+			//margin-right: 20px;
+			margin-left: -10px;
+
+			& .label {
+				background: #cc3030;
+			}
+		}
+
+		& .armors {
 			//margin-left: 20px;
 			margin-right: -10px;
+
+			& .label {
+				background: #be861e;
+			}
 		}
 	}
 
@@ -397,6 +414,38 @@ canvas {
 			background: @box-bkg;
 			outline: 2px solid @box-outline;
 			font-size: 18px;
+
+			@keyframes coolDown {
+				0%,
+				100% {
+					background: mix(@box-bkg, #7171bd);
+				}
+				50% {
+					background: #7171bd;
+				}
+			}
+
+			@keyframes hot {
+				0%,
+				100% {
+					background: mix(@box-bkg, #c5403c);
+				}
+				50% {
+					background: #c5403c;
+				}
+			}
+
+			&.cool {
+				animation-name: coolDown;
+				animation-duration: 2s;
+				animation-iteration-count: infinite;
+			}
+
+			&.hot {
+				animation-name: hot;
+				animation-duration: 2s;
+				animation-iteration-count: infinite;
+			}
 		}
 	}
 
