@@ -24,6 +24,10 @@ export const weapons = {
 		storeData: {
 			cost: 0,
 			class: "sidearm"
+		},
+		ammo: {
+			mag: 12,
+			pack: 36
 		}
 	},
 	smg: {
@@ -40,6 +44,10 @@ export const weapons = {
 		storeData: {
 			cost: 1000,
 			class: "smg"
+		},
+		ammo: {
+			mag: 20,
+			pack: 60
 		}
 	},
 	assault_rifle: {
@@ -62,6 +70,10 @@ export const weapons = {
 		storeData: {
 			cost: 1500,
 			class: "rifle"
+		},
+		ammo: {
+			mag: 30,
+			pack: 90
 		}
 	},
 	burst_rifle: {
@@ -82,6 +94,10 @@ export const weapons = {
 		storeData: {
 			cost: 2100,
 			class: "rifle"
+		},
+		ammo: {
+			mag: 24,
+			pack: 72
 		}
 	},
 	marksman_rifle: {
@@ -105,6 +121,10 @@ export const weapons = {
 		storeData: {
 			cost: 2700,
 			class: "rifle"
+		},
+		ammo: {
+			mag: 12,
+			pack: 36
 		}
 	},
 	sniper: {
@@ -128,6 +148,10 @@ export const weapons = {
 		storeData: {
 			cost: 1100,
 			class: "sniper"
+		},
+		ammo: {
+			mag: 5,
+			pack: 15
 		}
 	},
 	lmg: {
@@ -151,6 +175,10 @@ export const weapons = {
 		storeData: {
 			cost: 1700,
 			class: "heavy"
+		},
+		ammo: {
+			mag: 50,
+			pack: 100
 		}
 	},
 	pump_shotgun: {
@@ -169,6 +197,10 @@ export const weapons = {
 		storeData: {
 			cost: 900,
 			class: "shotgun"
+		},
+		ammo: {
+			mag: 5,
+			pack: 10
 		}
 	}
 };
