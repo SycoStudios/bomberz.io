@@ -32,6 +32,10 @@ export const dictionary = {
 		en: "Shotguns",
 		es: "Escopetas"
 	},
+	shotgun: {
+		en: "Shotgun",
+		es: "Escopeta"
+	},
 	pump_shotgun: {
 		en: "Pump Shotgun",
 		es: "Escopeta de Bomba"
@@ -43,6 +47,10 @@ export const dictionary = {
 	rifles: {
 		en: "Rifles",
 		es: "Fusiles"
+	},
+	rifle: {
+		en: "Rifle",
+		es: "Fusile"
 	},
 	smg: {
 		en: "SMG",
@@ -340,5 +348,24 @@ export class Language {
 
 	getText(text) {
 		return dictionary[text][this.language] || dictionary[text]["en"];
+	}
+
+	getShortText(text) {
+		let long = this.getText(text);
+
+		if (long.length > 7) {
+			let tReg = new RegExp(
+				`${this.getText("rifle")}|${this.getText("shotgun")}|${this.getText(
+					"sniper"
+				)}|${this.getText("pistol")}`,
+				"i"
+			);
+			let type = long.match(tReg)[0];
+			let abbr = long.replace(tReg, "").match(/[A-Z]/g).join("");
+
+			return type ? `${abbr}-${type}` : abbr;
+		} else {
+			return long;
+		}
 	}
 }

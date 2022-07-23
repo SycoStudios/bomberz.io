@@ -8,11 +8,12 @@ import {
 	inputState,
 	localState,
 	bullets,
-	roundInfo
+	roundInfo,
+	loadout
 } from "../../models/index";
 import { filter, forEach, map } from "../../modules/optimized";
 import { actions } from "../../modules/meta/actions";
-import { weapons, weapFromId } from "../../modules/meta/weapons";
+import { weapons, weapFromId, idFromWeap } from "../../modules/meta/weapons";
 import { dictionary, Language } from "../../modules/lang";
 import { categoryFromId } from "../../modules/meta/objCategories";
 import { calcAngle, calcDistance, clamp, deg2Rad, getRandomInt, lerp } from "../../modules/math";
@@ -32,6 +33,7 @@ let listeners = [];
 let friends = [];
 let friendReqs = [];
 let loggedIn = false;
+let curSocket = null;
 
 const audio = new Audio();
 const settings = new Settings("game-settings", {
@@ -125,7 +127,8 @@ const startGame = (done) => {
 		moveUp: "w",
 		moveDown: "s",
 		interact: "f",
-		pause: "Escape"
+		pause: "Escape",
+		buyMenu: "b"
 	};
 	const data = {
 		started: false,
@@ -158,6 +161,7 @@ const startGame = (done) => {
 		interact: document.querySelector(".interact"),
 		deathScreen: document.querySelector("#death"),
 		pauseMenu: document.querySelector(".pauseMenu"),
+		buyMenu: document.querySelector(".buyMenu"),
 		roundInfo: {
 			timeLeft: document.querySelector(".roundInfo .timer"),
 			team0: {
@@ -179,8 +183,8 @@ const startGame = (done) => {
 		app.stage.addChild(
 			layers.floors,
 			layers.objects,
-			layers.players,
 			layers.bullets,
+			layers.players,
 			layers.roofs
 		);
 	};
@@ -607,6 +611,10 @@ const startGame = (done) => {
 			UI.pauseMenu.classList.toggle("hidden");
 		}
 
+		if (input.getKeyDown(keybinds.buyMenu) && !data.lastKeybind.buyMenu) {
+			UI.buyMenu.classList.toggle("hidden");
+		}
+
 		if (touching.length > 0) {
 			let item = touching.sort((a, b) => a.dist - b.dist)[0];
 
@@ -620,6 +628,7 @@ const startGame = (done) => {
 		}
 
 		data.lastKeybind.pause = input.getKeyDown(keybinds.pause);
+		data.lastKeybind.buyMenu = input.getKeyDown(keybinds.buyMenu);
 	};
 	const inMap = (x, y, pad = false, rad = 0) => {
 		let min = data.map.min + rad - (pad ? data.map.pad : 0);
@@ -661,6 +670,8 @@ const startGame = (done) => {
 
 	channel.onConnect((error) => {
 		requestAnimationFrame(animateUpdate);
+
+		curSocket = channel;
 
 		channel.onRaw((buffer) => {
 			let arr = new BitArray(buffer);
@@ -731,7 +742,7 @@ const startGame = (done) => {
 						weapSlots[i].classList.remove("none");
 
 						weapSlots[i].children[0].src = weapons[weaps[i].type].lootImage || "";
-						weapSlots[i].children[1].children[0].innerText = lang.getText(
+						weapSlots[i].children[1].children[0].innerText = lang.getShortText(
 							weaps[i].type
 						);
 
@@ -774,6 +785,7 @@ const startGame = (done) => {
 		});
 	});
 	channel.onDisconnect(() => {
+		curSocket = null;
 		cancelAnimationFrame(animateUpdate);
 	});
 	input.on("change", sendInput);
@@ -902,7 +914,7 @@ let storeData = map(
 	}
 );
 forEach(storeData, (weapon) => {
-	let gunTemplate = `<div class="box"><img src="${
+	let gunTemplate = `<div onclick="selectWeapon('${weapon.name}')" class="box"><img src="${
 		weapon.image
 	}" /><div><span class="name">${lang.getText(weapon.name)}</span><span class="cost">${
 		weapon.cost ? weapon.cost.toLocaleString() : "FREE"
@@ -1125,4 +1137,9 @@ window.rejectFriend = (name) => {
 
 			loadUserData();
 		});
+};
+window.selectWeapon = (weapName) => {
+	if (!curSocket) return;
+
+	curSocket.raw.emit(loadout.encode({ selectedWeap: idFromWeap(weapName) }));
 };

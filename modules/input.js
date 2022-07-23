@@ -28,6 +28,8 @@ export class Input {
 	}
 
 	onInput(e) {
+		this.keysOld = { ...this.keys };
+
 		switch (e.type) {
 			case "keydown": {
 				this.keys[e.key] = true;

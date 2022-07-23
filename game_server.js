@@ -1,5 +1,5 @@
 import geckos, { iceServers } from "@geckos.io/server";
-import { inputState } from "./models/index.js";
+import { inputState, loadout } from "./models/index.js";
 import { messageIds } from "./modules/meta/messageIds.js";
 import { BitArray } from "@codezilluh/bitarray.js";
 import Game from "./game.js";
@@ -31,6 +31,9 @@ io.onConnection((channel) => {
 			case messageIds.input: {
 				game.playerInput(channel.pid, inputState.decode(arr));
 				break;
+			}
+			case messageIds.loadout: {
+				game.playerLoadout(channel.pid, loadout.decode(arr));
 			}
 		}
 	});

@@ -3,7 +3,7 @@ import { Bullet } from "./modules/bullet.js";
 import { forEach, map, filter } from "./modules/optimized.js";
 import { gameState, welcomeState, localState, bullets, roundInfo } from "./models/index.js";
 import { actions } from "./modules/meta/actions.js";
-import { weapons, idFromWeap } from "./modules/meta/weapons.js";
+import { weapons, idFromWeap, weapFromId } from "./modules/meta/weapons.js";
 import { Circle, Box, System } from "detect-collisions";
 import { calcDistance, clamp, deg2Rad } from "./modules/math.js";
 import { animations } from "./modules/meta/animations.js";
@@ -768,6 +768,32 @@ export default class Game {
 		}
 	}
 
+	playerLoadout(id, { selectedWeap }) {
+		let player = this.players[id];
+
+		if (player && !player.disconnected) {
+			if (selectedWeap != 31) {
+				let weapName = weapFromId(selectedWeap);
+				let weapData = weapons[weapName];
+				let storeData = weapData.storeData;
+
+				if (storeData && player.credits >= storeData.cost) {
+					player.credits -= storeData.cost;
+
+					if (storeData.class != "sidearm") {
+						player.weapons[0].type = weapName;
+						player.weapons[0].ammo = weapData.ammo.mag;
+					} else {
+						player.weapons[1].type = weapName;
+						player.weapons[1].ammo = weapData.ammo.mag;
+					}
+
+					player.invChanged = true;
+				}
+			}
+		}
+	}
+
 	playerLeft(channel) {
 		if (!channel.pid || !this.players[channel.pid]) return;
 
@@ -783,6 +809,7 @@ export default class Game {
 		channel.pid = player.id;
 		player.create({ system: this.collisionSystem, Circle });
 		player.invChanged = true;
+		player.credits = 1000000;
 
 		channel.join(this.gameId);
 
