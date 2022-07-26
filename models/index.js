@@ -5,5 +5,6 @@ import localState from "./localState.js";
 import bullets from "./bullets.js";
 import roundInfo from "./round.js";
 import loadout from "./loadout.js";
+import playerInfo from "./playerInfo.js";
 
-export { gameState, inputState, welcomeState, localState, bullets, roundInfo, loadout };
+export { gameState, inputState, welcomeState, localState, bullets, roundInfo, loadout, playerInfo };

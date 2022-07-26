@@ -257,7 +257,7 @@ app.post("/api/deny_friend/:username", (req, res) => {
 let apiKey = "apiKey123";
 
 app.get("/server_api/:apiKey/check_token/:token", (req, res) => {
-	if (req.params.apiKey !== apiKey) return send(res, 403);
+	if (req.params.apiKey !== apiKey || req.get("x-real") !== "yes") return send(res, 403);
 
 	let valid = tokenValid(req.params.token);
 	if (valid) {
@@ -267,7 +267,7 @@ app.get("/server_api/:apiKey/check_token/:token", (req, res) => {
 	}
 });
 app.get("/server_api/:apiKey/add_match", (req, res) => {
-	if (req.params.apiKey !== apiKey) return send(res, 403);
+	if (req.params.apiKey !== apiKey || req.get("x-real") !== "yes") return send(res, 403);
 
 	let user = getUser(req.query.username);
 

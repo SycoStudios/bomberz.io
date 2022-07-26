@@ -5,5 +5,6 @@ export const messageIds = {
 	welcome: 3,
 	bullets: 4,
 	roundInfo: 5,
-	loadout: 6
+	loadout: 6,
+	playerInfo: 7
 };

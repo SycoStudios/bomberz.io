@@ -9,7 +9,8 @@ import {
 	localState,
 	bullets,
 	roundInfo,
-	loadout
+	loadout,
+	playerInfo
 } from "../../models/index";
 import { filter, forEach, map } from "../../modules/optimized";
 import { actions } from "../../modules/meta/actions";
@@ -148,7 +149,8 @@ const startGame = (done) => {
 		},
 		lastKeybind: {},
 		sec: 0,
-		recSec: 0
+		recSec: 0,
+		playerInfo: []
 	};
 	const layers = {
 		floors: new Container(),
@@ -241,6 +243,13 @@ const startGame = (done) => {
 				if (!data.players[player.id]) {
 					data.players[player.id] = new Player(true);
 					data.players[player.id].id = player.id;
+
+					let info = data.playerInfo.filter((p) => p.id == player.id)[0];
+
+					if (info) {
+						data.players[player.id].credits = info.credits;
+						data.players[player.id].username = info.username;
+					}
 
 					layers.players.addChild(
 						data.players[player.id].create(
@@ -780,6 +789,32 @@ const startGame = (done) => {
 							UI.roundInfo.timeLeft.classList.add("hot");
 						}
 					}
+
+					break;
+				}
+				case messageIds.playerInfo: {
+					let players = playerInfo.decode(arr);
+
+					forEach(players, (p) => {
+						if (!data.players[p.id]) {
+							data.playerInfo = players;
+
+							return;
+						} else {
+							if (data.playerInfo !== players) {
+								data.playerInfo = [];
+							}
+						}
+
+						data.players[p.id].credits = p.credits;
+						data.players[p.id].username = p.username;
+
+						if (p.id == data.pov) {
+							document.querySelector(".credit span").innerText = p.credits;
+						}
+					});
+
+					break;
 				}
 			}
 		});

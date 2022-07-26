@@ -1,7 +1,14 @@
 import { Player } from "./modules/player.js";
 import { Bullet } from "./modules/bullet.js";
 import { forEach, map, filter } from "./modules/optimized.js";
-import { gameState, welcomeState, localState, bullets, roundInfo } from "./models/index.js";
+import {
+	gameState,
+	welcomeState,
+	localState,
+	bullets,
+	roundInfo,
+	playerInfo
+} from "./models/index.js";
 import { actions } from "./modules/meta/actions.js";
 import { weapons, idFromWeap, weapFromId } from "./modules/meta/weapons.js";
 import { Circle, Box, System } from "detect-collisions";
@@ -11,6 +18,7 @@ import { idFromItem, items } from "./modules/meta/itemTypes.js";
 import { idFromObj, objects, objFromId } from "./modules/meta/objects.js";
 import { categoryFromId } from "./modules/meta/objCategories.js";
 import { gameModes } from "./modules/meta/gameModes.js";
+import axios from "axios";
 import LootClass from "./modules/loot.js";
 import ObjectClass from "./modules/object.js";
 import crypto from "crypto";
@@ -58,6 +66,14 @@ const mapBullets = (bullets) =>
 			angle: b.angle,
 			type: b.bulletType,
 			team: b.team
+		};
+	});
+const mapPlayerInfo = (players) =>
+	map(players, (p) => {
+		return {
+			username: p.username || "",
+			credits: p.credits,
+			id: p.id
 		};
 	});
 const cycle = (num) => {
@@ -148,6 +164,9 @@ export default class Game {
 		this.actualTicks = 0;
 		this.inLoop = false;
 
+		this.apiKey = "apiKey123";
+		this.apiURL = `https://73.145.149.66:1234/server_api/${this.apiKey}`;
+
 		this.gameId = crypto.randomBytes(36).toString("hex");
 		this.gameMode = gameModes.diffuse;
 
@@ -222,6 +241,20 @@ export default class Game {
 		};
 
 		this.room.emit(roundInfo.encode(info));
+	}
+
+	sendPlayerInfo(player) {
+		let arr = [];
+
+		if (player) {
+			arr.push(player);
+		} else {
+			arr = this.players;
+		}
+
+		arr = mapPlayerInfo(arr);
+
+		this.room.emit(playerInfo.encode(arr));
 	}
 
 	addRound() {
@@ -789,9 +822,30 @@ export default class Game {
 					}
 
 					player.invChanged = true;
+
+					this.sendPlayerInfo(player);
 				}
 			}
 		}
+	}
+
+	playerToken(id, token) {
+		let player = this.players[id];
+
+		if (!player || player.disconnected) return;
+
+		axios
+			.get(`${this.apiURL}/check_token/${token}`, {
+				headers: { "x-real": "yes" }
+			})
+			.then((response) => {
+				if (response.error) return;
+
+				player.token = token;
+				player.username = response.data;
+
+				this.sendPlayerInfo(player);
+			});
 	}
 
 	playerLeft(channel) {
@@ -809,7 +863,7 @@ export default class Game {
 		channel.pid = player.id;
 		player.create({ system: this.collisionSystem, Circle });
 		player.invChanged = true;
-		player.credits = 1000000;
+		player.credits = 800;
 
 		channel.join(this.gameId);
 
@@ -829,6 +883,8 @@ export default class Game {
 				gameMode: this.gameMode
 			})
 		);
+
+		this.sendPlayerInfo();
 
 		this.lastRoundInfo = 0;
 	}
