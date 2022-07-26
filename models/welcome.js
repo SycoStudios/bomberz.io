@@ -1,8 +1,10 @@
 import { BitArray } from "@codezilluh/bitarray.js";
 import { messageIds } from "../modules/meta/messageIds.js";
 
+let arr = new BitArray();
+
 const encode = ({ pov, gameMode }) => {
-	let arr = new BitArray();
+	arr.reset();
 
 	arr.addUint(messageIds.welcome, 3);
 	arr.addUint(pov, 7);

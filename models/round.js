@@ -1,8 +1,10 @@
 import { BitArray } from "@codezilluh/bitarray.js";
 import { messageIds } from "../modules/meta/messageIds.js";
 
+let arr = new BitArray();
+
 const encode = ({ id, timeLeft, team0Wins, team1Wins, team0Alive, team1Alive, coolDown }) => {
-	let arr = new BitArray();
+	arr.reset();
 
 	arr.addUint(messageIds.roundInfo, 3);
 	arr.addUint(id, 5);

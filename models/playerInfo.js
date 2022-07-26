@@ -1,10 +1,10 @@
 import { BitArray } from "@codezilluh/bitarray.js";
 import { messageIds } from "../modules/meta/messageIds.js";
 
-let fraction = (2 ** 14 - 1) / 180;
+let arr = new BitArray();
 
 const encode = (players) => {
-	let arr = new BitArray();
+	arr.reset();
 
 	arr.addUint(messageIds.playerInfo, 3);
 	arr.addUint(players.length, 7);

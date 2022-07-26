@@ -2,9 +2,10 @@ import { BitArray } from "@codezilluh/bitarray.js";
 import { messageIds } from "../modules/meta/messageIds.js";
 
 let fraction = (2 ** 14 - 1) / 180;
+let arr = new BitArray();
 
 const encode = ({ bullets }) => {
-	let arr = new BitArray();
+	arr.reset();
 
 	arr.addUint(messageIds.bullets, 3);
 	arr.addUint(bullets.length, 10);

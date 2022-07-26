@@ -1,6 +1,8 @@
 import { BitArray } from "@codezilluh/bitarray.js";
 import { messageIds } from "../modules/meta/messageIds.js";
 
+let arr = new BitArray();
+
 const encode = ({
 	weapon1Type,
 	weapon2Type,
@@ -13,7 +15,7 @@ const encode = ({
 	weapId,
 	health
 }) => {
-	let arr = new BitArray();
+	arr.reset();
 
 	arr.addUint(messageIds.self, 3);
 	arr.addUint(weapon1Type, 5);

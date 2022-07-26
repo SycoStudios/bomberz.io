@@ -1,8 +1,10 @@
 import { BitArray } from "@codezilluh/bitarray.js";
 import { messageIds } from "../modules/meta/messageIds.js";
 
+let arr = new BitArray();
+
 const encode = ({ selectedWeap }) => {
-	let arr = new BitArray();
+	arr.reset();
 
 	arr.addUint(messageIds.loadout, 3);
 	arr.addUint(selectedWeap, 5);

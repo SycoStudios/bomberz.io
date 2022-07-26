@@ -22,7 +22,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@codezilluh/bitarray.js": "^1.0.4",
+		"@codezilluh/bitarray.js": "^1.0.5",
 		"@geckos.io/client": "^2.1.8",
 		"@geckos.io/server": "^2.2.0",
 		"@rbf/parcel-optimizer-javascript-obfuscator": "^0.2.2",

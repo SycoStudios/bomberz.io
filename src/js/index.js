@@ -676,6 +676,7 @@ const startGame = (done) => {
 
 		layers.floors.addChildAt(grid, 0);
 	};
+	const bitarr = new BitArray();
 
 	channel.onConnect((error) => {
 		requestAnimationFrame(animateUpdate);
@@ -687,20 +688,19 @@ const startGame = (done) => {
 		}
 
 		channel.onRaw((buffer) => {
-			let arr = new BitArray(buffer);
-			let messageType = arr.getUint(3, 0);
+			bitarr.decode(buffer);
 
-			switch (messageType) {
+			switch (bitarr.getUint(3, 0)) {
 				case messageIds.update: {
-					dataUpdate(gameState.decode(arr));
+					dataUpdate(gameState.decode(bitarr));
 					break;
 				}
 				case messageIds.bullets: {
-					dataUpdate(bullets.decode(arr));
+					dataUpdate(bullets.decode(bitarr));
 					break;
 				}
 				case messageIds.welcome: {
-					let msg = welcomeState.decode(arr);
+					let msg = welcomeState.decode(bitarr);
 
 					if (!data.started) {
 						done();
@@ -726,7 +726,7 @@ const startGame = (done) => {
 						weapon4Ammo,
 						weapId,
 						health
-					} = localState.decode(arr);
+					} = localState.decode(bitarr);
 					let weaps = [
 						{ type: weapFromId(weapon1Type), ammo: weapon1Ammo },
 						{ type: weapFromId(weapon2Type), ammo: weapon2Ammo },
@@ -771,7 +771,7 @@ const startGame = (done) => {
 					break;
 				}
 				case messageIds.roundInfo: {
-					let info = roundInfo.decode(arr);
+					let info = roundInfo.decode(bitarr);
 
 					UI.roundInfo.team0.wins.innerText = info.team0Wins;
 					UI.roundInfo.team1.wins.innerText = info.team1Wins;
@@ -797,7 +797,7 @@ const startGame = (done) => {
 					break;
 				}
 				case messageIds.playerInfo: {
-					let players = playerInfo.decode(arr);
+					let players = playerInfo.decode(bitarr);
 
 					forEach(players, (p) => {
 						if (!data.players[p.id]) {

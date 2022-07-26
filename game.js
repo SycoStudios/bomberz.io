@@ -336,6 +336,16 @@ export default class Game {
 		return x >= min && y >= min && x <= max && y <= max;
 	}
 
+	resetPlayer(id) {
+		let player = this.players[id];
+
+		if (!player) return;
+
+		player.dead = false;
+		player.health = 100;
+		player.move(0, 0, true);
+	}
+
 	update(delta) {
 		if (this.inLoop) return;
 		if (!this.round) {
@@ -618,14 +628,16 @@ export default class Game {
 
 								let object = this.objects[collider.__oid];
 
-								if (object.damage && player.shooting && weapStats.type == "melee") {
-									object.damage(weapStats.damage, this.collisionSystem);
-								}
+								// if (object.damage && player.shooting && weapStats.type == "melee") {
+								// 	object.damage(weapStats.damage, this.collisionSystem);
+								// }
 							}
 						}
 					}
 				);
 			});
+		} else {
+			forEach(this.players, (player) => this.resetPlayer(player.id));
 		}
 		forEach(this.objects, (object) => {
 			if (object.destroyed) return;

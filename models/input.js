@@ -2,6 +2,7 @@ import { BitArray } from "@codezilluh/bitarray.js";
 import { messageIds } from "../modules/meta/messageIds.js";
 
 let fraction = (2 ** 14 - 1) / 180;
+let arr = new BitArray();
 
 const encode = ({
 	moveLeft,
@@ -17,7 +18,7 @@ const encode = ({
 	curWeap,
 	sec
 }) => {
-	let arr = new BitArray();
+	arr.reset();
 
 	arr.addUint(messageIds.input, 3);
 	arr.setBit(moveLeft, 3);
