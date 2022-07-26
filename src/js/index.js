@@ -682,6 +682,10 @@ const startGame = (done) => {
 
 		curSocket = channel;
 
+		if (loggedIn && settings.token) {
+			channel.emit("token", settings.token);
+		}
+
 		channel.onRaw((buffer) => {
 			let arr = new BitArray(buffer);
 			let messageType = arr.getUint(3, 0);

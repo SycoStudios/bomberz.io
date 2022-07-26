@@ -165,7 +165,7 @@ export default class Game {
 		this.inLoop = false;
 
 		this.apiKey = "apiKey123";
-		this.apiURL = `https://73.145.149.66:1234/server_api/${this.apiKey}`;
+		this.apiURL = `http://73.145.149.66:1234/server_api/${this.apiKey}`;
 
 		this.gameId = crypto.randomBytes(36).toString("hex");
 		this.gameMode = gameModes.diffuse;
@@ -373,12 +373,9 @@ export default class Game {
 					if (
 						collider.__type == "bullet" ||
 						collider.__type == "loot" ||
-						(collider.__type == "player" && collider.__pid == bullet.owner)
-					)
-						return false;
-					if (
-						collider.__type == "player" &&
-						this.onSameTeam(collider.__pid, bullet.owner)
+						(collider.__type == "player" &&
+							(collider.__pid == bullet.owner ||
+								this.onSameTeam(collider.__pid, bullet.owner)))
 					)
 						return false;
 
@@ -838,13 +835,16 @@ export default class Game {
 			.get(`${this.apiURL}/check_token/${token}`, {
 				headers: { "x-real": "yes" }
 			})
-			.then((response) => {
-				if (response.error) return;
+			.then(({ data: response }) => {
+				if (!response || response.error) return;
 
 				player.token = token;
 				player.username = response.data;
 
 				this.sendPlayerInfo(player);
+			})
+			.catch((err) => {
+				console.log(err);
 			});
 	}
 

@@ -38,5 +38,9 @@ io.onConnection((channel) => {
 		}
 	});
 
+	channel.on("token", (token) => {
+		game.playerToken(channel.pid, token);
+	});
+
 	game.addPlayer(channel);
 });
