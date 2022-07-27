@@ -514,6 +514,39 @@ export default class Game {
 								player.shooting = true;
 								player.change();
 								player.lastShot = now;
+
+								// Cast a punch ray, currently 2 units long from edge of player radius
+								// TODO: make it variable (defined by weapStats)
+								let rayData = this.collisionSystem.raycast(
+									{
+										x: player.x + Math.cos(player.angle * deg2Rad),
+										y: player.y + Math.cos(player.angle * deg2Rad)
+									},
+									{
+										x: player.x + Math.cos(player.angle * deg2Rad) * 3,
+										y: player.y + Math.cos(player.angle * deg2Rad) * 3
+									}
+								);
+
+								if (rayData && rayData.collider) {
+									let collider = rayData.collider;
+									let ent;
+
+									if (collider.__type == "object")
+										ent = this.objects[collider.__oid];
+									if (collider.__type == "player")
+										ent = this.players[collider.__pid];
+
+									if (
+										ent &&
+										!ent.dead &&
+										!ent.destroyed &&
+										ent.damage &&
+										collider.__pid !== player.id
+									) {
+										ent.damage(weapStats.damage, this.collisionSystem);
+									}
+								}
 							}
 							break;
 						}
@@ -649,12 +682,6 @@ export default class Game {
 								const { overlapV } = this.collisionSystem.response;
 
 								player.move(-overlapV.x, -overlapV.y, false);
-
-								let object = this.objects[collider.__oid];
-
-								// if (object.damage && player.shooting && weapStats.type == "melee") {
-								// 	object.damage(weapStats.damage, this.collisionSystem);
-								// }
 							}
 						}
 					}
@@ -837,7 +864,7 @@ export default class Game {
 	playerLoadout(id, { selectedWeap }) {
 		let player = this.players[id];
 
-		if (player && !player.disconnected) {
+		if (this.round.inCoolDown && player && !player.disconnected) {
 			if (selectedWeap != 31) {
 				let weapName = weapFromId(selectedWeap);
 				let weapData = weapons[weapName];
