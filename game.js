@@ -184,7 +184,7 @@ export default class Game {
 		this.currentRound = 0;
 		this.rounds = [];
 		this.roundLength = 100 * seconds;
-		this.roundCoolDown = 1 * seconds;
+		this.roundCoolDown = 30 * seconds;
 
 		this.map = {
 			min: -300,
@@ -557,7 +557,6 @@ export default class Game {
 										ent = this.players[collider.__pid];
 
 									if (ent && ent.damage) {
-										console.log("punch");
 										ent.damage(weapStats.damage, this.collisionSystem);
 									}
 								}

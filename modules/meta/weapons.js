@@ -50,6 +50,28 @@ export const weapons = {
 			pack: 60
 		}
 	},
+	enhanced_smg: {
+		type: "gun",
+		height: 0.35,
+		width: 1.97,
+		bulletSpeed: 0.4,
+		shootDelay: 66,
+		range: 30,
+		spread: 9,
+		damage: 8,
+		lootImage: new URL("../../src/img/enhanced_smg_item.png?as=webp&width=300", import.meta.url)
+			.href,
+		bodyImage: new URL("../../src/img/enhanced_smg_body.png?as=webp&width=200", import.meta.url)
+			.href,
+		storeData: {
+			cost: 1600,
+			class: "smg"
+		},
+		ammo: {
+			mag: 30,
+			pack: 90
+		}
+	},
 	assault_rifle: {
 		type: "gun",
 		height: 0.4,

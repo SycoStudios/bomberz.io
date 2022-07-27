@@ -42,6 +42,12 @@ export const animations = {
 		gun: { x: 1.02, y: 0 },
 		length: 150
 	},
+	enhanced_smg: {
+		right: { x: 1.4, y: 0.06 },
+		left: { x: 2.15, y: -0.04 },
+		gun: { x: 1.03, y: 0 },
+		length: 186
+	},
 	assault_rifle: {
 		right: { x: 1.25, y: 0.08 },
 		left: { x: 2.21, y: -0.08 },
