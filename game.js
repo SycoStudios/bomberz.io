@@ -184,7 +184,7 @@ export default class Game {
 		this.currentRound = 0;
 		this.rounds = [];
 		this.roundLength = 100 * seconds;
-		this.roundCoolDown = 30 * seconds;
+		this.roundCoolDown = 1 * seconds;
 
 		this.map = {
 			min: -300,
@@ -276,7 +276,11 @@ export default class Game {
 	}
 
 	onSameTeam(id1, id2) {
-		return this.players[id1].team === this.players[id2].team;
+		return (
+			this.players[id1] &&
+			this.players[id2] &&
+			this.players[id1].team === this.players[id2].team
+		);
 	}
 
 	spawnBullet(x, y, dir, owner, type, moving) {
@@ -515,16 +519,31 @@ export default class Game {
 								player.change();
 								player.lastShot = now;
 
-								// Cast a punch ray, currently 2 units long from edge of player radius
+								// Cast a punch ray
 								// TODO: make it variable (defined by weapStats)
 								let rayData = this.collisionSystem.raycast(
 									{
 										x: player.x + Math.cos(player.angle * deg2Rad),
-										y: player.y + Math.cos(player.angle * deg2Rad)
+										y: player.y + Math.sin(player.angle * deg2Rad)
 									},
 									{
-										x: player.x + Math.cos(player.angle * deg2Rad) * 3,
-										y: player.y + Math.cos(player.angle * deg2Rad) * 3
+										x: player.x + Math.cos(player.angle * deg2Rad) * 2.5,
+										y: player.y + Math.sin(player.angle * deg2Rad) * 2.5
+									},
+									(body) => {
+										if (body.type == "loot" || body.type == "bullet")
+											return false;
+										if (
+											body.__pid == player.id ||
+											this.onSameTeam(body.__pid, player.id) ||
+											(this.players[body.__pid] &&
+												this.players[body.__pid].dead) ||
+											(this.objects[body.__oid] &&
+												this.objects[body.__oid].destroyed)
+										)
+											return false;
+
+										return true;
 									}
 								);
 
@@ -537,13 +556,8 @@ export default class Game {
 									if (collider.__type == "player")
 										ent = this.players[collider.__pid];
 
-									if (
-										ent &&
-										!ent.dead &&
-										!ent.destroyed &&
-										ent.damage &&
-										collider.__pid !== player.id
-									) {
+									if (ent && ent.damage) {
+										console.log("punch");
 										ent.damage(weapStats.damage, this.collisionSystem);
 									}
 								}
