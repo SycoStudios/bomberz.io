@@ -802,6 +802,18 @@ const startGame = (done) => {
 
 						if (info.timeLeft <= 20) {
 							UI.roundInfo.timeLeft.classList.add("hot");
+
+							if (info.timeLeft <= 10) {
+								audio.playSound(
+									"countdown_tick",
+									null,
+									info.timeLeft <= 5
+										? () => {
+												audio.playSound("countdown_tick");
+										  }
+										: null
+								);
+							}
 						}
 					}
 

@@ -16,11 +16,17 @@ export const Audio = class {
 			smg_shoot: new Howl({
 				src: new URL("../src/audio/mp5_shoot.mp3", import.meta.url).href
 			}),
+			enhanced_smg_shoot: new Howl({
+				src: new URL("../src/audio/mp5_shoot.mp3", import.meta.url).href
+			}),
 			marksman_rifle_shoot: new Howl({
 				src: new URL("../src/audio/m14_shoot.mp3", import.meta.url).href
 			}),
 			pump_shotgun_shoot: new Howl({
 				src: new URL("../src/audio/r870_shoot.mp3", import.meta.url).href
+			}),
+			countdown_tick: new Howl({
+				src: new URL("../src/audio/countdown_tick.mp3", import.meta.url).href
 			}),
 			title_looped: new Howl({
 				src: new URL("../src/audio/title_theme_looped.mp3", import.meta.url).href,
@@ -36,13 +42,15 @@ export const Audio = class {
 		let sound = this.sounds[name];
 		let instance = sound.play();
 
-		//sound.pos(-(this.x - listener.x), this.y - listener.y, 0, instance);
-		sound.stereo(clamp(((this.x - listener.x) / 28) * -1, -1, 1), instance);
-		sound.volume(
-			(1 - clamp(calcDistance(this.x, this.y, listener.x, listener.y) / 28, 0, 1)) *
-				this.volume,
-			instance
-		);
+		if (listener) {
+			//sound.pos(-(this.x - listener.x), this.y - listener.y, 0, instance);
+			sound.stereo(clamp(((this.x - listener.x) / 28) * -1, -1, 1), instance);
+			sound.volume(
+				(1 - clamp(calcDistance(this.x, this.y, listener.x, listener.y) / 28, 0, 1)) *
+					this.volume,
+				instance
+			);
+		}
 
 		sound.once(
 			"end",
