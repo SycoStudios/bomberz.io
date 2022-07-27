@@ -90,6 +90,13 @@ const secondsToDisplay = (sec) => {
 		return `${min}:${lsec}`;
 	}
 };
+const runAsync = (fn, params, cb) => {
+	new Promise((resolve, reject) => {
+		fn(params);
+	})
+		.then(cb || (() => {}))
+		.catch((e) => console.log(e));
+};
 const replaceInText = (element, pattern, replacement) => {
 	for (let node of element.childNodes) {
 		switch (node.nodeType) {
@@ -238,163 +245,167 @@ const startGame = (done) => {
 			data.recSec = sec;
 
 			forEach(players, (player) => {
-				data.playersJustSeen.push(player.id);
+				runAsync(() => {
+					data.playersJustSeen.push(player.id);
 
-				if (!data.players[player.id]) {
-					data.players[player.id] = new Player(true);
-					data.players[player.id].id = player.id;
+					if (!data.players[player.id]) {
+						data.players[player.id] = new Player(true);
+						data.players[player.id].id = player.id;
 
-					let info = data.playerInfo.filter((p) => p.id == player.id)[0];
+						let info = data.playerInfo.filter((p) => p.id == player.id)[0];
 
-					if (info) {
-						data.players[player.id].credits = info.credits;
-						data.players[player.id].username = info.username;
+						if (info) {
+							data.players[player.id].credits = info.credits;
+							data.players[player.id].username = info.username;
+						}
+
+						layers.players.addChild(
+							data.players[player.id].create(
+								{
+									Sprite,
+									Text,
+									TextStyle,
+									Container,
+									Circle,
+									system: data.collisionSystem
+								},
+								true
+							)
+						);
 					}
 
-					layers.players.addChild(
-						data.players[player.id].create(
-							{
-								Sprite,
-								Text,
-								TextStyle,
-								Container,
-								Circle,
-								system: data.collisionSystem
-							},
-							true
-						)
-					);
-				}
+					let p = data.players[player.id];
 
-				let p = data.players[player.id];
+					p.dead = player.dead;
+					p.setSkin("bomb_skin_01", Sprite);
 
-				p.dead = player.dead;
-				p.setSkin("bomb_skin_01", Sprite);
+					if (player.id == data.pov && data.spectating) {
+						focus(player.x, player.y);
+					}
 
-				if (player.id == data.pov && data.spectating) {
-					focus(player.x, player.y);
-				}
+					if (!p._container.visible) p._container.visible = true;
 
-				if (!p._container.visible) p._container.visible = true;
+					if (!player.dead) {
+						if (player.id == data.pov && !data.spectating) {
+							data.team = player.team;
+							p.actualX = player.x;
+							p.actualY = player.y;
+						} else {
+							p.rotate(player.angle);
+							p.move(player.x, player.y);
+						}
+						p.team = player.team;
+						p.curWeap = weapFromId(player.curWeap);
+						p.action = player.action;
 
-				if (!player.dead) {
-					if (player.id == data.pov && !data.spectating) {
-						data.team = player.team;
-						p.actualX = player.x;
-						p.actualY = player.y;
+						if (p.action == actions.shoot && p.lastAction !== p.action) {
+							audio.playSound(p.curWeap + "_shoot", { x: p.x, y: p.y });
+						}
+
+						p.lastAction = p.action;
 					} else {
-						p.rotate(player.angle);
+						p._playerRip.visible = true;
+						p._playerBody.visible = false;
+						p._playerSkin.visible = false;
+						p._leftHand.visible = false;
+						p._rightHand.visible = false;
+						p._weapon.visible = false;
+
+						if (player.id == data.pov) {
+							audio.playMenuTheme();
+							UI.deathScreen.classList.remove("hidden");
+						}
+
+						data.collisionSystem.remove(p._collider);
+
+						p.rotate(0);
 						p.move(player.x, player.y);
+
+						layers.players.removeChild(p._container);
+						layers.floors.addChild(p._container);
 					}
-					p.team = player.team;
-					p.curWeap = weapFromId(player.curWeap);
-					p.action = player.action;
-
-					if (p.action == actions.shoot && p.lastAction !== p.action) {
-						audio.playSound(p.curWeap + "_shoot", { x: p.x, y: p.y });
-					}
-
-					p.lastAction = p.action;
-				} else {
-					p._playerRip.visible = true;
-					p._playerBody.visible = false;
-					p._playerSkin.visible = false;
-					p._leftHand.visible = false;
-					p._rightHand.visible = false;
-					p._weapon.visible = false;
-
-					if (player.id == data.pov) {
-						audio.playMenuTheme();
-						UI.deathScreen.classList.remove("hidden");
-					}
-
-					data.collisionSystem.remove(p._collider);
-
-					p.rotate(0);
-					p.move(player.x, player.y);
-
-					layers.players.removeChild(p._container);
-					layers.floors.addChild(p._container);
-				}
+				});
 			});
 
 			forEach(objects, (object) => {
-				let category = categoryFromId(object.category);
+				runAsync(() => {
+					let category = categoryFromId(object.category);
 
-				if (object.destroyed) {
-					if (data.objects[object.id]) {
-						data.objects[object.id].destroy(data.collisionSystem);
-						data.objects[object.id] = undefined;
-					}
-
-					return;
-				}
-
-				switch (category) {
-					case "loot": {
-						if (
-							!!data.objects[object.id]
-								? data.objects[object.id].item !== itemFromId(object.data)
-								: true
-						) {
-							if (!!data.objects[object.id]) {
-								data.objects[object.id].destroy();
-							}
-
-							data.objects[object.id] = new LootClass(
-								object.x,
-								object.y,
-								object.id,
-								object.data,
-								true
-							);
-							data.objects[object.id].category = category;
-
-							layers.objects.addChild(
-								data.objects[object.id].create({ Sprite, Container })
-							);
-
-							data.objects[object.id]._container.scale.set(0.5);
+					if (object.destroyed) {
+						if (data.objects[object.id]) {
+							data.objects[object.id].destroy(data.collisionSystem);
+							data.objects[object.id] = undefined;
 						}
 
-						data.objects[object.id].targetX = object.x;
-						data.objects[object.id].targetY = object.y;
-						break;
+						return;
 					}
-					case "object": {
-						if (!data.objects[object.id]) {
-							data.objects[object.id] = new ObjectClass(
-								object.x,
-								object.y,
-								object.id,
-								objFromId(object.data),
-								true
-							);
 
-							let o = data.objects[object.id];
+					switch (category) {
+						case "loot": {
+							if (
+								!!data.objects[object.id]
+									? data.objects[object.id].item !== itemFromId(object.data)
+									: true
+							) {
+								if (!!data.objects[object.id]) {
+									data.objects[object.id].destroy();
+								}
 
-							o.category = category;
-
-							layers[o.layer].addChild(
-								o.create(
-									{
-										Sprite,
-										Container,
-										Box,
-										Circle,
-										system: data.collisionSystem
-									},
+								data.objects[object.id] = new LootClass(
+									object.x,
+									object.y,
+									object.id,
+									object.data,
 									true
-								)
-							);
+								);
+								data.objects[object.id].category = category;
 
-							if (objectData[objFromId(object.data)].rotate) {
-								o._container.rotation = getRandomInt(180 * deg2Rad);
+								layers.objects.addChild(
+									data.objects[object.id].create({ Sprite, Container })
+								);
+
+								data.objects[object.id]._container.scale.set(0.5);
 							}
+
+							data.objects[object.id].targetX = object.x;
+							data.objects[object.id].targetY = object.y;
+							break;
 						}
-						break;
+						case "object": {
+							if (!data.objects[object.id]) {
+								data.objects[object.id] = new ObjectClass(
+									object.x,
+									object.y,
+									object.id,
+									objFromId(object.data),
+									true
+								);
+
+								let o = data.objects[object.id];
+
+								o.category = category;
+
+								layers[o.layer].addChild(
+									o.create(
+										{
+											Sprite,
+											Container,
+											Box,
+											Circle,
+											system: data.collisionSystem
+										},
+										true
+									)
+								);
+
+								if (objectData[objFromId(object.data)].rotate) {
+									o._container.rotation = getRandomInt(180 * deg2Rad);
+								}
+							}
+							break;
+						}
 					}
-				}
+				});
 			});
 
 			forEach(data.players, (player, id) => {

@@ -99,6 +99,13 @@ const loopAngle = (angle) => {
 	if (angle > 180) return loopAngle(angle - 360);
 	if (angle < -180) return loopAngle(angle + 360);
 };
+const runAsync = (fn, params, cb) => {
+	new Promise((resolve, reject) => {
+		fn(params);
+	})
+		.then(cb || (() => {}))
+		.catch((e) => console.log(e));
+};
 
 const Round = class Round {
 	constructor(roundLength, roundCoolDown) {
@@ -230,31 +237,35 @@ export default class Game {
 	}
 
 	sendRoundInfo() {
-		let info = {
-			id: this.currentRound,
-			timeLeft: Math.round(this.round.timeLeft / seconds),
-			team0Wins: filter(this.rounds, (e) => e.winningTeam && e.winningTeam == 0).length,
-			team1Wins: filter(this.rounds, (e) => e.winningTeam && e.winningTeam == 1).length,
-			team0Alive: filter(this.players, (e) => !e.dead && e.team == 0).length,
-			team1Alive: filter(this.players, (e) => !e.dead && e.team == 1).length,
-			coolDown: this.round.inCoolDown
-		};
+		runAsync(() => {
+			let info = {
+				id: this.currentRound,
+				timeLeft: Math.round(this.round.timeLeft / seconds),
+				team0Wins: filter(this.rounds, (e) => e.winningTeam && e.winningTeam == 0).length,
+				team1Wins: filter(this.rounds, (e) => e.winningTeam && e.winningTeam == 1).length,
+				team0Alive: filter(this.players, (e) => !e.dead && e.team == 0).length,
+				team1Alive: filter(this.players, (e) => !e.dead && e.team == 1).length,
+				coolDown: this.round.inCoolDown
+			};
 
-		this.room.emit(roundInfo.encode(info));
+			this.room.emit(roundInfo.encode(info));
+		});
 	}
 
 	sendPlayerInfo(player) {
-		let arr = [];
+		runAsync(() => {
+			let arr = [];
 
-		if (player) {
-			arr.push(player);
-		} else {
-			arr = this.players;
-		}
+			if (player) {
+				arr.push(player);
+			} else {
+				arr = this.players;
+			}
 
-		arr = mapPlayerInfo(arr);
+			arr = mapPlayerInfo(arr);
 
-		this.room.emit(playerInfo.encode(arr));
+			this.room.emit(playerInfo.encode(arr));
+		});
 	}
 
 	addRound() {
@@ -269,24 +280,27 @@ export default class Game {
 	}
 
 	spawnBullet(x, y, dir, owner, type, moving) {
-		let bullet = new Bullet(
-			x + (weapons[type].width + animations[type].gun.x - 0.3) * Math.cos(dir * deg2Rad),
-			y + (weapons[type].width + animations[type].gun.x - 0.3) * Math.sin(dir * deg2Rad),
-			loopAngle(
-				dir + (weapons[type].spread || 3) * (moving ? 2 : 1) * (2 * (Math.random() - 0.5))
-			)
-		);
+		runAsync(() => {
+			let bullet = new Bullet(
+				x + (weapons[type].width + animations[type].gun.x - 0.3) * Math.cos(dir * deg2Rad),
+				y + (weapons[type].width + animations[type].gun.x - 0.3) * Math.sin(dir * deg2Rad),
+				loopAngle(
+					dir +
+						(weapons[type].spread || 3) * (moving ? 2 : 1) * (2 * (Math.random() - 0.5))
+				)
+			);
 
-		bullet.owner = owner;
-		bullet.speed = weapons[type].bulletSpeed || 0.2;
-		bullet.range = weapons[type].range || 10;
-		bullet.damage = weapons[type].damage || 5;
-		bullet.bulletType = idFromWeap(type);
-		bullet.start = Date.now();
-		bullet.team = this.players[owner].team;
-		bullet.create({ system: this.collisionSystem, Circle });
+			bullet.owner = owner;
+			bullet.speed = weapons[type].bulletSpeed || 0.2;
+			bullet.range = weapons[type].range || 10;
+			bullet.damage = weapons[type].damage || 5;
+			bullet.bulletType = idFromWeap(type);
+			bullet.start = Date.now();
+			bullet.team = this.players[owner].team;
+			bullet.create({ system: this.collisionSystem, Circle });
 
-		this.bullets.push(bullet);
+			this.bullets.push(bullet);
+		});
 	}
 
 	spawnLoot(x, y, type, qty = 0, create = true) {
@@ -398,6 +412,16 @@ export default class Game {
 							if (player.dead) return false;
 
 							player.damage(bullet.damage, this.collisionSystem);
+
+							let owner = this.players[bullet.owner];
+
+							if (player.dead && owner) {
+								owner.credits += 300;
+								owner.points += 15;
+								player.points -= 15;
+
+								this.sendPlayerInfo(owner);
+							}
 						}
 
 						if (collider.__type == "object") {
@@ -875,7 +899,8 @@ export default class Game {
 		channel.pid = player.id;
 		player.create({ system: this.collisionSystem, Circle });
 		player.invChanged = true;
-		player.credits = 800;
+		player.credits = 800; // credits for purchasing weaps
+		player.points = 0; // rank change points
 
 		channel.join(this.gameId);
 
