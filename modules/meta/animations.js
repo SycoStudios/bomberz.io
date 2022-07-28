@@ -37,9 +37,9 @@ export const animations = {
 		}
 	},
 	smg: {
-		right: { x: 1.2, y: 0.11 },
-		left: { x: 1.83, y: -0.11 },
-		gun: { x: 1.02, y: 0 },
+		right: { x: 1.37, y: 0.09 },
+		left: { x: 2.02, y: -0.09 },
+		gun: { x: 0.49, y: 0 },
 		length: 150
 	},
 	enhanced_smg: {
