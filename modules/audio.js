@@ -52,13 +52,14 @@ export const Audio = class {
 			);
 		}
 
-		sound.once(
-			"end",
-			(() => {
-				end(this);
-			}).bind(this),
-			instance
-		);
+		if (typeof end == "function")
+			sound.once(
+				"end",
+				(() => {
+					end(this);
+				}).bind(this),
+				instance
+			);
 
 		return instance;
 	}

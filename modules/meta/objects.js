@@ -34,7 +34,7 @@ export const objects = {
 		height: 7.76,
 		collider: {
 			type: "circle",
-			radius: 0.4
+			radius: 0.8
 		},
 		health: 200,
 		layer: "roofs",

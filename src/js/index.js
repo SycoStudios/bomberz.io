@@ -52,10 +52,10 @@ const renderFriend = (id, req = false) => {
 	let friend = req ? friendReqs[id] : friends[id];
 	let friendTemplate = req
 		? `<div class="friend"><img src="${
-				new URL("../../src/img/UI/logo_small.png", import.meta.url).href
+				new URL("../../src/img/UI/logo_small.png?as=webp", import.meta.url).href
 		  }" class="avatar" /><div class="name">${friend}</div><div class="acceptFriend" onclick="acceptFriend('${friend}')"></div><div class="removeFriend" onclick="rejectFriend('${friend}')"></div></div>`
 		: `<div class="friend"><img src="${
-				new URL("../../src/img/UI/logo_small.png", import.meta.url).href
+				new URL("../../src/img/UI/logo_small.png?as=webp", import.meta.url).href
 		  }" class="avatar" /><div class="name">${friend}</div><div class="matchesFriend"></div><div class="inviteFriend"></div><div class="removeFriend"></div></div>`;
 
 	document.querySelector(".friendList").innerHTML += friendTemplate;

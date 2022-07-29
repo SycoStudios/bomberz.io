@@ -1,0 +1,14 @@
+{
+	"name": "parcel-optimizer-js",
+	"version": "1.0.0",
+	"description": "Optimize/Codeprotect Bomberz.io",
+	"main": "optimize.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "",
+	"license": "ISC",
+	"engines": {
+		"parcel": "^2.5.0"
+	}
+}

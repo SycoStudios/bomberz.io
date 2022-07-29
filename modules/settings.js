@@ -2,6 +2,7 @@ import { forEach } from "./optimized";
 
 export default class Settings {
 	constructor(settingsKey, { sfxVol, musicVol, lang }) {
+		// remember to add to build reserved list
 		this.elements = {
 			sfxVol,
 			musicVol,

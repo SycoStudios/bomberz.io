@@ -1,0 +1,14 @@
+{
+	"name": "parcel-namer-files",
+	"version": "1.0.0",
+	"description": "File namer for Bomberz.io",
+	"main": "namer.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "",
+	"license": "ISC",
+	"engines": {
+		"parcel": "^2.5.0"
+	}
+}
