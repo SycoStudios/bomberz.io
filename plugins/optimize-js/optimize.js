@@ -10,8 +10,6 @@ const props = [
 	"health",
 	"curWeap",
 	"angle",
-	"x",
-	"y",
 	"changed",
 	"seenList",
 	"_isLocal",
@@ -83,18 +81,26 @@ const props = [
 	"collisionSystem",
 	"spectating",
 	"playerInfo",
-	"recSec"
+	"recSec",
+	"players",
+	"objects",
+	"bullets",
+	"id",
+	"x",
+	"x"
 ];
 const clean = (code) => {
 	let n = code;
 
-	// props.forEach((p) => {
-	// 	let x = randomBytes(2).toString("hex");
+	props.forEach((p) => {
+		let x = randomBytes(2).toString("hex");
 
-	// 	n = n.replace(new RegExp(`\\.${p}`, "g"), `._${x}`);
-	// 	n = n.replace(new RegExp(`\\["${p}"\\]`, "g"), `['_${x}']`);
-	// 	n = n.replace(new RegExp(`${p}:`, "g"), `_${x}:`);
-	// });
+		n = n.replace(new RegExp(`(?<!Object)\\.${p}(?=\W)(?=\S)`, "g"), `._${x}`);
+		n = n.replace(new RegExp(`(?<!Object)\\["${p}"\\]`, "g"), `['_${x}']`);
+		n = n.replace(new RegExp(`(?<!Object|const|let)(\\W)${p}:`, "g"), `$1_${x}:`);
+		n = n.replace(new RegExp(`(?<!Object)(\\})${p}\\(`, "g"), `$1_${x}(`);
+		n = n.replace(new RegExp(`(?<!Object)(\\W)\\.${p}=`, "g"), `$1._${x}=`);
+	});
 
 	return n;
 };
@@ -104,26 +110,34 @@ const dictionary = readFileSync(resolve(__dirname, "../../modules/lang.js"), "ut
 
 module.exports = new Optimizer({
 	async optimize({ contents, map, bundle }) {
-		if (true || !bundle.env.shouldOptimize) {
+		if (!bundle.env.shouldOptimize) {
 			return { contents, map };
 		}
 
-		let { code } = await minify(contents, {
-			compress: {
-				booleans_as_integers: true,
-				//drop_console: true,
-				keep_fargs: false,
-				passes: 2
-			},
-			mangle: {
-				reserved: [],
-				properties: {
-					reserved: [],
-					regex: new RegExp(`^(${props.join("|")})`)
-				}
-			}
-		});
+		if (contents.includes("@pixi/constants")) {
+			let { code } = await minify(contents, {
+				toplevel: true
+			});
 
-		return { contents: clean(code) };
+			return { contents: code };
+		} else {
+			let cleanedCode = (await minify(contents, { toplevel: true })).code;
+			let { code } = await minify(cleanedCode, {
+				compress: {
+					booleans_as_integers: true,
+					//drop_console: true,
+					keep_fargs: false,
+					passes: 2
+				},
+				mangle: {
+					properties: {
+						regex: new RegExp(`^(${props.join("|")})`)
+					}
+				},
+				toplevel: true
+			});
+
+			return { contents: code };
+		}
 	}
 });

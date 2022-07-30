@@ -1,8 +1,7 @@
-import { Howl, Howler } from "howler";
 import { calcDistance, clamp } from "./math";
 
 export const Audio = class {
-	constructor() {
+	constructor(Howl) {
 		this.sounds = {
 			assault_rifle_shoot: new Howl({
 				src: new URL("../src/audio/ak47_shoot.mp3", import.meta.url).href

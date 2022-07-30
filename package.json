@@ -18,6 +18,7 @@
 		"buffer": "^6.0.3",
 		"parcel": "^2.5.0",
 		"parcel-namer-files": "file:plugins/file-namer",
+		"parcel-optimizer-js": "file:plugins/optimize-js",
 		"querystring-es3": "^0.2.1",
 		"sharp": "^0.29.1",
 		"terser": "^5.14.2"
@@ -33,7 +34,6 @@
 		"detect-collisions": "^3.2.6",
 		"express": "^4.18.1",
 		"howler": "^2.2.3",
-		"parcel-optimizer-js": "file:plugins/optimize-js",
 		"pixi.js": "^6.3.0",
 		"sweetalert2": "^11.4.23"
 	}

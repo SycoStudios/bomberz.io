@@ -3,5 +3,10 @@
 	"namers": [
 		"parcel-namer-files",
 		"..."
-	]
+	],
+	"optimizers": {
+		"*.js": [
+			"parcel-optimizer-js"
+		]
+	}
 }
