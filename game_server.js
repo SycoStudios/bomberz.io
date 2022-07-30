@@ -21,9 +21,12 @@ io.listen(3000);
 io.onConnection((channel) => {
 	channel.onDisconnect(() => {
 		game.playerLeft(channel);
+		channel.__disconnected = true;
 	});
 
 	channel.onRaw(({ buffer }) => {
+		if (channel.__disconnected) return;
+
 		let arr = new BitArray(buffer);
 		let messageType = arr.getUint(3);
 
@@ -38,9 +41,17 @@ io.onConnection((channel) => {
 		}
 	});
 
+	channel.on("protocol", (v) => {
+		if (v == game.protocol) {
+			channel.joined = true;
+			channel.emit("joined");
+			game.addPlayer(channel);
+		} else {
+			channel.emit("outdated");
+		}
+	});
+
 	channel.on("token", (token) => {
 		game.playerToken(channel.pid, token);
 	});
-
-	game.addPlayer(channel);
 });

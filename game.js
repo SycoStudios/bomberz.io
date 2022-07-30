@@ -171,6 +171,8 @@ export default class Game {
 		this.actualTicks = 0;
 		this.inLoop = false;
 
+		this.protocol = 1;
+
 		this.apiKey = "apiKey123";
 		this.apiURL = `http://73.145.149.66:1234/server_api/${this.apiKey}`;
 

@@ -29,6 +29,7 @@ import ObjectClass from "../../modules/object.js";
 import Settings from "../../modules/settings.js";
 import geckos from "@geckos.io/client";
 
+let protocol = 1;
 let listeners = [];
 let friends = [];
 let friendReqs = [];
@@ -117,11 +118,22 @@ import("./externs.js").then(
 			if (num > 255) return loopByte(num - 255);
 			if (num < 0) return loopByte(num + 255);
 		};
-		const startGame = (done) => {
+		const keybinds = {
+			moveLeft: "a",
+			moveRight: "d",
+			moveUp: "w",
+			moveDown: "s",
+			interact: "f",
+			pause: "Escape",
+			buyMenu: "b"
+		};
+		const startGame = (gameLoaded) => {
 			removeEventListeners();
 			removeCanvases();
 
 			console.log("Game started");
+
+			let over = false;
 
 			const app = new Application({
 				antialias: true,
@@ -130,15 +142,6 @@ import("./externs.js").then(
 			});
 			const channel = geckos({ port: 3000 });
 			const input = new Input();
-			const keybinds = {
-				moveLeft: "a",
-				moveRight: "d",
-				moveUp: "w",
-				moveDown: "s",
-				interact: "f",
-				pause: "Escape",
-				buyMenu: "b"
-			};
 			const data = {
 				started: false,
 				players: {},
@@ -719,6 +722,26 @@ import("./externs.js").then(
 
 				layers.floors.addChildAt(grid, 0);
 			};
+			const endGame = (reason) => {
+				if (over) return;
+
+				over = true;
+
+				if (channel) channel.close();
+
+				removeEventListeners();
+				removeCanvases();
+				cancelAnimationFrame(animateUpdate);
+
+				curSocket = null;
+
+				document.querySelector("#lobby").classList.remove("hidden");
+				document.querySelector("#info").classList.remove("hidden");
+				document.querySelector("#play .load").classList.add("hidden");
+				document.querySelector("#play .text").classList.remove("hidden");
+
+				console.log("Game ended");
+			};
 			const bitarr = new BitArray();
 
 			channel.onConnect((error) => {
@@ -726,9 +749,7 @@ import("./externs.js").then(
 
 				curSocket = channel;
 
-				if (loggedIn && settings.token) {
-					channel.emit("token", settings.token);
-				}
+				channel.emit("protocol", protocol);
 
 				channel.onRaw((buffer) => {
 					bitarr.decode(buffer);
@@ -746,7 +767,11 @@ import("./externs.js").then(
 							let msg = welcomeState.decode(bitarr);
 
 							if (!data.started) {
-								done();
+								gameLoaded();
+
+								if (loggedIn && settings.token) {
+									channel.emit("token", settings.token);
+								}
 							}
 
 							data.started = true;
@@ -879,11 +904,10 @@ import("./externs.js").then(
 						}
 					}
 				});
+
+				channel.on("outdated", endGame.bind(this, ["outdated"]));
 			});
-			channel.onDisconnect(() => {
-				curSocket = null;
-				cancelAnimationFrame(animateUpdate);
-			});
+			channel.onDisconnect(endGame.bind(this, ["disconnected"]));
 			input.on("change", sendInput);
 
 			addEventListener("resize", resize);
@@ -986,6 +1010,9 @@ import("./externs.js").then(
 		}
 
 		document.querySelector("#play").onclick = () => {
+			document.querySelector("#play .load").classList.remove("hidden");
+			document.querySelector("#play .text").classList.add("hidden");
+
 			startGame(() => {
 				document.querySelector("#lobby").classList.add("hidden");
 				document.querySelector("#info").classList.add("hidden");

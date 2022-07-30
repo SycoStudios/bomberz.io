@@ -3,7 +3,7 @@ const { Namer } = require("@parcel/plugin");
 module.exports = new Namer({
 	name({ bundle }) {
 		if (!bundle.needsStableName) {
-			if (bundle.type === "webp") {
+			if (bundle.type === "webp" || bundle.type === "png") {
 				return `img/${bundle.hashReference}.webp`;
 			}
 			if (bundle.type === "mp3") {
