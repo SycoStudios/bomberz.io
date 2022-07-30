@@ -116,7 +116,11 @@ module.exports = new Optimizer({
 
 		if (contents.includes("@pixi/constants")) {
 			let { code } = await minify(contents, {
-				toplevel: true
+				toplevel: true,
+				compress: {
+					drop_console: true,
+					passes: 20
+				}
 			});
 
 			return { contents: code };
@@ -125,9 +129,9 @@ module.exports = new Optimizer({
 			let { code } = await minify(cleanedCode, {
 				compress: {
 					booleans_as_integers: true,
-					//drop_console: true,
+					drop_console: true,
 					keep_fargs: false,
-					passes: 2
+					passes: 20
 				},
 				mangle: {
 					properties: {

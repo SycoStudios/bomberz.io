@@ -100,6 +100,10 @@ const hash = (data) => {
 const enc = new Encrypter("@VeryStrongPassword+Secret!");
 const emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/i;
 
+app.get("*.map", (req, res) => {
+	return send(res, 404);
+});
+
 app.use(express.static("dist"));
 app.use(bodyParser.json());
 
