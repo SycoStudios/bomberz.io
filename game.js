@@ -244,6 +244,10 @@ export default class Game {
 		return this.rounds[this.currentRound];
 	}
 
+	get activePlayers() {
+		return filter(this.players, (player) => !player.disconnected).length;
+	}
+
 	sendRoundInfo() {
 		runAsync(() => {
 			let info = {
