@@ -723,7 +723,8 @@ import("./externs.js").then(
 				layers.floors.addChildAt(grid, 0);
 			};
 			const endGame = (reason) => {
-				if (over) return;
+				// Only do this action if the connection was stopped, not if the game was finished.
+				if (over || data.gameOver) return;
 
 				over = true;
 
@@ -903,6 +904,10 @@ import("./externs.js").then(
 							break;
 						}
 					}
+				});
+
+				channel.on("gameOver", () => {
+					data.gameOver = true;
 				});
 
 				channel.on("outdated", endGame.bind(this, ["outdated"]));

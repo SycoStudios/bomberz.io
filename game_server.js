@@ -19,6 +19,12 @@ const game = new Game(io);
 
 io.listen(3000);
 io.onConnection((channel) => {
+	if (game.gameOver) {
+		channel.close();
+
+		return;
+	}
+
 	channel.onDisconnect(() => {
 		game.playerLeft(channel);
 		channel.__disconnected = true;
