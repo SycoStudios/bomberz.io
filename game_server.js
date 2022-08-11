@@ -22,7 +22,7 @@ const getOpenGame = () => {
 	});
 
 	let openGames = Object.keys(games).sort(
-		(a, b) => games[a].activePlayers - games[b].activePlayers
+		(a, b) => games[a].currentRound - games[b].currentRound
 	);
 
 	if (openGames.length == 0) {
