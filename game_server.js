@@ -21,9 +21,7 @@ const getOpenGame = () => {
 		return !g.gameOver && g.activePlayers < 10 && g.round.inCoolDown;
 	});
 
-	let openGames = Object.keys(games).sort(
-		(a, b) => games[a].currentRound - games[b].currentRound
-	);
+	let openGames = Object.keys(games).sort((a, b) => games[a].gameStarted - games[b].gameStarted);
 
 	if (openGames.length == 0) {
 		let game = new Game(io);
