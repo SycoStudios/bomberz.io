@@ -39,6 +39,16 @@ export const objects = {
 		health: 200,
 		layer: "roofs",
 		rotate: true
+	},
+	bomb: {
+		worldImage: new URL("../../src/img/c4_normal.png?as=webp&width=300", import.meta.url).href,
+		width: 2.05,
+		height: 1.61,
+		collider: {
+			type: "box",
+			width: 2.05,
+			height: 1.21
+		}
 	}
 };
 const objNames = Object.keys(objects);

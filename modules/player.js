@@ -16,7 +16,7 @@ export class Player {
 			{ type: "fists", ammo: 0 },
 			{ type: "", ammo: 0 }
 		];
-		this.curWeap = 0;
+		this.curWeap = 2;
 		this.changed = false;
 		this.seenList = [];
 		this._isLocal = local;

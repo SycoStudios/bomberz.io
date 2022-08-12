@@ -55,7 +55,7 @@ export const weapons = {
 		height: 0.35,
 		width: 1.97,
 		bulletSpeed: 0.6,
-		shootDelay: 50,
+		shootDelay: 40,
 		range: 30,
 		spread: 9,
 		damage: 8,

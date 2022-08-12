@@ -210,6 +210,7 @@ export default class Game {
 		this.spawnObject(2, 0, `crate_01`);
 		this.spawnObject(-6, 2, `tree_01`);
 		this.spawnObject(-10, 4, `tree_01`);
+		this.spawnObject(3, 7, `bomb`);
 
 		this.server = server;
 		this.room = server.room(this.gameId);
@@ -278,6 +279,25 @@ export default class Game {
 
 			this.rawRoom.emit(playerInfo.encode(arr));
 		});
+	}
+
+	sendLocalState(player) {
+		runAsync(() =>
+			player.channel.raw.emit(
+				localState.encode({
+					weapon1Type: idFromWeap(player.weapons[0].type),
+					weapon2Type: idFromWeap(player.weapons[1].type),
+					weapon3Type: idFromWeap(player.weapons[2].type),
+					weapon4Type: idFromWeap(player.weapons[3].type),
+					weapon1Ammo: player.weapons[0].ammo,
+					weapon2Ammo: player.weapons[1].ammo,
+					weapon3Ammo: player.weapons[2].ammo,
+					weapon4Ammo: player.weapons[3].ammo,
+					weapId: player.curWeap,
+					health: player.health
+				})
+			)
+		);
 	}
 
 	addRound() {
@@ -655,20 +675,8 @@ export default class Game {
 				player.inputChanged = false;
 			}
 			if (player.invChanged || player.health !== player.lastHealth) {
-				player.channel.raw.emit(
-					localState.encode({
-						weapon1Type: idFromWeap(player.weapons[0].type),
-						weapon2Type: idFromWeap(player.weapons[1].type),
-						weapon3Type: idFromWeap(player.weapons[2].type),
-						weapon4Type: idFromWeap(player.weapons[3].type),
-						weapon1Ammo: player.weapons[0].ammo,
-						weapon2Ammo: player.weapons[1].ammo,
-						weapon3Ammo: player.weapons[2].ammo,
-						weapon4Ammo: player.weapons[3].ammo,
-						weapId: player.curWeap,
-						health: player.health
-					})
-				);
+				this.sendLocalState(player);
+
 				player.change();
 				player.invChanged = false;
 				player.lastHealth = player.health;
@@ -948,6 +956,7 @@ export default class Game {
 					player.invChanged = true;
 
 					this.sendPlayerInfo(player);
+					this.sendLocalState(player);
 				}
 			}
 		}
@@ -993,7 +1002,6 @@ export default class Game {
 		player.id = Object.keys(this.players).length;
 		channel.pid = player.id;
 		player.create({ system: this.collisionSystem, Circle });
-		player.invChanged = true;
 		player.credits = 800; // credits for purchasing weaps
 		player.points = 0; // rank change points
 
@@ -1017,6 +1025,7 @@ export default class Game {
 		);
 
 		this.sendPlayerInfo();
+		this.sendLocalState(player);
 
 		this.lastRoundInfo = 0;
 	}

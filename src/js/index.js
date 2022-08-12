@@ -206,6 +206,8 @@ import("./externs.js").then(
 				app.stage.pivot.set(x, y);
 			};
 			const sendInput = (input, weap = undefined, drop = undefined) => {
+				if (data.gameOver) return;
+
 				input.weapKey = input.getKeyDown(1)
 					? 0
 					: input.getKeyDown(2)
@@ -464,11 +466,13 @@ import("./externs.js").then(
 			const animateUpdate = () => {
 				requestAnimationFrame(animateUpdate);
 
+				if (data.gameOver) return;
+
 				let touching = [];
 				let now = Date.now();
 				let delta = (now - data.lastFrameTime) / (1000 / 60);
 
-				if (data.pov != undefined && !data.spectating) {
+				if (data.pov != undefined && !data.inCoolDown && !data.spectating) {
 					let player = data.players[data.pov];
 
 					if (!player || player.dead) return;
@@ -659,7 +663,11 @@ import("./externs.js").then(
 					UI.pauseMenu.classList.toggle("hidden");
 				}
 
-				if (input.getKeyDown(keybinds.buyMenu) && !data.lastKeybind.buyMenu) {
+				if (
+					data.inCoolDown &&
+					input.getKeyDown(keybinds.buyMenu) &&
+					!data.lastKeybind.buyMenu
+				) {
 					UI.buyMenu.classList.toggle("hidden");
 				}
 
@@ -847,6 +855,8 @@ import("./externs.js").then(
 							UI.roundInfo.team0.wins.innerText = info.team0Wins;
 							UI.roundInfo.team1.wins.innerText = info.team1Wins;
 
+							data.inCoolDown = info.coolDown;
+
 							if (info.coolDown) {
 								UI.roundInfo.starting.classList.remove("hidden");
 								UI.roundInfo.roundNum.innerText = info.id + 1;
@@ -854,11 +864,15 @@ import("./externs.js").then(
 								UI.roundInfo.timeLeft.innerText = secondsToDisplay(info.timeLeft);
 								UI.roundInfo.timeLeft.classList.add("cool");
 								UI.roundInfo.timeLeft.classList.remove("hot");
+
+								document.title = `Starting in ${info.timeLeft}s`;
 							} else {
 								UI.roundInfo.starting.classList.add("hidden");
 								UI.roundInfo.timeLeft.classList.remove("cool");
 								UI.roundInfo.timeLeft.classList.remove("hot");
 								UI.roundInfo.timeLeft.innerText = secondsToDisplay(info.timeLeft);
+
+								UI.buyMenu.classList.add("hidden");
 
 								if (info.timeLeft <= 20) {
 									UI.roundInfo.timeLeft.classList.add("hot");
@@ -875,6 +889,8 @@ import("./externs.js").then(
 										);
 									}
 								}
+
+								document.title = `Bomberz.io`;
 							}
 
 							break;

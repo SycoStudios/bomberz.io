@@ -9,9 +9,20 @@ export default class Object {
 		this.type = type;
 		this.category = idFromCategory("object");
 		this.seenList = [];
+		this.destructible = !!objects[type].health;
 		this.health = objects[type].health || 100;
 		this.layer = objects[type].layer || "objects";
 		this._isLocal = local;
+	}
+
+	set scale(value) {
+		if (this._isLocal) {
+			this._container.scale.set(value, value);
+		}
+
+		if (!!this._collider) {
+			this.change();
+		}
 	}
 
 	move(x, y, reset = true) {
@@ -85,7 +96,7 @@ export default class Object {
 	}
 
 	damage(amnt, system) {
-		if (this.destroyed) return;
+		if (this.destroyed || !this.destructible) return;
 
 		this.health -= amnt;
 		if (this.health <= 0) {
