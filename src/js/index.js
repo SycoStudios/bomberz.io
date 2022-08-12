@@ -291,7 +291,7 @@ import("./externs.js").then(
 								focus(player.x, player.y);
 							}
 
-							if (!p._container.visible) p._container.visible = true;
+							if (!p.visible) p.visible = true;
 
 							if (!player.dead) {
 								if (player.id == data.pov && !data.spectating) {
@@ -315,13 +315,6 @@ import("./externs.js").then(
 
 								p.lastAction = p.action;
 							} else {
-								p._playerRip.visible = true;
-								p._playerBody.visible = false;
-								p._playerSkin.visible = false;
-								p._leftHand.visible = false;
-								p._rightHand.visible = false;
-								p._weapon.visible = false;
-
 								if (player.id == data.pov) {
 									audio.playMenuTheme();
 									UI.deathScreen.classList.remove("hidden");
@@ -329,7 +322,6 @@ import("./externs.js").then(
 
 								data.collisionSystem.remove(p._collider);
 
-								p.rotate(0);
 								p.move(player.x, player.y);
 
 								layers.players.removeChild(p._container);
@@ -417,6 +409,8 @@ import("./externs.js").then(
 											o._container.rotation = getRandomInt(180 * deg2Rad);
 										}
 									}
+
+									data.objects[object.id].scale = object.scale;
 									break;
 								}
 							}

@@ -9,7 +9,6 @@ export class Player {
 		this.y = 0;
 		this.angle = 0;
 		this.health = 100;
-		this.dead = false;
 		this.weapons = [
 			{ type: "", ammo: 0 },
 			{ type: "", ammo: 0 },
@@ -19,11 +18,43 @@ export class Player {
 		this.curWeap = 2;
 		this.changed = false;
 		this.seenList = [];
+		this._dead = false;
 		this._isLocal = local;
 	}
 
+	get speed() {
+		return 0.16;
+	}
+
+	get dead() {
+		return this._dead;
+	}
+
+	set dead(value) {
+		this._dead = !!value;
+
+		if (this._isLocal && value) {
+			this._playerRip.visible = true;
+			this._playerBody.visible = false;
+			this._playerSkin.visible = false;
+			this._leftHand.visible = false;
+			this._rightHand.visible = false;
+			this._weapon.visible = false;
+
+			this.rotate(0);
+		}
+	}
+
+	get visible() {
+		return this._container.visible;
+	}
+
+	set visible(value) {
+		this._container.visible = value;
+	}
+
 	move(x, y, reset = true) {
-		if (this.dead && !this._isLocal) return;
+		if (this._dead && !this._isLocal) return;
 
 		this.x = reset ? x : this.x + x;
 		this.y = reset ? y : this.y + y;
@@ -32,7 +63,7 @@ export class Player {
 	}
 
 	rotate(angle) {
-		if (this.dead && !this._isLocal) return;
+		if (this._dead && !this._isLocal) return;
 
 		if (angle !== this.angle) this.inputChanged = true;
 
@@ -47,7 +78,7 @@ export class Player {
 		this.health -= amnt;
 
 		if (this.health <= 0) {
-			this.dead = true;
+			this._dead = true;
 			this.health = 0;
 
 			system.remove(this._collider);
@@ -259,9 +290,5 @@ export class Player {
 
 	change() {
 		this.seenList = [];
-	}
-
-	get speed() {
-		return 0.16;
 	}
 }

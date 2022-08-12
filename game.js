@@ -52,6 +52,7 @@ const mapObjects = (objects) =>
 			category: o.category,
 			destroyed: o.destroyed,
 			data: idFromItem(o.item) || idFromObj(o.type),
+			scale: o.scale,
 			id: o.id
 		};
 	});
@@ -588,7 +589,7 @@ export default class Game {
 				(player.mouseDown ||
 					(weapStats.burst && player.shotInBurst !== 0 && player.shotInBurst < 3)) &&
 				now - player.lastShot >
-					((player.shotInBurst == 0 ? weapStats.shootDelay : weapStats.burstDelay) || 150)
+					((player.shotInBurst == 0 ? weapStats.shootDelay : weapStats.burstDelay) || 210)
 			) {
 				switch (weapStats.type) {
 					case "melee": {

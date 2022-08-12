@@ -10,17 +10,31 @@ export default class Object {
 		this.category = idFromCategory("object");
 		this.seenList = [];
 		this.destructible = !!objects[type].health;
+		this.dontScale = !!objects[type].dontScale;
 		this.health = objects[type].health || 100;
 		this.layer = objects[type].layer || "objects";
 		this._isLocal = local;
+		this._scale = 1;
+	}
+
+	get originalHealth() {
+		return objects[this.type].health || 100;
+	}
+
+	get scale() {
+		return this._scale;
 	}
 
 	set scale(value) {
+		this._scale = value;
+
 		if (this._isLocal) {
 			this._container.scale.set(value, value);
 		}
 
-		if (!!this._collider) {
+		if (!!this._collider && !!this._collisionCache) {
+			this._collisionCache.system.remove(this._collider);
+			this.createCollider(this._collisionCache, value);
 			this.change();
 		}
 	}
@@ -36,30 +50,8 @@ export default class Object {
 
 	create({ Sprite, Container, Box, Circle, system }, collisions = false) {
 		if (!this._isLocal || collisions) {
-			let object = objects[this.type];
-
-			if (object.collider.type == "box") {
-				this._collider = new Box(
-					{
-						x: this.x - object.collider.width / 2,
-						y: this.y - object.collider.height / 2
-					},
-					object.collider.width,
-					object.collider.height
-				);
-			} else if (object.collider.type == "circle") {
-				this._collider = new Circle(
-					{
-						x: this.x,
-						y: this.y
-					},
-					object.collider.radius
-				);
-			}
-			this._collider.__type = "object";
-			this._collider.__oid = this.id;
-
-			system.insert(this._collider);
+			this._collisionCache = { Box, Circle, system };
+			this.createCollider({ system, Box, Circle });
 		}
 		if (this._isLocal) {
 			let object = objects[this.type];
@@ -103,10 +95,42 @@ export default class Object {
 			this.health = 0;
 			this.destroy(system);
 		}
+
+		if (this.destructible && !this.dontScale) {
+			this.scale = this.health / this.originalHealth / 2 + 0.5;
+		}
 	}
 
 	change() {
 		this.seenList = [];
+	}
+
+	createCollider({ system, Box, Circle }, scale = 1) {
+		let object = objects[this.type];
+
+		if (object.collider.type == "box") {
+			this._collider = new Box(
+				{
+					x: this.x - (object.collider.width * scale) / 2,
+					y: this.y - (object.collider.height * scale) / 2
+				},
+				object.collider.width * scale,
+				object.collider.height * scale
+			);
+		} else if (object.collider.type == "circle") {
+			this._collider = new Circle(
+				{
+					x: this.x,
+					y: this.y
+				},
+				object.collider.radius * scale
+			);
+		}
+
+		this._collider.__type = "object";
+		this._collider.__oid = this.id;
+
+		system.insert(this._collider);
 	}
 
 	update() {
