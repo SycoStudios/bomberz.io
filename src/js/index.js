@@ -482,6 +482,7 @@ import("./externs.js").then(
 
 					if (moveX || moveY) {
 						let moveDir = Math.atan2(moveY, moveX);
+						let prevPos = { x: player.x, y: player.y };
 
 						player.move(
 							Math.cos(moveDir) * deltaSpeed,
@@ -507,13 +508,20 @@ import("./externs.js").then(
 							)
 								return;
 
-							if (data.collisionSystem.checkCollision(player._collider, collider)) {
-								const { overlapV } = data.collisionSystem.response;
+							player.move(
+								lerp(prevPos.x, player.actualX, 0.8),
+								lerp(prevPos.y, player.actualY, 0.8),
+								true
+							);
 
-								player.move(-overlapV.x, -overlapV.y, false);
-							}
+							// if (data.collisionSystem.checkCollision(player._collider, collider)) {
+							// 	const { overlapV } = data.collisionSystem.response;
+
+							// 	player.move(-overlapV.x, -overlapV.y, false);
+							// }
 						});
-					} else if (data.sec - data.recSec <= 1) {
+					}
+					if (data.sec - data.recSec <= 1) {
 						player.move(
 							lerp(player.x, player.actualX, 0.35),
 							lerp(player.y, player.actualY, 0.35),
