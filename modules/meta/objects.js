@@ -13,7 +13,7 @@ export const objects = {
 			width: 2.7,
 			height: 2.7
 		},
-		health: 50,
+		health: 110,
 		contentRarity: 0
 	},
 	crate_02: {
@@ -25,7 +25,7 @@ export const objects = {
 			width: 2.64,
 			height: 1.5
 		},
-		health: 50,
+		health: 110,
 		contentRarity: 1
 	},
 	tree_01: {
@@ -49,6 +49,16 @@ export const objects = {
 			width: 2.05,
 			height: 1.21
 		}
+	},
+	building_01: {
+		compound: true,
+		children: [
+			{
+				x: 0,
+				y: 0,
+				type: "crate_01"
+			}
+		]
 	}
 };
 const objNames = Object.keys(objects);

@@ -208,7 +208,7 @@ export default class Game {
 
 		// Object Spawning from Objects.js
 		this.spawnObject(5, 5, `crate_02`);
-		this.spawnObject(2, 0, `crate_01`);
+		this.spawnObject(2, 0, `building_01`);
 		this.spawnObject(-6, 2, `tree_01`);
 		this.spawnObject(-10, 4, `tree_01`);
 		this.spawnObject(3, 7, `bomb`);
@@ -355,23 +355,29 @@ export default class Game {
 	}
 
 	spawnObject(x, y, type, create = true) {
-		let object = new ObjectClass(x, y, this.objects.length, type);
+		let objData = objects[type];
 
-		this.objects.push(object);
-
-		if (create) {
-			object.create({
-				Circle,
-				Box,
-				system: this.collisionSystem
+		if (objData.compound) {
+			forEach(objData.children, (obj) => {
+				this.spawnObject(x + obj.x, y + obj.y, obj.type, create);
 			});
-		}
+		} else {
+			let object = new ObjectClass(x, y, this.objects.length, type);
 
-		if (type.includes("crate")) {
-			object.onDestroy = this.crateDestroyed.bind(this);
-		}
+			this.objects.push(object);
 
-		return object;
+			if (create) {
+				object.create({
+					Circle,
+					Box,
+					system: this.collisionSystem
+				});
+			}
+
+			if (objData.contentRarity) {
+				object.onDestroy = this.crateDestroyed.bind(this);
+			}
+		}
 	}
 
 	crateDestroyed(x, y, type) {
