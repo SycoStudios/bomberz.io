@@ -11,7 +11,7 @@ import {
 } from "./models/index.js";
 import { actions } from "./modules/meta/actions.js";
 import { weapons, idFromWeap, weapFromId } from "./modules/meta/weapons.js";
-import { Circle, Box, System } from "detect-collisions";
+import { Circle, Box, Polygon, System } from "detect-collisions";
 import { calcDistance, clamp, deg2Rad } from "./modules/math.js";
 import { animations } from "./modules/meta/animations.js";
 import { idFromItem, items } from "./modules/meta/itemTypes.js";
@@ -207,11 +207,14 @@ export default class Game {
 		}
 
 		// Object Spawning from Objects.js
-		this.spawnObject(5, 5, `crate_02`);
+		//this.spawnObject(5, 5, `crate_02`);
 		this.spawnObject(2, 0, `building_01`);
-		this.spawnObject(-6, 2, `tree_01`);
-		this.spawnObject(-10, 4, `tree_01`);
-		this.spawnObject(3, 7, `bomb`);
+		//this.spawnObject(-6, 2, `tree_01`);
+		//this.spawnObject(-10, 4, `tree_01`);
+		//this.spawnObject(3, 7, `bomb`);
+
+		// this.spawnObject(1.4, 1.4, `crate_01`);
+		// this.spawnObject(2.7 + 1.4, 2.7 + 1.4, `crate_01`);
 
 		this.server = server;
 		this.room = server.room(this.gameId);
@@ -319,8 +322,8 @@ export default class Game {
 	spawnBullet(x, y, dir, owner, type, moving) {
 		runAsync(() => {
 			let bullet = new Bullet(
-				x + (weapons[type].width + animations[type].gun.x - 0.3) * Math.cos(dir * deg2Rad),
-				y + (weapons[type].width + animations[type].gun.x - 0.3) * Math.sin(dir * deg2Rad),
+				x + (weapons[type].width + animations[type].gun.x - 0.5) * Math.cos(dir * deg2Rad),
+				y + (weapons[type].width + animations[type].gun.x - 0.5) * Math.sin(dir * deg2Rad),
 				loopAngle(
 					dir +
 						(weapons[type].spread || 3) * (moving ? 2 : 1) * (2 * (Math.random() - 0.5))
@@ -369,12 +372,13 @@ export default class Game {
 			if (create) {
 				object.create({
 					Circle,
+					Polygon,
 					Box,
 					system: this.collisionSystem
 				});
 			}
 
-			if (objData.contentRarity) {
+			if (objData.contentRarity !== undefined) {
 				object.onDestroy = this.crateDestroyed.bind(this);
 			}
 		}
@@ -563,6 +567,87 @@ export default class Game {
 					clamp(player.y, this.map.min + 1, this.map.max - 1),
 					true
 				);
+			} else {
+				if (!player.interact) player.alreadyInteracted = false;
+				player.lastInteraction = player.lastInteraction || 0;
+				player.lastNonInteract = player.lastNonInteract || 0;
+
+				const potentials = this.collisionSystem.getPotentials(player._collider);
+
+				forEach(
+					potentials.sort(
+						(a, b) =>
+							calcDistance(a.pos.x, a.pos.y, player.x, player.y) -
+							calcDistance(b.pos.x, b.pos.y, player.x, player.y)
+					),
+					(collider) => {
+						if (collider.__type == "bullet" || collider.__type == "player") return;
+
+						if (this.collisionSystem.checkCollision(player._collider, collider)) {
+							if (
+								collider.__oid != undefined &&
+								this.objects[collider.__oid].destroyed
+							)
+								return;
+
+							if (collider.__type == "loot") {
+								if (
+									player.interact &&
+									!player.alreadyInteracted &&
+									now - player.lastInteraction >= 100 &&
+									now - player.lastNonInteract <= 50
+								) {
+									player.alreadyInteracted = true;
+									player.lastInteraction = now;
+
+									let obj = this.objects[collider.__oid];
+									let item = obj.item;
+
+									switch (items[item].type) {
+										case "gun": {
+											if (
+												player.weapons[0].type != "" &&
+												player.weapons[1].type != ""
+											) {
+												if (
+													player.curWeap != 2 &&
+													player.weapons[player.curWeap].type !== item
+												) {
+													obj.item = player.weapons[player.curWeap].type;
+													obj.change();
+													player.weapons[player.curWeap].type = item;
+													player.weapons[player.curWeap].ammo = obj.qty;
+													//obj.destroy(this.collisionSystem);
+												}
+											} else {
+												if (player.weapons[0].type == "") {
+													player.weapons[0].type = item;
+													player.weapons[0].ammo = obj.qty;
+													player.curWeap = 0;
+													obj.destroy(this.collisionSystem);
+												} else if (player.weapons[1].type == "") {
+													player.weapons[1].type = item;
+													player.weapons[1].ammo = obj.qty;
+													player.curWeap = 1;
+													obj.destroy(this.collisionSystem);
+												}
+											}
+
+											player.invChanged = true;
+											break;
+										}
+									}
+								} else {
+									if (!player.interact) player.lastNonInteract = now;
+								}
+							} else {
+								const { overlapV, aInB, bInA } = this.collisionSystem.response;
+
+								player.move(-overlapV.x, -overlapV.y, false);
+							}
+						}
+					}
+				);
 			}
 
 			let weap = player.weapons[player.curWeap] || {};
@@ -688,110 +773,26 @@ export default class Game {
 				player.invChanged = false;
 				player.lastHealth = player.health;
 			}
-
-			if (!player.interact) player.alreadyInteracted = false;
-			player.lastInteraction = player.lastInteraction || 0;
-			player.lastNonInteract = player.lastNonInteract || 0;
-
-			const potentials = this.collisionSystem.getPotentials(player._collider);
-
-			forEach(
-				potentials.sort(
-					(a, b) =>
-						calcDistance(a.pos.x, a.pos.y, player.x, player.y) -
-						calcDistance(b.pos.x, b.pos.y, player.x, player.y)
-				),
-				(collider) => {
-					if (collider.__type == "bullet" || collider.__type == "player") return;
-
-					if (this.collisionSystem.checkCollision(player._collider, collider)) {
-						if (collider.__oid != undefined && this.objects[collider.__oid].destroyed)
-							return;
-
-						if (collider.__type == "loot") {
-							if (
-								player.interact &&
-								!player.alreadyInteracted &&
-								now - player.lastInteraction >= 100 &&
-								now - player.lastNonInteract <= 50
-							) {
-								player.alreadyInteracted = true;
-								player.lastInteraction = now;
-
-								let obj = this.objects[collider.__oid];
-								let item = obj.item;
-
-								switch (items[item].type) {
-									case "gun": {
-										if (
-											player.weapons[0].type != "" &&
-											player.weapons[1].type != ""
-										) {
-											if (
-												player.curWeap != 2 &&
-												player.weapons[player.curWeap].type !== item
-											) {
-												obj.item = player.weapons[player.curWeap].type;
-												obj.change();
-												player.weapons[player.curWeap].type = item;
-												player.weapons[player.curWeap].ammo = obj.qty;
-												//obj.destroy(this.collisionSystem);
-											}
-										} else {
-											if (player.weapons[0].type == "") {
-												player.weapons[0].type = item;
-												player.weapons[0].ammo = obj.qty;
-												player.curWeap = 0;
-												obj.destroy(this.collisionSystem);
-											} else if (player.weapons[1].type == "") {
-												player.weapons[1].type = item;
-												player.weapons[1].ammo = obj.qty;
-												player.curWeap = 1;
-												obj.destroy(this.collisionSystem);
-											}
-										}
-
-										player.invChanged = true;
-										break;
-									}
-								}
-							} else {
-								if (!player.interact) player.lastNonInteract = now;
-							}
-						} else {
-							const { overlapV } = this.collisionSystem.response;
-
-							player.move(-overlapV.x, -overlapV.y, false);
-						}
-					}
-				}
-			);
 		});
 		forEach(this.objects, (object) => {
 			if (object.destroyed) return;
 			if (categoryFromId(object.category) == "object") return;
-			if (object.collisions == undefined) object.collisions = 0;
 
 			const potentials = this.collisionSystem.getPotentials(object._collider);
 
 			forEach(potentials, (collider) => {
 				if (collider.__oid == undefined) return;
-				if (object.collisions > 10) return;
+				if (this.objects[collider.__oid].destroyed) {
+					this.collisionSystem.remove(collider);
+					return;
+				}
 
 				if (this.collisionSystem.checkCollision(object._collider, collider)) {
-					const { overlapV, aInB, bInA } = this.collisionSystem.response;
+					const { overlapV } = this.collisionSystem.response;
 
-					if (aInB || bInA) {
-						object.move(Math.random() ** 2, Math.random() ** 2, false);
-					} else {
-						object.collisions += 2;
-						object.move(-overlapV.x * 1.2, -overlapV.y * 1.2, false);
-					}
+					object.move(-overlapV.x, -overlapV.y, false);
 				}
 			});
-
-			object.collisions -= 1;
-			object.collisions = Math.max(0, object.collisions);
 		});
 
 		// Remove bullets that are "done"

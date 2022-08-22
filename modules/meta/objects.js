@@ -50,14 +50,142 @@ export const objects = {
 			height: 1.21
 		}
 	},
+	building_roof_01: {
+		worldImage: new URL("../../src/img/building_roof_01.png?as=webp&width=300", import.meta.url)
+			.href,
+		width: 28,
+		height: 16.52
+	},
+	building_layout_01: {
+		worldImage: new URL(
+			"../../src/img/building_layout_01.png?as=webp&width=3000",
+			import.meta.url
+		).href,
+		width: 26.5,
+		height: 15.02
+	},
+	building_floor_01: {
+		worldImage: new URL(
+			"../../src/img/building_floor_01.png?as=webp&width=3000",
+			import.meta.url
+		).href,
+		width: 25.85,
+		height: 18.27,
+		layer: "floors"
+	},
+	building_walls_a_01: {
+		collider: {
+			type: "poly",
+			points: [
+				{ x: -11.25, y: -6.76 },
+				{ x: -12.5, y: -6.76 },
+				{ x: -12.5, y: 6.75 },
+				{ x: -3.1, y: 6.75 },
+				{ x: -3.1, y: 0.41 },
+				{ x: -2.35, y: 0.41 },
+				{ x: -2.35, y: 6.75 },
+				{ x: 0.77, y: 6.75 },
+				{ x: 0.77, y: 7.5 },
+				{ x: -13.25, y: 7.5 },
+				{ x: -13.25, y: -7.51 },
+				{ x: -11.25, y: -7.51 }
+			]
+		}
+	},
+	building_walls_b_01: {
+		collider: {
+			type: "poly",
+			points: [
+				{ x: -7.75, y: -7.51 },
+				{ x: -7.75, y: -6.76 },
+				{ x: 4.74, y: -6.76 },
+				{ x: 4.74, y: 2.39 },
+				{ x: 5.49, y: 2.39 },
+				{ x: 5.49, y: -2.78 },
+				{ x: 9, y: -2.78 },
+				{ x: 9, y: -3.53 },
+				{ x: 5.49, y: -3.53 },
+				{ x: 5.49, y: -6.76 },
+				{ x: 12.5, y: -6.76 },
+				{ x: 12.5, y: 6.75 },
+				{ x: 5.49, y: 6.75 },
+				{ x: 5.49, y: 5.89 },
+				{ x: 4.74, y: 5.89 },
+				{ x: 4.74, y: 6.75 },
+				{ x: 4.27, y: 6.75 },
+				{ x: 4.27, y: 7.5 },
+				{ x: 13.25, y: 7.5 },
+				{ x: 13.25, y: -7.51 }
+			]
+		}
+	},
+	toilet_01: {
+		worldImage: new URL("../../src/img/toilet_01.png?as=webp&width=300", import.meta.url).href,
+		width: 2.51,
+		height: 1.64
+	},
+	bed_01: {
+		worldImage: new URL("../../src/img/bed_01.png?as=webp&width=300", import.meta.url).href,
+		width: 3.08,
+		height: 4.63
+	},
+	oven_01: {
+		worldImage: new URL("../../src/img/oven_01.png?as=webp&width=300", import.meta.url).href,
+		width: 2.19,
+		height: 2.03,
+		collider: {
+			type: "poly",
+			points: [
+				{ x: -0.96, y: -1.01 },
+				{ x: 0.96, y: -1.01 },
+				{ x: 0.96, y: 1.01 },
+				{ x: -0.96, y: 1.01 }
+			]
+		}
+	},
+	fridge_01: {
+		worldImage: new URL("../../src/img/fridge_01.png?as=webp&width=300", import.meta.url).href,
+		width: 2.36,
+		height: 2.8,
+		collider: {
+			type: "poly",
+			points: [
+				{ x: -0.82, y: -1.4 },
+				{ x: 1.18, y: -1.4 },
+				{ x: 1.18, y: 1.4 },
+				{ x: -0.82, y: 1.4 },
+				{ x: -0.98, y: 0.71 },
+				{ x: -1.03, y: 0 },
+				{ x: -0.98, y: -0.71 }
+			]
+		}
+	},
+	table_01: {
+		worldImage: new URL("../../src/img/table_01.png?as=webp&width=475", import.meta.url).href,
+		width: 4.75,
+		height: 3.07,
+		layer: "roofs"
+	},
 	building_01: {
 		compound: true,
 		children: [
 			{
 				x: 0,
 				y: 0,
-				type: "crate_01"
-			}
+				type: "building_layout_01"
+			},
+			{
+				x: 0,
+				y: 0,
+				type: "building_floor_01"
+			},
+			{ x: 0, y: 0, type: "building_walls_a_01" },
+			{ x: 0, y: 0, type: "building_walls_b_01" },
+			{ x: -9.15, y: 3.75, type: "table_01" },
+			{ x: -4.41, y: 5.15, type: "fridge_01" },
+			{ x: -4.39, y: 2.22, type: "oven_01" },
+			{ x: -0.82, y: 2.23, type: "crate_01" },
+			{ x: -0.82, y: 5.18, type: "crate_01" }
 		]
 	}
 };

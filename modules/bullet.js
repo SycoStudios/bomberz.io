@@ -35,10 +35,10 @@ export class Bullet {
 		if (!this._isLocal || collisions) {
 			this._collider = new Circle(
 				{
-					x: this.x - Math.cos(this.angle * deg2Rad) * 0.15,
-					y: this.y - Math.sin(this.angle * deg2Rad) * 0.15
+					x: this.x - Math.cos(this.angle * deg2Rad) * 0.1,
+					y: this.y - Math.sin(this.angle * deg2Rad) * 0.1
 				},
-				0.3
+				0.2
 			);
 			this._collider.__type = "bullet";
 			this._collider.__bid = this.id;
@@ -54,7 +54,7 @@ export class Bullet {
 			this._tracer.width = 5;
 			this._tracer.height = 0.15;
 			this._tracer.anchor.set(1, 0.5);
-			this._tracer.tint = 0xe1edb2;
+			this._tracer.tint = 0x000000;
 
 			this._container.rotation = this.angle * deg2Rad;
 			this._container.addChild(this._tracer);
@@ -75,8 +75,8 @@ export class Bullet {
 		}
 		if (!!this._collider) {
 			this._collider.setPosition(
-				this.x - Math.cos(this.angle * deg2Rad) * 0.15,
-				this.y - Math.sin(this.angle * deg2Rad) * 0.15
+				this.x - Math.cos(this.angle * deg2Rad) * 0.1,
+				this.y - Math.sin(this.angle * deg2Rad) * 0.1
 			);
 		}
 	}

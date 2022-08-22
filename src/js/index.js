@@ -22,7 +22,7 @@ import { itemFromId } from "../../modules/meta/itemTypes";
 import { BitArray } from "@codezilluh/bitarray.js";
 import { messageIds } from "../../modules/meta/messageIds";
 import { objFromId, objects as objectData } from "../../modules/meta/objects";
-import { Circle, Box, System } from "detect-collisions";
+import { Circle, Box, Polygon, System } from "detect-collisions";
 import Swal from "sweetalert2";
 import LootClass from "../../modules/loot.js";
 import ObjectClass from "../../modules/object.js";
@@ -195,8 +195,8 @@ import("./externs.js").then(
 
 				app.stage.addChild(
 					layers.floors,
-					layers.objects,
 					layers.bullets,
+					layers.objects,
 					layers.players,
 					layers.roofs
 				);
@@ -364,11 +364,16 @@ import("./externs.js").then(
 										);
 										data.objects[object.id].category = category;
 
-										layers.objects.addChild(
-											data.objects[object.id].create({ Sprite, Container })
-										);
+										let container = data.objects[object.id].create({
+											Sprite,
+											Container
+										});
 
-										data.objects[object.id]._container.scale.set(0.5);
+										if (container) {
+											layers.objects.addChild(container);
+
+											data.objects[object.id]._container.scale.set(0.5);
+										}
 									}
 
 									data.objects[object.id].targetX = object.x;
@@ -389,24 +394,24 @@ import("./externs.js").then(
 
 										o.category = category;
 
-										(o.layer == "roofs"
-											? layers.roofs
-											: layers.objects
-										).addChild(
-											o.create(
-												{
-													Sprite,
-													Container,
-													Box,
-													Circle,
-													system: data.collisionSystem
-												},
-												true
-											)
+										let container = o.create(
+											{
+												Sprite,
+												Container,
+												Box,
+												Circle,
+												Polygon,
+												system: data.collisionSystem
+											},
+											true
 										);
 
-										if (objectData[objFromId(object.data)].rotate) {
-											o._container.rotation = getRandomInt(180 * deg2Rad);
+										if (container) {
+											layers[o.layer || "objects"].addChild(container);
+
+											if (objectData[objFromId(object.data)].rotate) {
+												o._container.rotation = getRandomInt(180 * deg2Rad);
+											}
 										}
 									}
 
@@ -521,7 +526,11 @@ import("./externs.js").then(
 							// }
 						});
 					}
-					if (data.sec - data.recSec <= 1) {
+					if (
+						data.sec - data.recSec <= 1 ||
+						player.x - player.actualX >= 0.5 ||
+						player.y - player.actualY >= 0.5
+					) {
 						player.move(
 							lerp(player.x, player.actualX, 0.35),
 							lerp(player.y, player.actualY, 0.35),

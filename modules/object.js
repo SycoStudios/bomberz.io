@@ -28,7 +28,7 @@ export default class Object {
 	set scale(value) {
 		this._scale = value;
 
-		if (this._isLocal) {
+		if (this._isLocal && this._container) {
 			this._container.scale.set(value, value);
 		}
 
@@ -48,13 +48,15 @@ export default class Object {
 		this.update();
 	}
 
-	create({ Sprite, Container, Box, Circle, system }, collisions = false) {
+	create({ Sprite, Container, Box, Circle, Polygon, system }, collisions = false) {
 		if (!this._isLocal || collisions) {
-			this._collisionCache = { Box, Circle, system };
-			this.createCollider({ system, Box, Circle });
+			this._collisionCache = { Box, Circle, Polygon, system };
+			this.createCollider({ system, Box, Circle, Polygon });
 		}
 		if (this._isLocal) {
 			let object = objects[this.type];
+
+			if (!object.worldImage) return;
 
 			this._container = new Container();
 			this._body = Sprite.from(new URL(object.worldImage, import.meta.url).href);
@@ -105,8 +107,10 @@ export default class Object {
 		this.seenList = [];
 	}
 
-	createCollider({ system, Box, Circle }, scale = 1) {
+	createCollider({ system, Box, Circle, Polygon }, scale = 1) {
 		let object = objects[this.type];
+
+		if (!object.collider) return;
 
 		if (object.collider.type == "box") {
 			this._collider = new Box(
@@ -125,6 +129,8 @@ export default class Object {
 				},
 				object.collider.radius * scale
 			);
+		} else if (object.collider.type == "poly") {
+			this._collider = new Polygon({ x: this.x, y: this.y }, object.collider.points);
 		}
 
 		this._collider.__type = "object";
