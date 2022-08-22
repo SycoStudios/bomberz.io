@@ -306,13 +306,6 @@ import("./externs.js").then(
 								p.curWeap = weapFromId(player.curWeap);
 								p.action = player.action;
 
-								if (p.action == actions.shoot && p.lastAction !== p.action) {
-									audio.playSound(p.curWeap + "_shoot", {
-										x: p.x,
-										y: p.y
-									});
-								}
-
 								p.lastAction = p.action;
 							} else {
 								if (player.id == data.pov) {
@@ -456,6 +449,11 @@ import("./externs.js").then(
 							b.bulletType = bullet.type;
 							b.team = bullet.team;
 							b.range = weapons[weapFromId(bullet.type)].range || 100;
+
+							audio.playSound(weapFromId(b.bulletType) + "_shoot", {
+								x: b.startX,
+								y: b.startY
+							});
 
 							b.update();
 						});

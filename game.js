@@ -321,17 +321,59 @@ export default class Game {
 
 	spawnBullet(x, y, dir, owner, type, moving) {
 		runAsync(() => {
-			let bullet = new Bullet(
-				x + (weapons[type].width + animations[type].gun.x - 0.5) * Math.cos(dir * deg2Rad),
-				y + (weapons[type].width + animations[type].gun.x - 0.5) * Math.sin(dir * deg2Rad),
-				loopAngle(
-					dir +
-						(weapons[type].spread || 3) * (moving ? 2 : 1) * (2 * (Math.random() - 0.5))
-				)
+			let startX =
+				x + (weapons[type].width + animations[type].gun.x - 0.5) * Math.cos(dir * deg2Rad);
+			let startY =
+				y + (weapons[type].width + animations[type].gun.x - 0.5) * Math.sin(dir * deg2Rad);
+			let rayData = this.collisionSystem.raycast(
+				{
+					x: x + Math.cos(dir * deg2Rad),
+					y: y + Math.sin(dir * deg2Rad)
+				},
+				{
+					x: startX + Math.cos(dir * deg2Rad),
+					y: startY + Math.sin(dir * deg2Rad)
+				},
+				(body) => {
+					if (body.__type == "loot" || body.__type == "bullet") return false;
+					if (
+						body.__oid &&
+						this.objects[body.__oid] &&
+						this.objects[body.__oid].destroyed
+					) {
+						this.collisionSystem.remove(body);
+						return false;
+					}
+					if (
+						body.__pid == owner ||
+						this.onSameTeam(body.__pid, owner) ||
+						(this.players[body.__pid] && this.players[body.__pid].dead)
+					)
+						return false;
+
+					return true;
+				}
 			);
+			let bullet;
+
+			if (rayData && rayData.point) {
+				bullet = new Bullet(rayData.point.x, rayData.point.y, dir);
+				bullet.speed = 0.05;
+			} else {
+				bullet = new Bullet(
+					startX,
+					startY,
+					loopAngle(
+						dir +
+							(weapons[type].spread || 3) *
+								(moving ? 2 : 1) *
+								(2 * (Math.random() - 0.5))
+					)
+				);
+				bullet.speed = weapons[type].bulletSpeed || 0.2;
+			}
 
 			bullet.owner = owner;
-			bullet.speed = weapons[type].bulletSpeed || 0.2;
 			bullet.range = weapons[type].range || 10;
 			bullet.damage = weapons[type].damage || 5;
 			bullet.bulletType = idFromWeap(type);
@@ -522,7 +564,7 @@ export default class Game {
 							object.damage(bullet.damage, this.collisionSystem);
 						}
 
-						bullet.move(-overlap);
+						//bullet.move(-overlap);
 						bullet.active = false;
 						this.collisionSystem.remove(bullet._collider);
 
@@ -680,7 +722,7 @@ export default class Game {
 				(player.mouseDown ||
 					(weapStats.burst && player.shotInBurst !== 0 && player.shotInBurst < 3)) &&
 				now - player.lastShot >
-					((player.shotInBurst == 0 ? weapStats.shootDelay : weapStats.burstDelay) || 210)
+					((player.shotInBurst == 0 ? weapStats.shootDelay : weapStats.burstDelay) || 300)
 			) {
 				switch (weapStats.type) {
 					case "melee": {
