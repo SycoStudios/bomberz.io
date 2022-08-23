@@ -450,6 +450,29 @@ import("./externs.js").then(
 							b.team = bullet.team;
 							b.range = weapons[weapFromId(bullet.type)].range || 100;
 
+							let { point, collider } = data.collisionSystem.raycast(
+								{ x: b.startX, y: b.startY },
+								{
+									x: b.startX + Math.cos(b.angle * deg2Rad) * b.range,
+									y: b.startY + Math.sin(b.angle * deg2Rad) * b.range
+								},
+								(body) => {
+									if (body.__pid != undefined || body.__type == "loot")
+										return false;
+									if (
+										body.__oid != undefined &&
+										data.objects[body.__oid] &&
+										data.objects[body.__oid].destructible
+									)
+										return false;
+
+									return true;
+								}
+							);
+
+							b.finalPos = point;
+							b.finalOid = collider.__oid;
+
 							audio.playSound(weapFromId(b.bulletType) + "_shoot", {
 								x: b.startX,
 								y: b.startY
@@ -511,17 +534,11 @@ import("./externs.js").then(
 							)
 								return;
 
-							player.move(
-								lerp(prevPos.x, player.actualX, 0.8),
-								lerp(prevPos.y, player.actualY, 0.8),
-								true
-							);
+							if (data.collisionSystem.checkCollision(player._collider, collider)) {
+								const { overlapV } = data.collisionSystem.response;
 
-							// if (data.collisionSystem.checkCollision(player._collider, collider)) {
-							// 	const { overlapV } = data.collisionSystem.response;
-
-							// 	player.move(-overlapV.x, -overlapV.y, false);
-							// }
+								player.move(-overlapV.x, -overlapV.y, false);
+							}
 						});
 					}
 					if (
@@ -650,7 +667,11 @@ import("./externs.js").then(
 						if (data.collisionSystem.checkCollision(bullet._collider, collider)) {
 							const { overlap, overlapN } = data.collisionSystem.response;
 
-							bullet.move(-overlap);
+							if (collider.__oid != bullet.finalOid || !bullet.finalPos) {
+								bullet.move(-overlap);
+							} else {
+								bullet.moveXY(bullet.finalPos.x, bullet.finalPos.y);
+							}
 							bullet.active = false;
 							bullet.deactivated = now;
 							data.collisionSystem.remove(bullet._collider);

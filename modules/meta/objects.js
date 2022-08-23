@@ -122,12 +122,41 @@ export const objects = {
 	toilet_01: {
 		worldImage: new URL("../../src/img/toilet_01.png?as=webp&width=300", import.meta.url).href,
 		width: 2.51,
-		height: 1.64
+		height: 1.64,
+		collider: {
+			type: "poly",
+			points: [
+				{ x: -1.25, y: -.69 },
+				{ x: -1.09, y: -.82 },
+				{ x: -.58, y: -.82 },
+				{ x: -.42, y: -.67 },
+				{ x: -.15, y: -.60 },
+				{ x: .17, y: -.72 },
+				{ x: .57, y: -.67 },
+				{ x: .98, y: -.46 },
+				{ x: 1.18, y: -.24 },
+				{ x: 1.25, y: 0 },
+				{ x: 1.18, y: .24 },
+				{ x: .98, y: .46 },
+				{ x: .57, y: .67 },
+				{ x: .17, y: .72 },
+				{ x: -.15, y: .60 },
+				{ x: -.42, y: .67 },
+				{ x: -.58, y: .82 },
+				{ x: -1.09, y: .82 },
+				{ x: -1.25, y: .69 },
+			]
+		}
 	},
 	bed_01: {
 		worldImage: new URL("../../src/img/bed_01.png?as=webp&width=300", import.meta.url).href,
 		width: 3.08,
-		height: 4.63
+		height: 4.63,
+		collider: {
+			type: "box",
+			width: 3.08,
+			height: 4.63
+		}
 	},
 	oven_01: {
 		worldImage: new URL("../../src/img/oven_01.png?as=webp&width=300", import.meta.url).href,
@@ -185,7 +214,9 @@ export const objects = {
 			{ x: -4.41, y: 5.15, type: "fridge_01" },
 			{ x: -4.39, y: 2.22, type: "oven_01" },
 			{ x: -0.82, y: 2.23, type: "crate_01" },
-			{ x: -0.82, y: 5.18, type: "crate_01" }
+			{ x: -0.82, y: 5.18, type: "crate_01" },
+			{ x: 7.23, y: -0.24, type: "bed_01" },
+			{ x: 6.92, y: -5.18, type: "toilet_01" }
 		]
 	}
 };

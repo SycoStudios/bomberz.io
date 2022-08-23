@@ -31,6 +31,15 @@ export class Bullet {
 		this.update();
 	}
 
+	moveXY(x, y) {
+		if (!this.active) return;
+
+		this.x = x;
+		this.y = y;
+
+		this.update();
+	}
+
 	create({ Sprite, Container, Circle, system }, collisions) {
 		if (!this._isLocal || collisions) {
 			this._collider = new Circle(
