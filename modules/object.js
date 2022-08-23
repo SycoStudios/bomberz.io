@@ -11,6 +11,7 @@ export default class Object {
 		this.seenList = [];
 		this.destructible = !!objects[type].health;
 		this.dontScale = !!objects[type].dontScale;
+		this.reflect = !!objects[type].reflect;
 		this.health = objects[type].health || 100;
 		this.layer = objects[type].layer || "objects";
 		this._isLocal = local;

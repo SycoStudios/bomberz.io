@@ -4,7 +4,9 @@
 	"description": "",
 	"scripts": {
 		"build": "rd /s /q dist && parcel build src/index.html",
+		"build:server": "node server-build",
 		"start": "node game_server",
+		"start:build": "npm run build:server && node build-server/game_server",
 		"host": "npm run build && node website"
 	},
 	"keywords": [],
