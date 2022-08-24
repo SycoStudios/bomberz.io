@@ -33,9 +33,18 @@ export default class Object {
 			this._container.scale.set(value, value);
 		}
 
-		if (!!this._collider && !!this._collisionCache) {
-			this._collisionCache.system.remove(this._collider);
-			this.createCollider(this._collisionCache, value);
+		if (!!this._collider) {
+			let object = objects[this.type];
+
+			this._collider.scale = value;
+
+			if (object.collider.type == "box") {
+				this._collider.setPosition(
+					this.x - (object.collider.width * value) / 2,
+					this.y - (object.collider.height * value) / 2
+				);
+			}
+
 			this.change();
 		}
 	}
@@ -51,7 +60,6 @@ export default class Object {
 
 	create({ Sprite, Container, Box, Circle, Polygon, system }, collisions = false) {
 		if (!this._isLocal || collisions) {
-			this._collisionCache = { Box, Circle, Polygon, system };
 			this.createCollider({ system, Box, Circle, Polygon });
 		}
 		if (this._isLocal) {

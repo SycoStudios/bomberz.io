@@ -189,7 +189,7 @@ export default class Game {
 		this.currentRound = 0;
 		this.rounds = [];
 		this.roundLength = 100 * seconds;
-		this.roundCoolDown = 30 * seconds;
+		this.roundCoolDown = 1 * seconds;
 		this.plantingTeam = 0;
 
 		this.map = {
