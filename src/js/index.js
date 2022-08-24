@@ -9,7 +9,8 @@ import {
 	bullets,
 	roundInfo,
 	loadout,
-	playerInfo
+	playerInfo,
+	actionState
 } from "../../models/index";
 import { filter, forEach, map } from "../../modules/optimized";
 import { actions } from "../../modules/meta/actions";
@@ -304,9 +305,6 @@ import("./externs.js").then(
 								}
 								p.team = player.team;
 								p.curWeap = weapFromId(player.curWeap);
-								p.action = player.action;
-
-								p.lastAction = p.action;
 							} else {
 								if (player.id == data.pov) {
 									audio.playMenuTheme();
@@ -574,28 +572,21 @@ import("./externs.js").then(
 						p._playerSkin.tint = 0xffffff;
 					}
 
-					switch (p.action) {
-						case actions.punch:
-						case actions.shoot: {
-							if (weapStats.multipleAnims) {
-								p.animate(Math.random() > 0.5 ? weapStats.animL : weapStats.animR);
+					if (p.shouldPunch) {
+						if (weapStats.multipleAnims) {
+							if (p.animation != weap && !p.animating && p.animStarted) {
+								p.shouldPunch = false;
 							} else {
-								p.shooting = true;
+								p.animStarted = true;
+								p.animate(Math.random() > 0.5 ? weapStats.animL : weapStats.animR);
 							}
-
-							break;
 						}
-						case actions.none: {
-							p.idleAnim = weap;
-							p.animate(weap);
-							p.wasShoot = p.shooting;
-							p.shooting = false;
-
-							break;
-						}
+					} else {
+						p.idleAnim = weap;
+						p.animate(weap);
 					}
 
-					if (p.shooting || p.wasShoot) {
+					if (p.shooting && weapStats.type == "gun") {
 						p._weapsContainer.position.x -= p.wasShoot ? 0.04 : 0.02;
 					} else {
 						p._weapsContainer.position.x += 0.005;
@@ -802,25 +793,6 @@ import("./externs.js").then(
 							dataUpdate(bullets.decode(bitarr));
 							break;
 						}
-						case messageIds.welcome: {
-							let msg = welcomeState.decode(bitarr);
-
-							if (!data.started) {
-								gameLoaded();
-
-								if (loggedIn && settings.token) {
-									channel.emit("token", settings.token);
-								}
-							}
-
-							data.started = true;
-							data.pov = msg.pov;
-							data.gameMode = msg.gameMode;
-
-							sendInput(input);
-
-							break;
-						}
 						case messageIds.local: {
 							let {
 								weapon1Type,
@@ -949,7 +921,38 @@ import("./externs.js").then(
 
 							break;
 						}
+						case messageIds.action: {
+							const { id, action } = actionState.decode(bitarr);
+							const p = data.players[id];
+
+							if (!!p) {
+								p.action = action;
+								if (action == actions.punch || action == actions.shoot) {
+									p.shouldPunch = true;
+									p.shooting = true;
+								} else {
+									p.shooting = false;
+								}
+							}
+							break;
+						}
 					}
+				});
+
+				channel.on("welcome", (msg) => {
+					if (!data.started) {
+						gameLoaded();
+
+						if (loggedIn && settings.token) {
+							channel.emit("token", settings.token);
+						}
+					}
+
+					data.started = true;
+					data.pov = msg.pov;
+					data.gameMode = msg.gameMode;
+
+					sendInput(input);
 				});
 
 				channel.on("gameOver", () => {

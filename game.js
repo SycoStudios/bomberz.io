@@ -7,7 +7,8 @@ import {
 	localState,
 	bullets,
 	roundInfo,
-	playerInfo
+	playerInfo,
+	actionState
 } from "./models/index.js";
 import { actions } from "./modules/meta/actions.js";
 import { weapons, idFromWeap, weapFromId } from "./modules/meta/weapons.js";
@@ -33,12 +34,6 @@ const mapPlayers = (players) =>
 			y: p.y,
 			dead: p.dead,
 			angle: p.angle,
-			action:
-				p.shooting || p.shouldSendShoot
-					? p.curWeap == 2
-						? actions.punch
-						: actions.shoot
-					: actions.none,
 			curWeap: idFromWeap(p.weapons[p.curWeap].type),
 			id: p.id,
 			team: p.team
@@ -189,7 +184,7 @@ export default class Game {
 		this.currentRound = 0;
 		this.rounds = [];
 		this.roundLength = 100 * seconds;
-		this.roundCoolDown = 1 * seconds;
+		this.roundCoolDown = 30 * seconds;
 		this.plantingTeam = 0;
 
 		this.map = {
@@ -282,6 +277,12 @@ export default class Game {
 			arr = mapPlayerInfo(arr);
 
 			this.rawRoom.emit(playerInfo.encode(arr));
+		});
+	}
+
+	sendPlayerAction(id, action) {
+		runAsync(() => {
+			this.rawRoom.emit(actionState.encode({ id, action }));
 		});
 	}
 
@@ -683,7 +684,7 @@ export default class Game {
 									if (!player.interact) player.lastNonInteract = now;
 								}
 							} else {
-								const { overlapV, aInB, bInA } = this.collisionSystem.response;
+								const { overlapV } = this.collisionSystem.response;
 
 								player.move(-overlapV.x, -overlapV.y, false);
 							}
@@ -705,6 +706,11 @@ export default class Game {
 
 			player.shooting = false;
 
+			player.couldShoot = !!player.canShoot;
+			player.canShoot =
+				player.mouseDown ||
+				(weapStats.burst && player.shotInBurst !== 0 && player.shotInBurst < 3);
+
 			if (!player.mouseDown && player.mouseWasDown) {
 				player.change();
 				player.mouseWasDown = false;
@@ -719,8 +725,7 @@ export default class Game {
 			}
 
 			if (
-				(player.mouseDown ||
-					(weapStats.burst && player.shotInBurst !== 0 && player.shotInBurst < 3)) &&
+				player.canShoot &&
 				now - player.lastShot >
 					((player.shotInBurst == 0 ? weapStats.shootDelay : weapStats.burstDelay) || 300)
 			) {
@@ -728,7 +733,7 @@ export default class Game {
 					case "melee": {
 						if (!player.mouseWasDown) {
 							player.shooting = true;
-							player.change();
+							//player.change();
 							player.lastShot = now;
 
 							// Cast a punch ray
@@ -794,7 +799,7 @@ export default class Game {
 										moveX || moveY
 									);
 								}
-								player.change();
+								//player.change();
 								player.lastShot = now;
 							}
 						}
@@ -803,6 +808,17 @@ export default class Game {
 				}
 
 				player.mouseWasDown = true;
+			}
+
+			if (!!player.canShoot != !!player.couldShoot) {
+				this.sendPlayerAction(
+					player.id,
+					player.canShoot
+						? player.curWeap == 2
+							? actions.punch
+							: actions.shoot
+						: actions.none
+				);
 			}
 			if (player.inputChanged) {
 				player.change();
@@ -867,16 +883,7 @@ export default class Game {
 					filter(this.players, (p) => {
 						if (!p.seenList) p.seenList = [];
 
-						let weapStats = weapons[p.weapons[p.curWeap].type];
-
-						p.lastShouldSendShoot = p.shouldSendShoot;
-						p.shouldSendShoot =
-							now - p.lastShot <
-							(weapons[p.weapons[p.curWeap].type].shootDelay || 150) / 2;
-
-						if (p.lastShouldSendShoot !== p.shouldSendShoot) {
-							p.change();
-						}
+						//let weapStats = weapons[p.weapons[p.curWeap].type];
 
 						// Can player see p?
 						if (!player.canSee(p.x, p.y, 3)) {
@@ -1049,7 +1056,7 @@ export default class Game {
 
 		player.cid = channel.id;
 		player.channel = channel;
-		player.id = Object.keys(this.players).length;
+		player.id = this.players.length;
 		channel.pid = player.id;
 		player.create({ system: this.collisionSystem, Circle });
 		player.credits = 800; // credits for purchasing weaps
@@ -1067,12 +1074,7 @@ export default class Game {
 			this.teams[0].push(player.id);
 		}
 
-		player.channel.raw.emit(
-			welcomeState.encode({
-				pov: player.id,
-				gameMode: this.gameMode
-			})
-		);
+		player.channel.emit("welcome", { pov: player.id, gameMode: this.gameMode });
 
 		this.sendPlayerInfo();
 		this.sendLocalState(player);
