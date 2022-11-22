@@ -17,7 +17,15 @@ import { actions } from "../../modules/meta/actions";
 import { weapons, weapFromId, idFromWeap } from "../../modules/meta/weapons";
 import { dictionary, Language } from "../../modules/lang";
 import { categoryFromId } from "../../modules/meta/objCategories";
-import { calcAngle, calcDistance, clamp, deg2Rad, getRandomInt, lerp } from "../../modules/math";
+import {
+	calcAngle,
+	calcDistance,
+	clamp,
+	deg2Rad,
+	getRandomInt,
+	lerp,
+	rad2Deg
+} from "../../modules/math";
 import { Audio } from "../../modules/audio";
 import { itemFromId } from "../../modules/meta/itemTypes";
 import { BitArray } from "@codezilluh/bitarray.js";
@@ -152,7 +160,7 @@ import("./externs.js").then(
 				gameMode: 0,
 				spectating: false,
 				playersJustSeen: [],
-				lastFrameTime: Date.now(),
+				lastFrameTime: 0,
 				collisionSystem: new System(),
 				map: {
 					min: -300,
@@ -160,6 +168,7 @@ import("./externs.js").then(
 					pad: 24
 				},
 				lastKeybind: {},
+				lastDelta: 1,
 				sec: 0,
 				recSec: 0,
 				playerInfo: []
@@ -498,14 +507,19 @@ import("./externs.js").then(
 					}
 				}
 			};
-			const animateUpdate = () => {
+			const speedEquation = (speed, dist, sign, thresh = 8) => {
+				return Math.abs((speed * dist ** 2) / (dist ** 2 + 1 / thresh ** 2));
+			};
+			const animateUpdate = (time) => {
 				requestAnimationFrame(animateUpdate);
 
 				if (data.gameOver) return;
 
 				let touching = [];
 				let now = Date.now();
-				let delta = (now - data.lastFrameTime) / (1000 / 60);
+				let delta = (time - data.lastFrameTime) / (1000 / 60);
+
+				deltaAvg = (delta + data.lastDelta) / 2;
 
 				// Localize inputs only when player is supposed to move
 				if (data.pov != undefined && !data.inCoolDown && !data.spectating) {
@@ -520,11 +534,12 @@ import("./externs.js").then(
 
 					let moveX = moveRight - moveLeft;
 					let moveY = moveDown - moveUp;
-					let deltaSpeed = player.speed * delta;
+					let deltaSpeed = player.speed * deltaAvg;
+
+					player.collided = false;
 
 					if (moveX || moveY) {
 						let moveDir = Math.atan2(moveY, moveX);
-						let prevPos = { x: player.x, y: player.y };
 
 						player.move(
 							Math.cos(moveDir) * deltaSpeed,
@@ -554,17 +569,20 @@ import("./externs.js").then(
 								const { overlapV } = data.collisionSystem.response;
 
 								player.move(-overlapV.x, -overlapV.y, false);
+								player.collided = true;
 							}
 						});
 					}
+
 					if (
-						data.sec - data.recSec <= 1 ||
-						player.x - player.actualX >= 0.5 ||
-						player.y - player.actualY >= 0.5
+						Math.abs(player.x - player.actualX) >= deltaSpeed ||
+						Math.abs(player.y - player.actualY) >= deltaSpeed ||
+						player.collided ||
+						!(moveX || moveY)
 					) {
 						player.move(
-							lerp(player.x, player.actualX, 0.35),
-							lerp(player.y, player.actualY, 0.35),
+							lerp(player.x, player.actualX, 0.1 * deltaAvg),
+							lerp(player.y, player.actualY, 0.1 * deltaAvg),
 							true
 						);
 					}
@@ -574,46 +592,55 @@ import("./externs.js").then(
 					player.rotate(input.mouseAngle);
 				}
 
-				data.lastFrameTime = now;
+				data.lastFrameTime = time;
+				data.lastDelta = delta;
 
-				forEach(data.players, (p) => {
-					const weap = p.curWeap;
-					const weapStats = weapons[weap];
+				runAsync(() =>
+					forEach(data.players, (p) => {
+						const weap = p.curWeap;
+						const weapStats = weapons[weap];
 
-					if (p.dead) {
-						return (p._weapon.visible = false);
-					}
-
-					if (p.team !== data.team) {
-						p._playerSkin.tint = 0xff0000;
-					} else {
-						p._playerSkin.tint = 0xffffff;
-					}
-
-					if (p.shouldPunch) {
-						if (weapStats.multipleAnims) {
-							if (p.animation != weap && !p.animating && p.animStarted) {
-								p.shouldPunch = false;
-							} else {
-								p.animStarted = true;
-								p.animate(Math.random() > 0.5 ? weapStats.animL : weapStats.animR);
-							}
+						if (p.dead) {
+							return (p._weapon.visible = false);
 						}
-					} else {
-						p.idleAnim = weap;
-						p.animate(weap);
-					}
 
-					if (p.shooting && weapStats.type == "gun") {
-						p._weapsContainer.position.x -= p.wasShoot ? 0.04 : 0.02;
-					} else {
-						p._weapsContainer.position.x += 0.005;
-					}
+						if (p.team !== data.team) {
+							p._playerSkin.tint = 0xff0000;
+						} else {
+							p._playerSkin.tint = 0xffffff;
+						}
 
-					p._weapsContainer.position.x = clamp(p._weapsContainer.position.x, -0.08, 0);
+						if (p.shouldPunch) {
+							if (weapStats.multipleAnims) {
+								if (p.animation != weap && !p.animating && p.animStarted) {
+									p.shouldPunch = false;
+								} else {
+									p.animStarted = true;
+									p.animate(
+										Math.random() > 0.5 ? weapStats.animL : weapStats.animR
+									);
+								}
+							}
+						} else {
+							p.idleAnim = weap;
+							p.animate(weap);
+						}
 
-					p.setWeap(p.curWeap, Sprite);
-				});
+						if (p.shooting && weapStats.type == "gun") {
+							p._weapsContainer.position.x -= p.wasShoot ? 0.04 : 0.02;
+						} else {
+							p._weapsContainer.position.x += 0.005;
+						}
+
+						p._weapsContainer.position.x = clamp(
+							p._weapsContainer.position.x,
+							-0.08,
+							0
+						);
+
+						p.setWeap(p.curWeap, Sprite);
+					})
+				);
 				forEach(data.objects, (object) => {
 					if (!object) return;
 					if (object.destroyed) return;
@@ -649,55 +676,58 @@ import("./externs.js").then(
 						}
 					}
 				});
-				forEach(data.bullets, (bullet) => {
-					if (!bullet || bullet.done) return;
-					if (bullet.deactivating >= 170) {
-						bullet.done = true;
-						return;
-					}
-					if (!bullet.active) {
-						bullet.deactivating = clamp(now - bullet.deactivated, 0, 170);
-						bullet.update();
-						return;
-					}
+				runAsync(() => {
+					forEach(data.bullets, (bullet) => {
+						if (!bullet || bullet.done) return;
+						if (bullet.deactivating >= 170) {
+							bullet.done = true;
+							return;
+						}
+						if (!bullet.active) {
+							bullet.deactivating = clamp(now - bullet.deactivated, 0, 170);
+							bullet.update();
+							return;
+						}
 
-					bullet.move(bullet.speed);
+						bullet.move(bullet.speed);
 
-					let potentials = data.collisionSystem.getPotentials(bullet._collider);
+						let potentials = data.collisionSystem.getPotentials(bullet._collider);
 
-					potentials.some((collider) => {
-						if (collider.__type == "bullet" || collider.__type == "loot") return false;
-						if (
-							collider.__type == "player" &&
-							data.players[collider.__pid].team == bullet.team
-						)
-							return false;
+						potentials.some((collider) => {
+							if (collider.__type == "bullet" || collider.__type == "loot")
+								return false;
+							if (
+								collider.__type == "player" &&
+								data.players[collider.__pid].team == bullet.team
+							)
+								return false;
 
-						if (data.collisionSystem.checkCollision(bullet._collider, collider)) {
-							const { overlap, overlapN } = data.collisionSystem.response;
+							if (data.collisionSystem.checkCollision(bullet._collider, collider)) {
+								const { overlap, overlapN } = data.collisionSystem.response;
 
-							if (collider.__oid != bullet.finalOid || !bullet.finalPos) {
-								bullet.move(-overlap);
-							} else {
-								bullet.moveXY(bullet.finalPos.x, bullet.finalPos.y);
+								if (collider.__oid != bullet.finalOid || !bullet.finalPos) {
+									bullet.move(-overlap);
+								} else {
+									bullet.moveXY(bullet.finalPos.x, bullet.finalPos.y);
+								}
+								bullet.active = false;
+								bullet.deactivated = now;
+								data.collisionSystem.remove(bullet._collider);
+
+								return true;
 							}
+						});
+
+						if (bullet.distance > bullet.range || !inMap(bullet.x, bullet.y, true)) {
 							bullet.active = false;
 							bullet.deactivated = now;
 							data.collisionSystem.remove(bullet._collider);
-
-							return true;
 						}
 					});
 
-					if (bullet.distance > bullet.range || !inMap(bullet.x, bullet.y, true)) {
-						bullet.active = false;
-						bullet.deactivated = now;
-						data.collisionSystem.remove(bullet._collider);
-					}
+					// Remove "dead" bullets
+					data.bullets = filter(data.bullets, (b) => !b.done);
 				});
-
-				// Remove "dead" bullets
-				data.bullets = filter(data.bullets, (b) => !b.done);
 
 				// Prevent pause menu repeatedly opening
 				if (input.getKeyDown(keybinds.pause) && !data.lastKeybind.pause) {
