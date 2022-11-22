@@ -249,14 +249,17 @@ import("./externs.js").then(
 				);
 			};
 			const dataUpdate = ({ players = [], objects = [], bullets = [], sec }) => {
+				// Does data contain players and objects, or just bullets?
 				if (players.length > 0 || objects.length > 0) {
 					data.playersJustSeen = [];
 					data.recSec = sec;
 
+					// Player entity generation
 					forEach(players, (player) => {
 						runAsync(() => {
 							data.playersJustSeen.push(player.id);
 
+							// Create player if not already made
 							if (!data.players[player.id]) {
 								data.players[player.id] = new Player(true);
 								data.players[player.id].id = player.id;
@@ -285,15 +288,17 @@ import("./externs.js").then(
 
 							let p = data.players[player.id];
 
+							// Update player data
 							p.dead = player.dead;
 							p.setSkin("bomb_skin_01", Sprite);
+							p.visible = true;
 
+							// Focus on player if playing as or spectating
 							if (player.id == data.pov && data.spectating) {
 								focus(player.x, player.y);
 							}
 
-							if (!p.visible) p.visible = true;
-
+							// Display the player differently if dead
 							if (!player.dead) {
 								if (player.id == data.pov && !data.spectating) {
 									data.team = player.team;
@@ -315,16 +320,19 @@ import("./externs.js").then(
 
 								p.move(player.x, player.y);
 
+								// Remove player containers
 								layers.players.removeChild(p._container);
 								layers.floors.addChild(p._container);
 							}
 						});
 					});
 
+					// Object entity generation
 					forEach(objects, (object) => {
 						runAsync(() => {
 							let category = categoryFromId(object.category);
 
+							// Remove "dead" objects
 							if (object.destroyed) {
 								if (data.objects[object.id]) {
 									data.objects[object.id].destroy(data.collisionSystem);
@@ -336,16 +344,20 @@ import("./externs.js").then(
 
 							switch (category) {
 								case "loot": {
+									// Create a new loot item if one doesn't exist
+									//   or if one exists of different type
 									if (
 										!!data.objects[object.id]
 											? data.objects[object.id].item !==
 											  itemFromId(object.data)
 											: true
 									) {
+										// Destroy the old loot item
 										if (!!data.objects[object.id]) {
 											data.objects[object.id].destroy();
 										}
 
+										// Create a new loot item
 										data.objects[object.id] = new LootClass(
 											object.x,
 											object.y,
@@ -372,6 +384,7 @@ import("./externs.js").then(
 									break;
 								}
 								case "object": {
+									// Create a new object if one doesn't exist
 									if (!data.objects[object.id]) {
 										data.objects[object.id] = new ObjectClass(
 											object.x,
@@ -406,6 +419,7 @@ import("./externs.js").then(
 										}
 									}
 
+									// Change the scale of the object
 									data.objects[object.id].scale = object.scale;
 									break;
 								}
@@ -413,13 +427,16 @@ import("./externs.js").then(
 						});
 					});
 
+					// Player entity cleanup
 					forEach(data.players, (player, id) => {
 						if (!player._container.visible) return;
 
-						if (!data.playersJustSeen.includes(id)) {
-							if (!data.players[data.pov].canSee(player.x, player.y, 3)) {
-								player._container.visible = false;
-							}
+						// Hide players that haven't been updated and that can't be seen
+						if (
+							!data.playersJustSeen.includes(id) &&
+							!data.players[data.pov].canSee(player.x, player.y, 3)
+						) {
+							player._container.visible = false;
 						}
 					});
 				} else {
@@ -490,6 +507,7 @@ import("./externs.js").then(
 				let now = Date.now();
 				let delta = (now - data.lastFrameTime) / (1000 / 60);
 
+				// Localize inputs only when player is supposed to move
 				if (data.pov != undefined && !data.inCoolDown && !data.spectating) {
 					let player = data.players[data.pov];
 
@@ -678,12 +696,15 @@ import("./externs.js").then(
 					}
 				});
 
+				// Remove "dead" bullets
 				data.bullets = filter(data.bullets, (b) => !b.done);
 
+				// Prevent pause menu repeatedly opening
 				if (input.getKeyDown(keybinds.pause) && !data.lastKeybind.pause) {
 					UI.pauseMenu.classList.toggle("hidden");
 				}
 
+				// Only let buy menu open when in Cool Down period.
 				if (
 					data.inCoolDown &&
 					input.getKeyDown(keybinds.buyMenu) &&
@@ -692,6 +713,7 @@ import("./externs.js").then(
 					UI.buyMenu.classList.toggle("hidden");
 				}
 
+				// Show pick-up loot message
 				if (touching.length > 0) {
 					let item = touching.sort((a, b) => a.dist - b.dist)[0];
 
@@ -706,6 +728,7 @@ import("./externs.js").then(
 						UI.interact.classList.add("hidden");
 				}
 
+				// Store previous values of keybinds
 				data.lastKeybind.pause = input.getKeyDown(keybinds.pause);
 				data.lastKeybind.buyMenu = input.getKeyDown(keybinds.buyMenu);
 			};
@@ -832,13 +855,13 @@ import("./externs.js").then(
 								}
 
 								weapSlots[i].classList.remove("none");
-
 								weapSlots[i].children[0].src =
 									weapons[weaps[i].type].lootImage || "";
 								weapSlots[i].children[1].children[0].innerText = lang.getShortText(
 									weaps[i].type
 								);
 
+								// Make sure UI is ready
 								if (!weapSlots[i].children[1].children[1]) continue;
 								if (!weapSlots[i].children[1].children[1].children.length) continue;
 
