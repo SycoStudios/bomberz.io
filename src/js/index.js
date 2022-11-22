@@ -689,7 +689,7 @@ import("./externs.js").then(
 							return;
 						}
 
-						bullet.move(bullet.speed);
+						bullet.move(bullet.speed * delta);
 
 						let potentials = data.collisionSystem.getPotentials(bullet._collider);
 
