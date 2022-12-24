@@ -8,7 +8,7 @@ let blockedIPs = [];
 let users = {};
 
 const app = express();
-const port = 80;
+const port = 90;
 const clean = (string) => {
 	return string.replace(/\W/gi, "").toLowerCase();
 };
