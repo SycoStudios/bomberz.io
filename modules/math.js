@@ -26,5 +26,9 @@ export const getRandomInt = (maxNum) => {
 	return Math.floor(Math.random() * maxNum);
 };
 
+export const getRandomArbitrary = (min, max) => {
+	return Math.random() * (max - min) + min;
+}
+
 export const deg2Rad = Math.PI / 180;
 export const rad2Deg = 180 / Math.PI;

@@ -205,7 +205,7 @@ export default class Game {
 		//this.spawnObject(5, 5, `crate_02`);
 		this.spawnObject(2, 0, `building_01`);
 		//this.spawnObject(-6, 2, `tree_01`);
-		//this.spawnObject(-10, 4, `tree_01`);
+		this.spawnObject(-10, 10, `tree_01`);
 		//this.spawnObject(3, 7, `bomb`);
 
 		// this.spawnObject(1.4, 1.4, `crate_01`);
