@@ -827,6 +827,8 @@ import("./externs.js").then(
 			};
 			const bitarr = new BitArray();
 
+			console.log(iceServers);
+
 			channel.onConnect((error) => {
 				requestAnimationFrame(animateUpdate);
 
