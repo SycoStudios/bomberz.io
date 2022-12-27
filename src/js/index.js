@@ -36,7 +36,14 @@ import Swal from "sweetalert2";
 import LootClass from "../../modules/loot.js";
 import ObjectClass from "../../modules/object.js";
 import Settings from "../../modules/settings.js";
-import geckos, { iceServers } from "@geckos.io/client";
+import geckos from "@geckos.io/client";
+
+let iceServers = [
+	{ urls: "stun:stun1.l.google.com:19302" },
+	{ urls: "stun:stun2.l.google.com:19302" },
+	{ urls: "stun:stun3.l.google.com:19302" },
+	{ urls: "stun:stun4.l.google.com:19302" }
+];
 
 let protocol = 1;
 let listeners = [];
@@ -826,8 +833,6 @@ import("./externs.js").then(
 				console.log("Game ended");
 			};
 			const bitarr = new BitArray();
-
-			console.log(iceServers);
 
 			channel.onConnect((error) => {
 				requestAnimationFrame(animateUpdate);
